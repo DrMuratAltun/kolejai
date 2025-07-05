@@ -111,8 +111,10 @@ const testimonials = [
 
 export default function Home() {
   const plugin = React.useRef(
-    Autoplay({ delay: 5000, stopOnInteraction: false, stopOnMouseEnter: true })
+    Autoplay({ delay: 5000, stopOnInteraction: true })
   );
+
+  const upcomingEvents = newsAndEvents.filter(item => item.type === 'Etkinlik');
 
   return (
     <div className="flex flex-col animate-in fade-in duration-500">
@@ -219,7 +221,7 @@ export default function Home() {
                 </div>
                 <div className="grid grid-cols-5 gap-4">
                     {institutions.map((inst, index) => (
-                        <Link href={inst.href} key={index} className="relative block h-96 rounded-xl overflow-hidden group shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
+                        <Link href={inst.href} key={index} className="relative block aspect-[3/4] rounded-xl overflow-hidden group shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
                             <Image
                                 src={inst.image}
                                 alt={inst.title}
@@ -324,11 +326,11 @@ export default function Home() {
                 <CardHeader>
                   <CardTitle>Hızlı Erişim</CardTitle>
                 </CardHeader>
-                <CardContent className="flex flex-col gap-6 pt-6">
+                <CardContent className="flex flex-col gap-4">
                   {quickAccessItems.map((item, index) => (
                     <div key={index} className="flex items-start gap-4">
                       <div className={`w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10 flex-shrink-0`}>
-                          <item.icon className={`text-primary text-2xl`} />
+                          <item.icon className={`text-primary h-6 w-6`} />
                       </div>
                       <div>
                         <h3 className="font-bold text-md mb-1 text-foreground">{item.title}</h3>
@@ -338,6 +340,27 @@ export default function Home() {
                   ))}
                 </CardContent>
               </Card>
+
+              {upcomingEvents.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Yaklaşan Etkinlikler</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex flex-col gap-4">
+                    {upcomingEvents.map((event) => (
+                      <Link href={event.href} key={event.id} className="flex items-start gap-4 group">
+                          <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10 flex-shrink-0">
+                              <Calendar className="text-primary h-6 w-6" />
+                          </div>
+                          <div>
+                              <h3 className="font-bold text-md mb-1 text-foreground transition-colors group-hover:text-primary">{event.title}</h3>
+                              <p className="text-muted-foreground text-sm">{event.date}</p>
+                          </div>
+                      </Link>
+                    ))}
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </aside>
 
