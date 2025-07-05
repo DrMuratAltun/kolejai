@@ -4,7 +4,6 @@ import { Toaster } from "@/components/ui/toaster";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import VisitorChatbot from '@/components/chat/VisitorChatbot';
-import BackToTop from '@/components/BackToTop';
 
 export const metadata: Metadata = {
   title: 'Bilge Yıldız Koleji - Geleceğin Liderlerini Yetiştiriyoruz',
@@ -30,7 +29,6 @@ export default function RootLayout({
           <Footer />
         </div>
         <VisitorChatbot />
-        <BackToTop />
         <Toaster />
       </body>
     </html>
