@@ -24,16 +24,22 @@ const announcements = [
     title: "2024-2025 Eğitim Yılı Kayıtları Başladı",
     date: "15.08.2024",
     content: "Yeni dönem kayıtlarımız için kontenjanlarımız dolmadan yerinizi ayırtın. Detaylı bilgi için okulumuzu ziyaret edebilirsiniz.",
+    image: "https://placehold.co/600x400.png",
+    aiHint: "school registration",
   },
   {
     title: "Yaz Okulu Programı Açıklandı",
     date: "10.06.2024",
     content: "Öğrencilerimiz için eğlence ve öğrenme dolu yaz okulu programımız hazır. Spor, sanat ve bilim atölyeleriyle dolu bir yaz sizi bekliyor.",
+    image: "https://placehold.co/600x400.png",
+    aiHint: "summer school",
   },
   {
     title: "Veli Toplantısı Duyurusu",
     date: "01.06.2024",
     content: "Tüm velilerimiz, 15 Haziran Cumartesi günü yapılacak olan genel veli toplantımıza davetlidir.",
+    image: "https://placehold.co/600x400.png",
+    aiHint: "parent meeting",
   },
 ];
 
@@ -114,27 +120,50 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-bold">Duyurular</h2>
             <p className="text-muted-foreground mt-2">Okulumuzdan en son haberler ve önemli bilgilendirmeler.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {announcements.map((announcement, index) => (
-              <Card key={index} className="flex flex-col transform hover:-translate-y-2 transition-transform duration-300 shadow-md hover:shadow-xl">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Megaphone className="text-primary" />
-                    {announcement.title}
-                  </CardTitle>
-                  <CardDescription>{announcement.date}</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <p>{announcement.content}</p>
-                </CardContent>
-                <CardFooter>
-                  <Button variant="link" className="p-0">
-                    Devamını Oku <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            <CarouselContent>
+              {announcements.map((announcement, index) => (
+                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                  <div className="p-1 h-full">
+                    <Card className="flex flex-col h-full transform hover:-translate-y-2 transition-transform duration-300 shadow-md hover:shadow-xl overflow-hidden">
+                       <Image
+                        src={announcement.image}
+                        alt={announcement.title}
+                        width={600}
+                        height={400}
+                        className="w-full h-48 object-cover"
+                        data-ai-hint={announcement.aiHint}
+                      />
+                      <CardHeader>
+                        <Badge variant={"outline"} className="w-fit bg-primary/20 text-primary mb-2 flex items-center gap-1 border-primary/50">
+                            <Megaphone className="h-4 w-4" />
+                            Duyuru
+                        </Badge>
+                        <CardTitle>{announcement.title}</CardTitle>
+                        <CardDescription>{announcement.date}</CardDescription>
+                      </CardHeader>
+                      <CardContent className="flex-grow">
+                        <p className="text-muted-foreground">{announcement.content}</p>
+                      </CardContent>
+                      <CardFooter>
+                         <Button variant="link" className="p-0 text-primary">
+                           Devamını Oku <ArrowRight className="ml-2 h-4 w-4" />
+                         </Button>
+                      </CardFooter>
+                    </Card>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2" />
+            <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2" />
+          </Carousel>
         </div>
       </section>
 
