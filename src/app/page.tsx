@@ -248,9 +248,9 @@ export default function Home() {
                   <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Kolejimizin Öne Çıkan Özellikleri</h2>
                   <div className="w-20 h-1 bg-primary mx-auto"></div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                   {features.map((feature, index) => (
-                      <Card key={index} className="text-center p-6 transform transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl">
+                      <Card key={index} className="flex flex-col text-center p-6 transform transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl h-full">
                           <div className="bg-primary/10 w-20 h-20 rounded-full flex items-center justify-center mb-6 mx-auto">
                               <feature.icon className="w-10 h-10 text-primary" />
                           </div>
@@ -368,3 +368,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
