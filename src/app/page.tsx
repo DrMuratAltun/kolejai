@@ -35,6 +35,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
+import { newsAndEvents } from "@/lib/data";
 
 const quickAccessItems = [
     {
@@ -65,45 +66,6 @@ const features = [
     { icon: HeartHandshake, title: "Psikolojik Danışmanlık", description: "Tam zamanlı psikolog ve rehber öğretmenlerle öğrencilerimizin duygusal gelişimini destekliyoruz." },
     { icon: Trophy, title: "Spor ve Sanat", description: "10'dan fazla spor branşı ve sanat atölyeleri ile öğrencilerimizin yeteneklerini keşfediyoruz." }
 ]
-
-const newsAndEvents = [
-  {
-    id: 1,
-    type: "Haber",
-    title: "Robotik Takımımız Türkiye Şampiyonu",
-    date: "15.06.2024",
-    description: "Öğrencilerimizin katıldığı ulusal robotik yarışmasında birinci olduk. Kendilerini kutluyoruz.",
-    image: "https://placehold.co/600x400.png",
-    aiHint: "robotics competition",
-  },
-  {
-    id: 2,
-    type: "Etkinlik",
-    title: "Yıl Sonu Gösterimiz Büyük İlgi Gördü",
-    date: "02.06.2024",
-    description: "Öğrencilerimizin hazırladığı yıl sonu gösterisi büyük beğeni topladı. Katılım için teşekkürler.",
-    image: "https://placehold.co/600x400.png",
-    aiHint: "school play",
-  },
-  {
-    id: 3,
-    type: "Duyuru",
-    title: "Yeni Yaz Okulu Programı Açılıyor",
-    date: "25.05.2024",
-    description: "Temel derslerin yanı sıra sportif ve sanatsal etkinliklerle dolu yaz okulumuz kayıtlara açılmıştır.",
-    image: "https://placehold.co/600x400.png",
-    aiHint: "summer school",
-  },
-  {
-    id: 4,
-    type: "Haber",
-    title: "Satranç Turnuvası Şampiyonları Belli Oldu",
-    date: "20.05.2024",
-    description: "Okulumuzda düzenlenen satranç turnuvası büyük bir heyecana sahne oldu. Dereceye giren öğrencilerimizi tebrik ederiz.",
-    image: "https://placehold.co/600x400.png",
-    aiHint: "chess tournament"
-  }
-];
 
 const testimonials = [
     {
@@ -136,7 +98,7 @@ export default function Home() {
   return (
     <div className="flex flex-col animate-in fade-in duration-500">
       {/* Hero Section */}
-      <section className="w-full bg-gradient-to-br from-primary to-blue-800 text-primary-foreground py-20 lg:py-32">
+      <section className="w-full bg-gradient-to-br from-primary to-blue-800 text-primary-foreground py-12 lg:py-24">
         <div className="container mx-auto px-4">
             <div className="flex flex-col items-center text-center gap-8">
                 <School className="h-24 w-24 text-white/80" />
@@ -275,7 +237,7 @@ export default function Home() {
                       </CardContent>
                       <CardFooter>
                         <Button variant="link" asChild className="p-0 text-primary font-semibold">
-                          <Link href="#">
+                          <Link href={item.href}>
                             Devamını Oku <ArrowRight className="ml-2 h-4 w-4" />
                           </Link>
                         </Button>

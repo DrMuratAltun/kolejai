@@ -1,0 +1,42 @@
+export const newsAndEvents = [
+  {
+    id: 1,
+    type: "Haber",
+    title: "Robotik Takımımız Türkiye Şampiyonu",
+    date: "15.06.2024",
+    description: "Öğrencilerimizin katıldığı ulusal robotik yarışmasında birinci olduk. Kendilerini kutluyoruz.",
+    image: "https://placehold.co/600x400.png",
+    aiHint: "robotics competition",
+    href: "#",
+  },
+  {
+    id: 2,
+    type: "Etkinlik",
+    title: "Yıl Sonu Gösterimiz Büyük İlgi Gördü",
+    date: "02.06.2024",
+    description: "Öğrencilerimizin hazırladığı yıl sonu gösterisi büyük beğeni topladı. Katılım için teşekkürler.",
+    image: "https://placehold.co/600x400.png",
+    aiHint: "school play",
+    href: "#",
+  },
+  {
+    id: 3,
+    type: "Duyuru",
+    title: "Yeni Yaz Okulu Programı Açılıyor",
+    date: "25.05.2024",
+    description: "Temel derslerin yanı sıra sportif ve sanatsal etkinliklerle dolu yaz okulumuz kayıtlara açılmıştır.",
+    image: "https://placehold.co/600x400.png",
+    aiHint: "summer school",
+    href: "#",
+  },
+  {
+    id: 4,
+    type: "Haber",
+    title: "Satranç Turnuvası Şampiyonları Belli Oldu",
+    date: "20.05.2024",
+    description: "Okulumuzda düzenlenen satranç turnuvası büyük bir heyecana sahne oldu. Dereceye giren öğrencilerimizi tebrik ederiz.",
+    image: "https://placehold.co/600x400.png",
+    aiHint: "chess tournament",
+    href: "#",
+  }
+];
