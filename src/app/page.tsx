@@ -302,21 +302,6 @@ export default function Home() {
                   ))}
                 </CardContent>
               </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Bizi Takip Edin</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-6">
-                  <p className="text-muted-foreground text-sm">Okulumuzdaki gelişmelerden ve etkinliklerden anında haberdar olun.</p>
-                  <div className="flex space-x-2 mt-4">
-                    <Button variant="outline" size="icon" asChild><Link href="#"><Facebook className="h-4 w-4" /></Link></Button>
-                    <Button variant="outline" size="icon" asChild><Link href="#"><Twitter className="h-4 w-4" /></Link></Button>
-                    <Button variant="outline" size="icon" asChild><Link href="#"><Instagram className="h-4 w-4" /></Link></Button>
-                  </div>
-                </CardContent>
-              </Card>
-
             </div>
           </aside>
 
