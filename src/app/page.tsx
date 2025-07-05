@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -215,10 +216,6 @@ export default function Home() {
 
             {/* Kurumlarımız */}
             <section id="kurumlarimiz">
-                <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Kurumlarımız</h2>
-                    <div className="w-20 h-1 bg-primary mx-auto"></div>
-                </div>
                 <div className="grid grid-cols-5 gap-4">
                     {institutions.map((inst, index) => (
                         <Link href={inst.href} key={index} className="relative block aspect-[3/4] rounded-xl overflow-hidden group shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
@@ -231,7 +228,7 @@ export default function Home() {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>
                             <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-2 text-center">
-                                <h3 className="text-base font-bold uppercase transition-all duration-300 group-hover:-translate-y-4">{inst.title}</h3>
+                                <h3 className="text-base font-bold uppercase tracking-tighter transition-all duration-300 group-hover:-translate-y-4">{inst.title}</h3>
                                 <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 group-hover:translate-y-0 translate-y-4">
                                     <Button variant="outline" className="bg-white/20 border-white text-white backdrop-blur-sm hover:bg-white hover:text-primary">
                                         İnceleyin <ArrowRight className="ml-2 h-4 w-4" />
