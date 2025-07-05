@@ -112,7 +112,7 @@ const testimonials = [
 
 export default function Home() {
   const plugin = React.useRef(
-    Autoplay({ delay: 5000, stopOnInteraction: false, stopOnMouseEnter: true })
+    Autoplay({ delay: 5000, stopOnInteraction: true, stopOnMouseEnter: true })
   );
 
   const upcomingEvents = newsAndEvents.filter(item => item.type === 'Etkinlik');
@@ -153,6 +153,8 @@ export default function Home() {
             opts={{
               loop: true,
             }}
+            onMouseEnter={plugin.current.stop}
+            onMouseLeave={plugin.current.reset}
           >
             <CarouselContent>
               {newsAndEvents.map((item) => (
@@ -227,11 +229,11 @@ export default function Home() {
                                 data-ai-hint={inst.aiHint}
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>
-                            <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-2 text-center">
-                                <h3 className="text-base font-bold uppercase tracking-tighter transition-all duration-300 group-hover:-translate-y-4">{inst.title}</h3>
-                                <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 group-hover:translate-y-0 translate-y-4">
-                                    <Button variant="outline" className="bg-white/20 border-white text-white backdrop-blur-sm hover:bg-white hover:text-primary">
-                                        İnceleyin <ArrowRight className="ml-2 h-4 w-4" />
+                            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-white p-1 text-center">
+                                <h3 className="text-[10px] sm:text-xs font-bold uppercase tracking-tighter transition-all duration-300 group-hover:-translate-y-4">{inst.title}</h3>
+                                <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 group-hover:translate-y-0 translate-y-4">
+                                    <Button variant="outline" size="sm" className="bg-white/20 border-white text-white backdrop-blur-sm hover:bg-white hover:text-primary text-xs h-auto px-2 py-1">
+                                        İnceleyin <ArrowRight className="ml-1 h-3 w-3" />
                                     </Button>
                                 </div>
                             </div>
