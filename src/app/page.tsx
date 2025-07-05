@@ -111,7 +111,7 @@ const testimonials = [
 
 export default function Home() {
   const plugin = React.useRef(
-    Autoplay({ delay: 5000, stopOnInteraction: true })
+    Autoplay({ delay: 5000, stopOnInteraction: false, stopOnMouseEnter: true })
   );
 
   return (
@@ -147,8 +147,6 @@ export default function Home() {
           <Carousel
             plugins={[plugin.current]}
             className="w-full"
-            onMouseEnter={plugin.current.stop}
-            onMouseLeave={plugin.current.reset}
             opts={{
               loop: true,
             }}
@@ -219,7 +217,7 @@ export default function Home() {
                     <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Kurumlarımız</h2>
                     <div className="w-20 h-1 bg-primary mx-auto"></div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6">
+                <div className="grid grid-flow-col auto-cols-[16rem] gap-6 overflow-x-auto pb-4 -mx-4 px-4">
                     {institutions.map((inst, index) => (
                         <Link href={inst.href} key={index} className="relative block h-96 rounded-xl overflow-hidden group shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
                             <Image
