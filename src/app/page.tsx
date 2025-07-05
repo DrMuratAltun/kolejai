@@ -97,27 +97,75 @@ const testimonials = [
 export default function Home() {
   return (
     <div className="flex flex-col animate-in fade-in duration-500">
-      {/* Hero Section */}
-      <section className="w-full bg-gradient-to-br from-primary to-blue-800 text-primary-foreground py-12 lg:py-24">
+      {/* Banner Section */}
+      <section className="w-full py-8">
         <div className="container mx-auto px-4">
-            <div className="flex flex-col items-center text-center gap-8">
-                <School className="h-24 w-24 text-white/80" />
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 tracking-tight">Geleceğin Liderlerini Yetiştiriyoruz</h1>
-                <p className="text-lg md:text-xl mb-6 max-w-3xl leading-relaxed text-primary-foreground/90">Bilge Yıldız Koleji olarak, öğrencilerimize akademik başarının yanı sıra sosyal ve duygusal gelişimlerini destekleyen bir eğitim ortamı sunuyoruz.</p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90">
-                        <Link href="/contact">Kayıt Bilgileri</Link>
-                    </Button>
-                    <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-white/10 hover:text-white">
-                        <Link href="#">Online Görüşme</Link>
-                    </Button>
-                </div>
-            </div>
+          <Image 
+            src="https://placehold.co/1200x400.png" 
+            alt="Bilge Yıldız Koleji kampüsü"
+            width={1200}
+            height={400}
+            className="rounded-xl shadow-lg w-full object-cover max-h-[400px]"
+            data-ai-hint="school campus"
+          />
+        </div>
+      </section>
+
+      {/* Haberler & Duyurular Section */}
+      <section className="py-20 lg:pt-10 lg:pb-28">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Haberler & Duyurular</h2>
+            <div className="w-20 h-1 bg-primary mx-auto"></div>
+            <p className="text-muted-foreground max-w-2xl mx-auto mt-6">Okulumuzdan en son haberler, etkinlikler ve önemli duyurular.</p>
+          </div>
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full max-w-6xl mx-auto"
+          >
+            <CarouselContent className="-ml-4">
+              {newsAndEvents.map((item) => (
+                <CarouselItem key={item.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                  <div className="h-full">
+                    <Card className="flex flex-col h-full transform hover:-translate-y-2 transition-transform duration-300 shadow-md hover:shadow-xl overflow-hidden group">
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        width={600}
+                        height={400}
+                        className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105"
+                        data-ai-hint={item.aiHint}
+                      />
+                      <CardHeader>
+                        <CardDescription>{item.date}</CardDescription>
+                        <CardTitle className="text-xl">{item.title}</CardTitle>
+                      </CardHeader>
+                      <CardContent className="flex-grow">
+                        <p className="text-muted-foreground">{item.description}</p>
+                      </CardContent>
+                      <CardFooter>
+                        <Button variant="link" asChild className="p-0 text-primary font-semibold">
+                          <Link href={item.href}>
+                            Devamını Oku <ArrowRight className="ml-2 h-4 w-4" />
+                          </Link>
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         </div>
       </section>
 
       {/* Hızlı Erişim */}
-      <section className="container mx-auto px-4 -mt-12 z-10 relative">
+      <section className="container mx-auto px-4 pb-20 -mt-12 z-10 relative">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {quickAccessItems.map((item, index) => (
                  <div key={index} className="bg-card p-6 rounded-xl shadow-lg text-center transform transition-transform duration-300 hover:-translate-y-2">
@@ -199,59 +247,6 @@ export default function Home() {
                 </div>
             </div>
         </section>
-
-      {/* Haberler & Duyurular Section */}
-      <section className="py-20 lg:py-28">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Haberler & Duyurular</h2>
-            <div className="w-20 h-1 bg-primary mx-auto"></div>
-            <p className="text-muted-foreground max-w-2xl mx-auto mt-6">Okulumuzdan en son haberler, etkinlikler ve önemli duyurular.</p>
-          </div>
-          <Carousel
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-            className="w-full max-w-6xl mx-auto"
-          >
-            <CarouselContent className="-ml-4">
-              {newsAndEvents.map((item) => (
-                <CarouselItem key={item.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
-                  <div className="h-full">
-                    <Card className="flex flex-col h-full transform hover:-translate-y-2 transition-transform duration-300 shadow-md hover:shadow-xl overflow-hidden group">
-                      <Image
-                        src={item.image}
-                        alt={item.title}
-                        width={600}
-                        height={400}
-                        className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105"
-                        data-ai-hint={item.aiHint}
-                      />
-                      <CardHeader>
-                        <CardDescription>{item.date}</CardDescription>
-                        <CardTitle className="text-xl">{item.title}</CardTitle>
-                      </CardHeader>
-                      <CardContent className="flex-grow">
-                        <p className="text-muted-foreground">{item.description}</p>
-                      </CardContent>
-                      <CardFooter>
-                        <Button variant="link" asChild className="p-0 text-primary font-semibold">
-                          <Link href={item.href}>
-                            Devamını Oku <ArrowRight className="ml-2 h-4 w-4" />
-                          </Link>
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
-        </div>
-      </section>
 
       {/* Veli Görüşleri */}
       <section className="py-20 lg:py-28 bg-secondary/50">
