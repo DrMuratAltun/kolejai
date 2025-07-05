@@ -100,7 +100,7 @@ const testimonials = [
 
 export default function Home() {
   const plugin = React.useRef(
-    Autoplay({ delay: 5000, stopOnInteraction: true })
+    Autoplay({ delay: 5000, stopOnInteraction: false })
   );
 
   return (
@@ -119,14 +119,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Haberler & Duyurular Section */}
-      <section className="py-20 lg:pt-10 lg:pb-28">
+      {/* Haberler & Duyurular Carousel */}
+      <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Haberler & Duyurular</h2>
-            <div className="w-20 h-1 bg-primary mx-auto"></div>
-            <p className="text-muted-foreground max-w-2xl mx-auto mt-6">Okulumuzdan en son haberler, etkinlikler ve önemli duyurular.</p>
-          </div>
           <Carousel
             plugins={[plugin.current]}
             className="w-full"
