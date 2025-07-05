@@ -9,142 +9,201 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Mail, Phone, MapPin } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: "İsim en az 2 karakter olmalıdır." }),
+  parentName: z.string().min(2, { message: "İsim en az 2 karakter olmalıdır." }),
+  phone: z.string().min(10, { message: "Geçerli bir telefon numarası giriniz." }),
   email: z.string().email({ message: "Geçerli bir e-posta adresi giriniz." }),
-  subject: z.string().min(5, { message: "Konu en az 5 karakter olmalıdır." }),
-  message: z.string().min(10, { message: "Mesaj en az 10 karakter olmalıdır." }),
+  studentName: z.string().min(2, { message: "Öğrenci ismi en az 2 karakter olmalıdır." }),
+  grade: z.string({ required_error: "Lütfen bir sınıf seçin."}),
+  source: z.string().optional(),
+  message: z.string().optional(),
+  kvkk: z.boolean().default(false).refine(val => val === true, { message: "Devam etmek için KVKK metnini onaylamalısınız." }),
 });
 
 export default function ContactPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
+      parentName: "",
+      phone: "",
       email: "",
-      subject: "",
-      message: "",
+      studentName: "",
+      kvkk: false,
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     // In a real app, you would handle form submission here.
     console.log(values);
-    alert("Mesajınız başarıyla gönderildi! (Bu bir demo mesajıdır.)");
+    alert("Formunuz başarıyla gönderildi! En kısa sürede sizinle iletişime geçeceğiz.");
     form.reset();
   }
 
   return (
-    <div className="container mx-auto px-4 py-16 animate-in fade-in duration-500">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold">Bize Ulaşın</h1>
-        <p className="text-muted-foreground mt-4 text-lg">Sorularınız, önerileriniz veya kayıt işlemleri için bizimle iletişime geçin.</p>
-      </div>
+    <div className="bg-primary/90">
+    <div className="container mx-auto px-4 py-16 md:py-24 animate-in fade-in duration-500">
+       <div className="max-w-4xl mx-auto">
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Kayıt Bilgi Formu</h2>
+                    <p className="text-primary-foreground/80 max-w-2xl mx-auto">Çocuğunuzun eğitim yolculuğuna Bilge Yıldız Koleji ile başlaması için aşağıdaki formu doldurun, sizinle en kısa sürede iletişime geçelim.</p>
+                </div>
+                <Card>
+                  <CardContent className="p-8">
+                     <Form {...form}>
+                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <FormField
+                            control={form.control}
+                            name="parentName"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Veli Ad Soyad*</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Adınız ve soyadınız..." {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                           <FormField
+                            control={form.control}
+                            name="phone"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Telefon*</FormLabel>
+                                <FormControl>
+                                  <Input type="tel" placeholder="Telefon numaranız..." {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        {/* Contact Info & Map */}
-        <div className="space-y-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>İletişim Bilgileri</CardTitle>
-              <CardDescription>Aşağıdaki kanallardan bize ulaşabilirsiniz.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-4">
-                <MapPin className="h-6 w-6 text-primary" />
-                <p>Örnek Mah. Okul Sk. No:123, 34762 Üsküdar/İstanbul</p>
-              </div>
-              <div className="flex items-center gap-4">
-                <Phone className="h-6 w-6 text-primary" />
-                <a href="tel:+902161234567" className="hover:text-primary">+90 (216) 123 45 67</a>
-              </div>
-              <div className="flex items-center gap-4">
-                <Mail className="h-6 w-6 text-primary" />
-                <a href="mailto:info@akilliokul.com" className="hover:text-primary">info@akilliokul.com</a>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="overflow-hidden">
-             <CardHeader>
-              <CardTitle>Konumumuz</CardTitle>
-            </CardHeader>
-             <CardContent>
-               <div className="aspect-video bg-muted rounded-md flex items-center justify-center">
-                <Image src="https://placehold.co/600x400.png" alt="Okulun konumu" width={600} height={400} className="w-full h-full object-cover" data-ai-hint="map location"/>
-               </div>
-             </CardContent>
-          </Card>
-        </div>
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <FormField
+                              control={form.control}
+                              name="email"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>E-posta Adresiniz*</FormLabel>
+                                  <FormControl>
+                                    <Input type="email" placeholder="ornek@eposta.com" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                             <FormField
+                              control={form.control}
+                              name="studentName"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Öğrenci Ad Soyad*</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Öğrencinin adı ve soyadı..." {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                         </div>
 
-        {/* Contact Form */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Mesaj Gönderin</CardTitle>
-            <CardDescription>Formu doldurarak bize hızlıca bir mesaj gönderebilirsiniz.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Adınız Soyadınız</FormLabel>
-                      <FormControl>
-                        <Input placeholder="İsminiz..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>E-posta Adresiniz</FormLabel>
-                      <FormControl>
-                        <Input type="email" placeholder="ornek@eposta.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="subject"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Konu</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Mesajınızın konusu..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="message"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Mesajınız</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="Mesajınızı buraya yazın..." className="min-h-[120px]" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" className="w-full" size="lg">Mesajı Gönder</Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-      </div>
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <FormField
+                                control={form.control}
+                                name="grade"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Sınıf Seçimi*</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Kayıt olunacak sınıfı seçin" />
+                                        </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="anaokulu">Anaokulu</SelectItem>
+                                            {[...Array(12)].map((_, i) => (
+                                                <SelectItem key={i+1} value={`${i + 1}. Sinif`}>{i + 1}. Sınıf</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="source"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Bizi Nereden Duydunuz?</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Seçiniz" />
+                                        </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="internet">İnternet Arama</SelectItem>
+                                            <SelectItem value="social">Sosyal Medya</SelectItem>
+                                            <SelectItem value="friend">Arkadaş/Tanıdık Tavsiyesi</SelectItem>
+                                            <SelectItem value="ad">Reklam</SelectItem>
+                                            <SelectItem value="other">Diğer</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                         </div>
+                        
+                        <FormField
+                          control={form.control}
+                          name="message"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Eklemek İstedikleriniz</FormLabel>
+                              <FormControl>
+                                <Textarea placeholder="Mesajınız..." className="min-h-[100px]" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                         <FormField
+                            control={form.control}
+                            name="kvkk"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                                <FormControl>
+                                    <Checkbox
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                    />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                    <FormLabel>
+                                     <a href="#" className="text-primary hover:underline">KVKK Aydınlatma Metni</a>'ni okudum ve onaylıyorum.
+                                    </FormLabel>
+                                </div>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                         />
+                        <Button type="submit" className="w-full" size="lg">Bilgi İstek Formunu Gönder</Button>
+                      </form>
+                    </Form>
+                  </CardContent>
+                </Card>
+           </div>
+    </div>
     </div>
   );
 }

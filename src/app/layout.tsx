@@ -7,8 +7,8 @@ import VisitorChatbot from '@/components/chat/VisitorChatbot';
 import BackToTop from '@/components/BackToTop';
 
 export const metadata: Metadata = {
-  title: 'Akilli Okul Web',
-  description: 'Modern, hızlı, estetik ve mobil uyumlu akıllı eğitim platformu',
+  title: 'Bilge Yıldız Koleji - Geleceğin Liderlerini Yetiştiriyoruz',
+  description: 'Öğrencilerimize akademik başarının yanı sıra sosyal ve duygusal gelişimlerini destekleyen bir eğitim ortamı sunuyoruz.',
 };
 
 export default function RootLayout({
