@@ -230,7 +230,7 @@ export default function Home() {
                                 data-ai-hint={inst.aiHint}
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>
-                            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-white p-1 text-center">
+                            <div className="absolute z-10 inset-0 flex flex-col items-center justify-center text-white p-1 text-center">
                                 <h3 className="text-[10px] sm:text-xs font-bold uppercase tracking-tighter transition-all duration-300 group-hover:-translate-y-4">{inst.title}</h3>
                                 <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 group-hover:translate-y-0 translate-y-4">
                                     <Button variant="outline" size="sm" className="bg-white/20 border-white text-white backdrop-blur-sm hover:bg-white hover:text-primary text-xs h-auto px-2 py-1">
@@ -294,22 +294,22 @@ export default function Home() {
                 </div>
                 <Marquee pauseOnHover={true} speed={40}>
                   {testimonials.map((testimonial, index) => (
-                      <Card key={index} className="p-8 mx-4 w-[450px] flex-shrink-0">
+                      <Card key={index} className="p-6 mx-4 w-[380px] flex-shrink-0">
                           <CardContent className="p-0">
-                              <div className="flex items-center mb-6">
-                                  <Image src={testimonial.image} alt={testimonial.name} width={64} height={64} className="rounded-full mr-4" data-ai-hint={testimonial.aiHint}/>
+                              <div className="flex items-center mb-4">
+                                  <Image src={testimonial.image} alt={testimonial.name} width={56} height={56} className="rounded-full mr-4" data-ai-hint={testimonial.aiHint}/>
                                   <div>
-                                      <h4 className="font-bold text-lg">{testimonial.name}</h4>
-                                      <p className="text-muted-foreground">{testimonial.role}</p>
+                                      <h4 className="font-bold text-base">{testimonial.name}</h4>
+                                      <p className="text-sm text-muted-foreground">{testimonial.role}</p>
                                   </div>
                               </div>
-                              <div className="relative text-foreground/80">
-                                  <Quote className="absolute -top-2 -left-3 w-8 h-8 text-primary/10" />
+                              <div className="relative text-sm text-foreground/80">
+                                  <Quote className="absolute -top-1 -left-2 w-6 h-6 text-primary/10" />
                                   <p>{testimonial.comment}</p>
                               </div>
                               <div className="flex mt-4">
                                   {Array.from({length: 5}).map((_, i) => (
-                                      <Star key={i} className={`h-5 w-5 ${i < testimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
+                                      <Star key={i} className={`h-4 w-4 ${i < testimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
                                   ))}
                               </div>
                           </CardContent>
