@@ -5,6 +5,7 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Autoplay from "embla-carousel-autoplay";
+import Marquee from "react-fast-marquee";
 import {
   Card,
   CardContent,
@@ -286,35 +287,35 @@ export default function Home() {
             </section>
 
             {/* Veli Görüşleri */}
-            <section>
+            <section className="overflow-hidden">
                 <div className="text-center mb-16">
                       <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Veli Görüşleri</h2>
                       <div className="w-20 h-1 bg-primary mx-auto"></div>
-                  </div>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                      {testimonials.map((testimonial, index) => (
-                          <Card key={index} className="p-8">
-                              <CardContent className="p-0">
-                                  <div className="flex items-center mb-6">
-                                      <Image src={testimonial.image} alt={testimonial.name} width={64} height={64} className="rounded-full mr-4" data-ai-hint={testimonial.aiHint}/>
-                                      <div>
-                                          <h4 className="font-bold text-lg">{testimonial.name}</h4>
-                                          <p className="text-muted-foreground">{testimonial.role}</p>
-                                      </div>
+                </div>
+                <Marquee pauseOnHover={true} speed={40}>
+                  {testimonials.map((testimonial, index) => (
+                      <Card key={index} className="p-8 mx-4 w-[450px] flex-shrink-0">
+                          <CardContent className="p-0">
+                              <div className="flex items-center mb-6">
+                                  <Image src={testimonial.image} alt={testimonial.name} width={64} height={64} className="rounded-full mr-4" data-ai-hint={testimonial.aiHint}/>
+                                  <div>
+                                      <h4 className="font-bold text-lg">{testimonial.name}</h4>
+                                      <p className="text-muted-foreground">{testimonial.role}</p>
                                   </div>
-                                  <div className="relative text-foreground/80">
-                                      <Quote className="absolute -top-2 -left-3 w-8 h-8 text-primary/10" />
-                                      <p>{testimonial.comment}</p>
-                                  </div>
-                                  <div className="flex mt-4">
-                                      {Array.from({length: 5}).map((_, i) => (
-                                          <Star key={i} className={`h-5 w-5 ${i < testimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
-                                      ))}
-                                  </div>
-                              </CardContent>
-                          </Card>
-                      ))}
-                  </div>
+                              </div>
+                              <div className="relative text-foreground/80">
+                                  <Quote className="absolute -top-2 -left-3 w-8 h-8 text-primary/10" />
+                                  <p>{testimonial.comment}</p>
+                              </div>
+                              <div className="flex mt-4">
+                                  {Array.from({length: 5}).map((_, i) => (
+                                      <Star key={i} className={`h-5 w-5 ${i < testimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
+                                  ))}
+                              </div>
+                          </CardContent>
+                      </Card>
+                  ))}
+                 </Marquee>
             </section>
           </main>
 
@@ -368,5 +369,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
