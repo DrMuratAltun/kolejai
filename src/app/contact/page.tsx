@@ -44,7 +44,7 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="bg-primary/90">
+    <div className="bg-primary/90 pt-20">
     <div className="container mx-auto px-4 py-16 md:py-24 animate-in fade-in duration-500">
        <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-12">

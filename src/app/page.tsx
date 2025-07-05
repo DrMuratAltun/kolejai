@@ -105,18 +105,17 @@ export default function Home() {
 
   return (
     <div className="flex flex-col animate-in fade-in duration-500">
-      {/* Banner Section */}
-      <section className="w-full py-8">
-        <div className="container mx-auto px-4">
-          <Image 
-            src="https://placehold.co/1200x400.png" 
-            alt="Bilge Yıldız Koleji kampüsü"
-            width={1200}
-            height={400}
-            className="rounded-xl shadow-lg w-full object-cover max-h-[400px]"
-            data-ai-hint="school campus"
-          />
-        </div>
+      {/* Hero Section with Banner */}
+      <section className="relative w-full h-[400px]">
+        <Image 
+          src="https://placehold.co/1200x400.png" 
+          alt="Bilge Yıldız Koleji kampüsü"
+          fill
+          className="object-cover"
+          data-ai-hint="school campus"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent"></div>
       </section>
 
       {/* Haberler & Duyurular Carousel */}

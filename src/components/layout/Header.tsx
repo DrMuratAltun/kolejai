@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { School, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,6 +10,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
 
 const navLinks = [
   { href: "/", label: "Anasayfa" },
@@ -20,14 +22,22 @@ const navLinks = [
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  const isHomePage = pathname === '/';
 
   return (
     <Collapsible asChild open={isOpen} onOpenChange={setIsOpen}>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-sm shadow-md">
+      <header className={cn(
+        "fixed top-0 left-0 right-0 z-50 transition-colors duration-300",
+        isHomePage ? "bg-transparent" : "bg-background/90 backdrop-blur-sm shadow-md"
+      )}>
         <div className="container mx-auto flex h-20 items-center justify-between px-4">
           <Link
             href="/"
-            className="flex items-center gap-2 text-2xl font-bold text-primary"
+            className={cn(
+              "flex items-center gap-2 text-2xl font-bold",
+              isHomePage ? "text-white" : "text-primary"
+            )}
           >
             <School className="h-8 w-8" />
             <span>Bilge Yıldız Koleji</span>
@@ -37,20 +47,23 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="font-medium text-foreground/80 transition-colors hover:text-primary"
+                className={cn(
+                  "font-medium transition-colors",
+                  isHomePage ? "text-white hover:text-white/80" : "text-foreground/80 hover:text-primary"
+                )}
               >
                 {link.label}
               </Link>
             ))}
           </nav>
           <div className="hidden md:block">
-            <Button asChild>
+            <Button asChild className={cn(isHomePage && "bg-white text-primary hover:bg-white/90")}>
               <Link href="/contact">Kayıt Ol</Link>
             </Button>
           </div>
           <div className="md:hidden">
             <CollapsibleTrigger asChild>
-              <Button variant="outline" size="icon">
+              <Button variant="outline" size="icon" className={cn(isHomePage && "text-white border-white hover:bg-white/10 hover:text-white")}>
                 {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                 <span className="sr-only">Menüyü aç/kapat</span>
               </Button>

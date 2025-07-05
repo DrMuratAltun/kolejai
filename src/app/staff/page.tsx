@@ -73,7 +73,7 @@ const staff = [
 
 export default function StaffPage() {
   return (
-    <div className="container mx-auto px-4 py-16 animate-in fade-in duration-500">
+    <div className="container mx-auto px-4 pb-16 pt-28 animate-in fade-in duration-500">
       <div className="text-center mb-16">
         <h1 className="text-3xl md:text-4xl font-bold text-primary mb-4">Eğitim Kadromuz</h1>
         <div className="w-20 h-1 bg-primary mx-auto"></div>
