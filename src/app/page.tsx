@@ -106,7 +106,7 @@ export default function Home() {
   return (
     <div className="flex flex-col animate-in fade-in duration-500">
       {/* Hero Section with Banner */}
-      <section className="relative w-full h-[400px]">
+      <section className="relative w-full h-[250px] md:h-[350px] lg:h-[400px]">
         <Image 
           src="https://placehold.co/1200x400.png" 
           alt="Bilge Yıldız Koleji kampüsü"
