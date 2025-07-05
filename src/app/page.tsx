@@ -30,7 +30,10 @@ import {
     Trophy,
     Quote,
     Star,
-    School
+    School,
+    Facebook,
+    Twitter,
+    Instagram
 } from "lucide-react";
 import {
   Carousel,
@@ -100,7 +103,7 @@ const testimonials = [
 
 export default function Home() {
   const plugin = React.useRef(
-    Autoplay({ delay: 5000, stopOnInteraction: false })
+    Autoplay({ delay: 5000, stopOnInteraction: true })
   );
 
   return (
@@ -173,123 +176,152 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Hızlı Erişim */}
-      <section className="container mx-auto px-4 pb-20 -mt-12 z-10 relative">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {quickAccessItems.map((item, index) => (
-                 <div key={index} className="bg-card p-6 rounded-xl shadow-lg text-center transform transition-transform duration-300 hover:-translate-y-2">
-                    <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 bg-primary/10`}>
-                        <item.icon className={`text-primary text-3xl`} />
-                    </div>
-                    <h3 className="font-bold text-lg mb-2 text-foreground">{item.title}</h3>
-                    <p className="text-muted-foreground">{item.description}</p>
-                </div>
-            ))}
-        </div>
-      </section>
+      {/* Main Content and Sidebar Wrapper */}
+      <div className="container mx-auto px-4 py-16">
+        <div className="flex flex-col lg:flex-row gap-12">
+          
+          {/* Main Content Area */}
+          <main className="lg:w-2/3 space-y-24">
+            
+            {/* Hakkımızda */}
+            <section id="hakkimizda">
+              <div className="flex flex-col lg:flex-row items-center gap-12">
+                  <div className="lg:w-1/2">
+                      <Image src="https://placehold.co/600x450.png" alt="Okul binamız" width={600} height={450} className="rounded-xl shadow-xl" data-ai-hint="modern school building"/>
+                  </div>
+                  <div className="lg:w-1/2">
+                      <div className="text-center lg:text-left mb-8">
+                          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Neden Bilge Yıldız Koleji?</h2>
+                          <div className="w-20 h-1 bg-primary mx-auto lg:mx-0"></div>
+                      </div>
+                      <p className="text-muted-foreground leading-relaxed mb-6">Öğrencilerimizi akademik, sosyal ve kültürel açıdan en iyi şekilde yetiştirerek, 21. yüzyıl becerileriyle donatılmış, özgüvenli ve erdemli bireyler olarak topluma kazandırmak temel vizyonumuzdur.</p>
+                       <div className="grid grid-cols-2 gap-4">
+                          <div className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-500" /> <p>Akademik Mükemmellik</p></div>
+                          <div className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-500" /> <p>Bireysel Eğitim</p></div>
+                          <div className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-500" /> <p>Yabancı Dil Ağırlıklı</p></div>
+                          <div className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-500" /> <p>Sosyal Sorumluluk</p></div>
+                      </div>
+                  </div>
+              </div>
+            </section>
 
-      {/* Hakkımızda */}
-      <section id="hakkimizda" className="py-20 lg:py-28">
-        <div className="container mx-auto px-4">
-            <div className="flex flex-col lg:flex-row items-center gap-12">
-                <div className="lg:w-1/2">
-                    <Image src="https://placehold.co/600x450.png" alt="Okul binamız" width={600} height={450} className="rounded-xl shadow-xl" data-ai-hint="modern school building"/>
-                </div>
-                <div className="lg:w-1/2">
-                    <div className="text-center lg:text-left mb-8">
-                        <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Neden Bilge Yıldız Koleji?</h2>
-                        <div className="w-20 h-1 bg-primary mx-auto lg:mx-0"></div>
-                    </div>
-                    <p className="text-muted-foreground leading-relaxed mb-6">Öğrencilerimizi akademik, sosyal ve kültürel açıdan en iyi şekilde yetiştirerek, 21. yüzyıl becerileriyle donatılmış, özgüvenli ve erdemli bireyler olarak topluma kazandırmak temel vizyonumuzdur.</p>
-                     <div className="grid grid-cols-2 gap-4">
-                        <div className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-500" /> <p>Akademik Mükemmellik</p></div>
-                        <div className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-500" /> <p>Bireysel Eğitim</p></div>
-                        <div className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-500" /> <p>Yabancı Dil Ağırlıklı</p></div>
-                        <div className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-500" /> <p>Sosyal Sorumluluk</p></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-      </section>
-
-      {/* Öne Çıkan Özellikler */}
-       <section className="py-20 lg:py-28 bg-secondary/50">
-        <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-                <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Kolejimizin Öne Çıkan Özellikleri</h2>
-                <div className="w-20 h-1 bg-primary mx-auto"></div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {features.map((feature, index) => (
-                    <Card key={index} className="text-center p-6 transform transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl">
-                        <div className="bg-primary/10 w-20 h-20 rounded-full flex items-center justify-center mb-6 mx-auto">
-                            <feature.icon className="w-10 h-10 text-primary" />
-                        </div>
-                        <CardTitle className="text-xl mb-3">{feature.title}</CardTitle>
-                        <CardDescription>{feature.description}</CardDescription>
-                    </Card>
-                ))}
-            </div>
-        </div>
-       </section>
+             {/* Öne Çıkan Özellikler */}
+            <section>
+              <div className="text-center mb-16">
+                  <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Kolejimizin Öne Çıkan Özellikleri</h2>
+                  <div className="w-20 h-1 bg-primary mx-auto"></div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {features.map((feature, index) => (
+                      <Card key={index} className="text-center p-6 transform transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl">
+                          <div className="bg-primary/10 w-20 h-20 rounded-full flex items-center justify-center mb-6 mx-auto">
+                              <feature.icon className="w-10 h-10 text-primary" />
+                          </div>
+                          <CardTitle className="text-xl mb-3">{feature.title}</CardTitle>
+                          <CardDescription>{feature.description}</CardDescription>
+                      </Card>
+                  ))}
+              </div>
+            </section>
       
-        {/* İstatistikler */}
-        <section className="py-20 bg-gradient-to-br from-primary to-blue-800 text-primary-foreground">
-            <div className="container mx-auto px-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-                    <div>
-                        <div className="text-5xl font-bold mb-2">98%</div>
-                        <div className="text-xl opacity-90">Üniversite Yerleşme</div>
-                    </div>
-                     <div>
-                        <div className="text-5xl font-bold mb-2">25+</div>
-                        <div className="text-xl opacity-90">Yurt Dışı Üniversite Kabulleri</div>
-                    </div>
-                     <div>
-                        <div className="text-5xl font-bold mb-2">12</div>
-                        <div className="text-xl opacity-90">Bilim Olimpiyatları Ödülü</div>
-                    </div>
-                     <div>
-                        <div className="text-5xl font-bold mb-2">100%</div>
-                        <div className="text-xl opacity-90">Memnun Veli Oranı</div>
+            {/* İstatistikler */}
+            <section className="py-20 my-12 rounded-xl bg-gradient-to-br from-primary to-blue-800 text-primary-foreground">
+                <div className="container mx-auto px-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+                        <div>
+                            <div className="text-5xl font-bold mb-2">98%</div>
+                            <div className="text-xl opacity-90">Üniversite Yerleşme</div>
+                        </div>
+                         <div>
+                            <div className="text-5xl font-bold mb-2">25+</div>
+                            <div className="text-xl opacity-90">Yurt Dışı Üniversite Kabulleri</div>
+                        </div>
+                         <div>
+                            <div className="text-5xl font-bold mb-2">12</div>
+                            <div className="text-xl opacity-90">Bilim Olimpiyatları Ödülü</div>
+                        </div>
+                         <div>
+                            <div className="text-5xl font-bold mb-2">100%</div>
+                            <div className="text-xl opacity-90">Memnun Veli Oranı</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-      {/* Veli Görüşleri */}
-      <section className="py-20 lg:py-28 bg-secondary/50">
-          <div className="container mx-auto px-4">
-               <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Veli Görüşleri</h2>
-                    <div className="w-20 h-1 bg-primary mx-auto"></div>
-                </div>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {testimonials.map((testimonial, index) => (
-                        <Card key={index} className="p-8">
-                            <CardContent className="p-0">
-                                <div className="flex items-center mb-6">
-                                    <Image src={testimonial.image} alt={testimonial.name} width={64} height={64} className="rounded-full mr-4" data-ai-hint={testimonial.aiHint}/>
-                                    <div>
-                                        <h4 className="font-bold text-lg">{testimonial.name}</h4>
-                                        <p className="text-muted-foreground">{testimonial.role}</p>
-                                    </div>
-                                </div>
-                                <div className="relative text-foreground/80">
-                                    <Quote className="absolute -top-2 -left-3 w-8 h-8 text-primary/10" />
-                                    <p>{testimonial.comment}</p>
-                                </div>
-                                <div className="flex mt-4">
-                                    {Array.from({length: 5}).map((_, i) => (
-                                        <Star key={i} className={`h-5 w-5 ${i < testimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
-                                    ))}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-          </div>
-      </section>
+            {/* Veli Görüşleri */}
+            <section>
+                <div className="text-center mb-16">
+                      <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Veli Görüşleri</h2>
+                      <div className="w-20 h-1 bg-primary mx-auto"></div>
+                  </div>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                      {testimonials.map((testimonial, index) => (
+                          <Card key={index} className="p-8">
+                              <CardContent className="p-0">
+                                  <div className="flex items-center mb-6">
+                                      <Image src={testimonial.image} alt={testimonial.name} width={64} height={64} className="rounded-full mr-4" data-ai-hint={testimonial.aiHint}/>
+                                      <div>
+                                          <h4 className="font-bold text-lg">{testimonial.name}</h4>
+                                          <p className="text-muted-foreground">{testimonial.role}</p>
+                                      </div>
+                                  </div>
+                                  <div className="relative text-foreground/80">
+                                      <Quote className="absolute -top-2 -left-3 w-8 h-8 text-primary/10" />
+                                      <p>{testimonial.comment}</p>
+                                  </div>
+                                  <div className="flex mt-4">
+                                      {Array.from({length: 5}).map((_, i) => (
+                                          <Star key={i} className={`h-5 w-5 ${i < testimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
+                                      ))}
+                                  </div>
+                              </CardContent>
+                          </Card>
+                      ))}
+                  </div>
+            </section>
+          </main>
+
+          {/* Sidebar Area */}
+          <aside className="lg:w-1/3 mt-16 lg:mt-0">
+            <div className="sticky top-28 space-y-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Hızlı Erişim</CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-6 pt-6">
+                  {quickAccessItems.map((item, index) => (
+                    <div key={index} className="flex items-start gap-4">
+                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10 flex-shrink-0`}>
+                          <item.icon className={`text-primary text-2xl`} />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-md mb-1 text-foreground">{item.title}</h3>
+                        <p className="text-muted-foreground text-sm">{item.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Bizi Takip Edin</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-6">
+                  <p className="text-muted-foreground text-sm">Okulumuzdaki gelişmelerden ve etkinliklerden anında haberdar olun.</p>
+                  <div className="flex space-x-2 mt-4">
+                    <Button variant="outline" size="icon" asChild><Link href="#"><Facebook className="h-4 w-4" /></Link></Button>
+                    <Button variant="outline" size="icon" asChild><Link href="#"><Twitter className="h-4 w-4" /></Link></Button>
+                    <Button variant="outline" size="icon" asChild><Link href="#"><Instagram className="h-4 w-4" /></Link></Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+            </div>
+          </aside>
+
+        </div>
+      </div>
     </div>
   );
 }
