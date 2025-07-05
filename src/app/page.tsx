@@ -65,6 +65,14 @@ const quickAccessItems = [
     }
 ]
 
+const institutions = [
+    { title: "Anaokulu", image: "https://placehold.co/600x800.png", aiHint: "kindergarten classroom", href: "#" },
+    { title: "İlkokul", image: "https://placehold.co/600x800.png", aiHint: "primary school students", href: "#" },
+    { title: "Ortaokul", image: "https://placehold.co/600x800.png", aiHint: "middle school science", href: "#" },
+    { title: "Anadolu Lisesi", image: "https://placehold.co/600x800.png", aiHint: "high school students", href: "#" },
+    { title: "Akşam Lisesi", image: "https://placehold.co/600x800.png", aiHint: "adult education graduation", href: "#" },
+];
+
 const features = [
     { icon: BrainCircuit, title: "STEAM Eğitimi", description: "Bilim, Teknoloji, Mühendislik, Sanat ve Matematik alanlarını birleştiren çok disiplinli eğitim yaklaşımı." },
     { icon: Languages, title: "Çift Dilli Eğitim", description: "Anaokulundan itibaren İngilizce ve İspanyolca eğitimi ile global dünyaya hazırlık." },
@@ -203,6 +211,36 @@ export default function Home() {
                       </div>
                   </div>
               </div>
+            </section>
+
+            {/* Kurumlarımız */}
+            <section id="kurumlarimiz">
+                <div className="text-center mb-16">
+                    <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Kurumlarımız</h2>
+                    <div className="w-20 h-1 bg-primary mx-auto"></div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6">
+                    {institutions.map((inst, index) => (
+                        <Link href={inst.href} key={index} className="relative block h-96 rounded-xl overflow-hidden group shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
+                            <Image
+                                src={inst.image}
+                                alt={inst.title}
+                                fill
+                                className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+                                data-ai-hint={inst.aiHint}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4 text-center">
+                                <h3 className="text-2xl font-bold uppercase tracking-wider transition-all duration-300 group-hover:-translate-y-4">{inst.title}</h3>
+                                <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 group-hover:translate-y-0 translate-y-4">
+                                    <Button variant="outline" className="bg-white/20 border-white text-white backdrop-blur-sm hover:bg-white hover:text-primary">
+                                        İnceleyin <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </div>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
             </section>
 
              {/* Öne Çıkan Özellikler */}
