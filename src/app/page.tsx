@@ -116,6 +116,18 @@ export default function Home() {
           priority
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent"></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+            <div className="bg-white/20 backdrop-blur-sm p-2 rounded-full shadow-lg">
+                <Image
+                    src="https://placehold.co/150x150.png"
+                    alt="Bilge Yıldız Koleji Logosu"
+                    width={150}
+                    height={150}
+                    className="h-28 w-28 md:h-36 md:w-36 rounded-full object-cover"
+                    data-ai-hint="school logo"
+                />
+            </div>
+        </div>
       </section>
 
       {/* Haberler & Duyurular Carousel */}
