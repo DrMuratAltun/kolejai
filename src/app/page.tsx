@@ -76,12 +76,12 @@ const institutions = [
 ];
 
 const features = [
-    { icon: BrainCircuit, title: "STEAM Eğitimi", description: "Bilim, Teknoloji, Mühendislik, Sanat ve Matematik alanlarını birleştiren çok disiplinli eğitim yaklaşımı." },
-    { icon: Languages, title: "Çift Dilli Eğitim", description: "Anaokulundan itibaren İngilizce ve İspanyolca eğitimi ile global dünyaya hazırlık." },
-    { icon: Bot, title: "Robotik ve Kodlama", description: "Yaş gruplarına özel robotik ve kodlama eğitimleri ile teknoloji okuryazarlığı." },
-    { icon: Leaf, title: "Doğa Bilinci", description: "Ekolojik okul projeleri ve doğa kampanyaları ile çevre bilinci kazandırıyoruz." },
-    { icon: HeartHandshake, title: "Psikolojik Danışmanlık", description: "Tam zamanlı psikolog ve rehber öğretmenlerle öğrencilerimizin duygusal gelişimini destekliyoruz." },
-    { icon: Trophy, title: "Spor ve Sanat", description: "10'dan fazla spor branşı ve sanat atölyeleri ile öğrencilerimizin yeteneklerini keşfediyoruz." }
+    { icon: BrainCircuit, title: "STEAM Eğitimi", description: "Bilim, Teknoloji, Mühendislik, Sanat ve Matematik alanlarını birleştiren çok disiplinli eğitim yaklaşımı.", colorVar: "feature-1" },
+    { icon: Languages, title: "Çift Dilli Eğitim", description: "Anaokulundan itibaren İngilizce ve İspanyolca eğitimi ile global dünyaya hazırlık.", colorVar: "feature-2" },
+    { icon: Bot, title: "Robotik ve Kodlama", description: "Yaş gruplarına özel robotik ve kodlama eğitimleri ile teknoloji okuryazarlığı.", colorVar: "feature-3" },
+    { icon: Leaf, title: "Doğa Bilinci", description: "Ekolojik okul projeleri ve doğa kampanyaları ile çevre bilinci kazandırıyoruz.", colorVar: "feature-4" },
+    { icon: HeartHandshake, title: "Psikolojik Danışmanlık", description: "Tam zamanlı psikolog ve rehber öğretmenlerle öğrencilerimizin duygusal gelişimini destekliyoruz.", colorVar: "feature-5" },
+    { icon: Trophy, title: "Spor ve Sanat", description: "10'dan fazla spor branşı ve sanat atölyeleri ile öğrencilerimizin yeteneklerini keşfediyoruz.", colorVar: "feature-6" }
 ]
 
 const testimonials = [
@@ -231,7 +231,7 @@ export default function Home() {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>
                             <div className="absolute z-10 inset-0 flex flex-col items-center justify-center text-white p-1 text-center">
-                                <h3 className="text-[10px] sm:text-xs font-bold uppercase tracking-tighter transition-all duration-300 group-hover:-translate-y-4">{inst.title}</h3>
+                                <h3 className="font-bold uppercase tracking-tighter transition-all duration-300 group-hover:-translate-y-4 text-[10px] sm:text-xs">{inst.title}</h3>
                                 <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 group-hover:translate-y-0 translate-y-4">
                                     <Button variant="outline" size="sm" className="bg-white/20 border-white text-white backdrop-blur-sm hover:bg-white hover:text-primary text-xs h-auto px-2 py-1">
                                         İnceleyin <ArrowRight className="ml-1 h-3 w-3" />
@@ -252,8 +252,14 @@ export default function Home() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                   {features.map((feature, index) => (
                       <Card key={index} className="flex flex-col text-center p-6 transform transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl h-full">
-                          <div className="bg-primary/10 w-20 h-20 rounded-full flex items-center justify-center mb-6 mx-auto">
-                              <feature.icon className="w-10 h-10 text-primary" />
+                          <div 
+                            className="w-20 h-20 rounded-full flex items-center justify-center mb-6 mx-auto"
+                            style={{ backgroundColor: `hsla(var(--${feature.colorVar}), 0.1)` }}
+                          >
+                              <feature.icon 
+                                className="w-10 h-10"
+                                style={{ color: `hsl(var(--${feature.colorVar}))` }}
+                              />
                           </div>
                           <CardTitle className="text-xl mb-3">{feature.title}</CardTitle>
                           <CardDescription>{feature.description}</CardDescription>
