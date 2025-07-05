@@ -25,8 +25,16 @@ import {
     HeartHandshake,
     Trophy,
     Quote,
-    Star
+    Star,
+    School
 } from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 
 const quickAccessItems = [
     {
@@ -86,6 +94,15 @@ const newsAndEvents = [
     image: "https://placehold.co/600x400.png",
     aiHint: "summer school",
   },
+  {
+    id: 4,
+    type: "Haber",
+    title: "Satranç Turnuvası Şampiyonları Belli Oldu",
+    date: "20.05.2024",
+    description: "Okulumuzda düzenlenen satranç turnuvası büyük bir heyecana sahne oldu. Dereceye giren öğrencilerimizi tebrik ederiz.",
+    image: "https://placehold.co/600x400.png",
+    aiHint: "chess tournament"
+  }
 ];
 
 const testimonials = [
@@ -121,21 +138,17 @@ export default function Home() {
       {/* Hero Section */}
       <section className="w-full bg-gradient-to-br from-primary to-blue-800 text-primary-foreground py-20 lg:py-32">
         <div className="container mx-auto px-4">
-            <div className="flex flex-col lg:flex-row items-center gap-12">
-                <div className="lg:w-1/2 text-center lg:text-left">
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 tracking-tight">Geleceğin Liderlerini Yetiştiriyoruz</h1>
-                    <p className="text-lg md:text-xl mb-8 leading-relaxed text-primary-foreground/90">Bilge Yıldız Koleji olarak, öğrencilerimize akademik başarının yanı sıra sosyal ve duygusal gelişimlerini destekleyen bir eğitim ortamı sunuyoruz.</p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                        <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90">
-                            <Link href="/contact">Kayıt Bilgileri</Link>
-                        </Button>
-                        <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-white/10 hover:text-white">
-                            <Link href="#">Online Görüşme</Link>
-                        </Button>
-                    </div>
-                </div>
-                <div className="lg:w-1/2 mt-10 lg:mt-0">
-                    <Image src="https://placehold.co/600x450.png" alt="Happy students at school" width={600} height={450} className="rounded-xl shadow-2xl" data-ai-hint="happy students classroom"/>
+            <div className="flex flex-col items-center text-center gap-8">
+                <School className="h-24 w-24 text-white/80" />
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 tracking-tight">Geleceğin Liderlerini Yetiştiriyoruz</h1>
+                <p className="text-lg md:text-xl mb-6 max-w-3xl leading-relaxed text-primary-foreground/90">Bilge Yıldız Koleji olarak, öğrencilerimize akademik başarının yanı sıra sosyal ve duygusal gelişimlerini destekleyen bir eğitim ortamı sunuyoruz.</p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90">
+                        <Link href="/contact">Kayıt Bilgileri</Link>
+                    </Button>
+                    <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-white/10 hover:text-white">
+                        <Link href="#">Online Görüşme</Link>
+                    </Button>
                 </div>
             </div>
         </div>
@@ -231,10 +244,20 @@ export default function Home() {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Haberler & Duyurular</h2>
             <div className="w-20 h-1 bg-primary mx-auto"></div>
+            <p className="text-muted-foreground max-w-2xl mx-auto mt-6">Okulumuzdan en son haberler, etkinlikler ve önemli duyurular.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full max-w-6xl mx-auto"
+          >
+            <CarouselContent className="-ml-4">
               {newsAndEvents.map((item) => (
-                    <Card key={item.id} className="flex flex-col transform hover:-translate-y-2 transition-transform duration-300 shadow-md hover:shadow-xl overflow-hidden group">
+                <CarouselItem key={item.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                  <div className="h-full">
+                    <Card className="flex flex-col h-full transform hover:-translate-y-2 transition-transform duration-300 shadow-md hover:shadow-xl overflow-hidden group">
                       <Image
                         src={item.image}
                         alt={item.title}
@@ -251,15 +274,20 @@ export default function Home() {
                         <p className="text-muted-foreground">{item.description}</p>
                       </CardContent>
                       <CardFooter>
-                         <Button variant="link" asChild className="p-0 text-primary font-semibold">
-                           <Link href="#">
-                             Devamını Oku <ArrowRight className="ml-2 h-4 w-4" />
-                           </Link>
-                         </Button>
+                        <Button variant="link" asChild className="p-0 text-primary font-semibold">
+                          <Link href="#">
+                            Devamını Oku <ArrowRight className="ml-2 h-4 w-4" />
+                          </Link>
+                        </Button>
                       </CardFooter>
                     </Card>
+                  </div>
+                </CarouselItem>
               ))}
-           </div>
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         </div>
       </section>
 
