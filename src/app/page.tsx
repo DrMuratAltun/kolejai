@@ -230,8 +230,8 @@ export default function Home() {
                                 data-ai-hint={inst.aiHint}
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>
-                            <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4 text-center">
-                                <h3 className="text-xl font-bold uppercase tracking-wider transition-all duration-300 group-hover:-translate-y-4">{inst.title}</h3>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-2 text-center">
+                                <h3 className="text-base font-bold uppercase transition-all duration-300 group-hover:-translate-y-4">{inst.title}</h3>
                                 <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 group-hover:translate-y-0 translate-y-4">
                                     <Button variant="outline" className="bg-white/20 border-white text-white backdrop-blur-sm hover:bg-white hover:text-primary">
                                         İnceleyin <ArrowRight className="ml-2 h-4 w-4" />
