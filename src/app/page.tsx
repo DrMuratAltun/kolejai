@@ -1,5 +1,9 @@
+"use client";
+
+import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Autoplay from "embla-carousel-autoplay";
 import {
   Card,
   CardContent,
@@ -95,6 +99,10 @@ const testimonials = [
 ]
 
 export default function Home() {
+  const plugin = React.useRef(
+    Autoplay({ delay: 5000, stopOnInteraction: true })
+  );
+
   return (
     <div className="flex flex-col animate-in fade-in duration-500">
       {/* Banner Section */}
@@ -120,46 +128,41 @@ export default function Home() {
             <p className="text-muted-foreground max-w-2xl mx-auto mt-6">Okulumuzdan en son haberler, etkinlikler ve önemli duyurular.</p>
           </div>
           <Carousel
+            plugins={[plugin.current]}
+            className="w-full"
+            onMouseEnter={plugin.current.stop}
+            onMouseLeave={plugin.current.reset}
             opts={{
-              align: "start",
               loop: true,
             }}
-            className="w-full max-w-6xl mx-auto"
           >
-            <CarouselContent className="-ml-4">
+            <CarouselContent>
               {newsAndEvents.map((item) => (
-                <CarouselItem key={item.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
-                  <div className="h-full">
-                    <Card className="flex flex-col h-full transform hover:-translate-y-2 transition-transform duration-300 shadow-md hover:shadow-xl overflow-hidden group">
+                <CarouselItem key={item.id}>
+                  <Link href={item.href} className="block">
+                    <div className="relative h-[400px] md:h-[500px] rounded-xl overflow-hidden group">
                       <Image
                         src={item.image}
                         alt={item.title}
-                        width={600}
-                        height={400}
-                        className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105"
+                        fill
+                        className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
                         data-ai-hint={item.aiHint}
                       />
-                      <CardHeader>
-                        <CardDescription>{item.date}</CardDescription>
-                        <CardTitle className="text-xl">{item.title}</CardTitle>
-                      </CardHeader>
-                      <CardContent className="flex-grow">
-                        <p className="text-muted-foreground">{item.description}</p>
-                      </CardContent>
-                      <CardFooter>
-                        <Button variant="link" asChild className="p-0 text-primary font-semibold">
-                          <Link href={item.href}>
-                            Devamını Oku <ArrowRight className="ml-2 h-4 w-4" />
-                          </Link>
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                  </div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                      <div className="absolute inset-0 flex flex-col justify-end p-8 text-white">
+                        <Badge className="w-fit mb-2 bg-primary/80 backdrop-blur-sm border-0">{item.type}</Badge>
+                        <h3 className="text-2xl md:text-4xl font-bold leading-tight shadow-lg">
+                          {item.title}
+                        </h3>
+                        <p className="mt-2 max-w-2xl text-primary-foreground/90 shadow-sm">{item.description}</p>
+                      </div>
+                    </div>
+                  </Link>
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
+            <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+            <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
           </Carousel>
         </div>
       </section>
