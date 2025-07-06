@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/firebase";
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, Timestamp, query, orderBy, serverTimestamp } from "firebase/firestore";
+import { unstable_noStore as noStore } from 'next/cache';
 
 export interface GalleryItem {
   id: string;
@@ -28,6 +29,7 @@ const fromFirestore = (snapshot: any): GalleryItem => {
 };
 
 export const getGalleryItems = async (): Promise<GalleryItem[]> => {
+  noStore();
   try {
     const q = query(galleryCollection, orderBy("createdAt", "desc"));
     const snapshot = await getDocs(q);

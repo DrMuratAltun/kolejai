@@ -1,5 +1,6 @@
 import { db } from "@/lib/firebase";
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, Timestamp, query, orderBy, serverTimestamp, where, getDoc, limit } from "firebase/firestore";
+import { unstable_noStore as noStore } from 'next/cache';
 
 export interface Page {
   id: string;
@@ -32,6 +33,7 @@ const fromFirestore = (snapshot: any): Page => {
 };
 
 export const getPages = async (): Promise<Page[]> => {
+  noStore();
   try {
     const q = query(pagesCollection, orderBy("createdAt", "desc"));
     const snapshot = await getDocs(q);
@@ -43,6 +45,7 @@ export const getPages = async (): Promise<Page[]> => {
 };
 
 export const getMenuPages = async (): Promise<Page[]> => {
+    noStore();
     try {
         const q = query(pagesCollection, where("showInMenu", "==", true), orderBy("menuOrder", "asc"));
         const snapshot = await getDocs(q);
@@ -54,6 +57,7 @@ export const getMenuPages = async (): Promise<Page[]> => {
 };
 
 export const getPageBySlug = async (slug: string): Promise<Page | null> => {
+    noStore();
     try {
         const q = query(pagesCollection, where("slug", "==", slug), limit(1));
         const snapshot = await getDocs(q);
@@ -68,6 +72,7 @@ export const getPageBySlug = async (slug: string): Promise<Page | null> => {
 };
 
 export const getPageById = async (id: string): Promise<Page | null> => {
+    noStore();
     try {
         const docRef = doc(db, "pages", id);
         const snapshot = await getDoc(docRef);

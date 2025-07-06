@@ -3,6 +3,7 @@
 
 import { db } from "@/lib/firebase";
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, Timestamp, query, orderBy, serverTimestamp } from "firebase/firestore";
+import { unstable_noStore as noStore } from 'next/cache';
 
 export interface StaffMember {
   id: string;
@@ -35,6 +36,7 @@ const fromFirestore = (snapshot: any): StaffMember => {
 };
 
 export const getStaffMembers = async (): Promise<StaffMember[]> => {
+  noStore();
   try {
     const q = query(staffCollection, orderBy("createdAt", "desc"));
     const snapshot = await getDocs(q);

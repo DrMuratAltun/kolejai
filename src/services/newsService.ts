@@ -1,6 +1,7 @@
 
 import { db } from "@/lib/firebase";
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, Timestamp, query, orderBy, serverTimestamp } from "firebase/firestore";
+import { unstable_noStore as noStore } from 'next/cache';
 
 export interface NewsItem {
   id: string;
@@ -35,6 +36,7 @@ const fromFirestore = (snapshot: any): NewsItem => {
 };
 
 export const getNewsItems = async (): Promise<NewsItem[]> => {
+  noStore();
   const q = query(newsCollection, orderBy("createdAt", "desc"));
   const snapshot = await getDocs(q);
   return snapshot.docs.map(fromFirestore);
