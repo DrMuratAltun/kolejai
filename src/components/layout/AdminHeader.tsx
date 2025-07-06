@@ -43,14 +43,10 @@ export default function AdminHeader() {
             <DropdownMenuItem disabled>Profil</DropdownMenuItem>
             <DropdownMenuItem disabled>Ayarlar</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <form action={logoutAction}>
-              <DropdownMenuItem asChild>
-                <button type="submit" className="w-full">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Çıkış Yap</span>
-                </button>
-              </DropdownMenuItem>
-            </form>
+            <DropdownMenuItem onSelect={() => logoutAction()}>
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Çıkış Yap</span>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

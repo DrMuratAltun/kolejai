@@ -75,11 +75,9 @@ export default function AdminSidebar() {
                   <span className="font-semibold text-sm">Admin User</span>
                   <span className="text-xs text-muted-foreground">admin@bilgeyildiz.com</span>
               </div>
-              <form action={logoutAction} className="ml-auto group-data-[collapsible=icon]:hidden">
-                <Button variant="ghost" size="icon" type="submit" aria-label="Çıkış Yap">
-                    <LogOut className="h-4 w-4" />
-                </Button>
-              </form>
+              <Button onClick={() => logoutAction()} variant="ghost" size="icon" aria-label="Çıkış Yap" className="ml-auto group-data-[collapsible=icon]:hidden">
+                <LogOut className="h-4 w-4" />
+              </Button>
            </div>
         </SidebarGroup>
       </SidebarFooter>
