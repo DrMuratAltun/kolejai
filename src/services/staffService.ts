@@ -35,21 +35,40 @@ const getStaffArray = async (): Promise<any[]> => {
     return data.staff && Array.isArray(data.staff) ? data.staff : [];
 };
 
+// This function is designed to be extremely robust against malformed data.
 const fromDbObjectToStaffMember = (dbObj: any): StaffMember | null => {
     // Robust check to ensure dbObj is a processable object
-    if (!dbObj || typeof dbObj !== 'object' || dbObj.id === undefined || dbObj.id === null) {
-        console.error("Skipping invalid or malformed staff member data found in Firestore:", dbObj);
+    if (!dbObj || typeof dbObj !== 'object') {
+        console.error("Skipping invalid (non-object) staff member data found in Firestore:", dbObj);
         return null;
     }
+    if (dbObj.id === undefined || dbObj.id === null) {
+        console.error("Skipping staff member data with missing or null ID:", dbObj);
+        return null;
+    }
+
+    // Ultra-robust parentId parsing to prevent NaN serialization errors.
+    const parsedParentId = Number(dbObj.parentId);
+    let finalParentId: number | null;
+
+    if (dbObj.parentId === undefined || dbObj.parentId === '' || dbObj.parentId === null) {
+        finalParentId = null;
+    } else if (isNaN(parsedParentId)) {
+        console.error(`ERROR: Invalid parentId for staff member ID ${dbObj.id}. The value was "${dbObj.parentId}", which is not a number. Defaulting to null to prevent crash.`);
+        finalParentId = null;
+    } else {
+        finalParentId = parsedParentId;
+    }
+    
     return {
-        id: dbObj.id,
+        id: Number(dbObj.id), // Ensure it's a number
         name: dbObj.name || 'İsimsiz Personel',
         title: dbObj.title || 'Unvan Belirtilmemiş',
         department: dbObj.department || 'Departman Bilinmiyor',
         description: dbObj.description || '',
         photo: dbObj.photo || 'https://placehold.co/400x400.png',
         aiHint: dbObj.aiHint || '',
-        parentId: dbObj.parentId === undefined || dbObj.parentId === '' ? null : dbObj.parentId,
+        parentId: finalParentId,
     };
 };
 
@@ -64,7 +83,7 @@ export const getStaffMembers = async (): Promise<StaffMember[]> => {
         .filter((member): member is StaffMember => member !== null);
 
     // Safely sort the valid members
-    members.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    members.sort((a, b) => a.name.localeCompare(b.name));
     
     return members;
   } catch (error) {
