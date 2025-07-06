@@ -5,7 +5,7 @@ import type { GalleryItem } from '@/services/galleryService';
 import { useToast } from "@/hooks/use-toast";
 import { handleGalleryFormSubmit } from './actions';
 import { generateImage } from '@/ai/flows/image-generation';
-import { dataURLtoFile } from '@/lib/firebase-storage';
+import { dataURLtoFile } from '@/lib/utils';
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useForm } from 'react-hook-form';

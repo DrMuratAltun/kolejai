@@ -23,7 +23,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
-import { cn } from "@/lib/utils";
+import { cn, dataURLtoFile } from "@/lib/utils";
 import { Skeleton } from '@/components/ui/skeleton';
 
 const AiTextEditor = dynamic(() => import('@/components/ai/AiTextEditor'), {
@@ -36,23 +36,6 @@ const AiTextEditor = dynamic(() => import('@/components/ai/AiTextEditor'), {
       </div>
   ),
 });
-
-// Helper to convert Data URL to File object
-const dataURLtoFile = (dataurl: string, filename: string): File => {
-  const arr = dataurl.split(',');
-  const mimeMatch = arr[0].match(/:(.*?);/);
-  if (!mimeMatch) {
-      throw new Error('Invalid data URI');
-  }
-  const mime = mimeMatch[1];
-  const bstr = atob(arr[1]);
-  let n = bstr.length;
-  const u8arr = new Uint8Array(n);
-  while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-  }
-  return new File([u8arr], filename, { type: mime });
-}
 
 // Helper to strip HTML tags for AI prompts
 const stripHtml = (html: string) => {

@@ -8,7 +8,8 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { generateImage } from './image-generation';
-import { uploadFile, dataURLtoFile } from '@/lib/firebase-storage';
+import { uploadFile } from '@/lib/firebase-storage';
+import { dataURLtoFile } from '@/lib/utils';
 import { v4 as uuidv4 } from 'uuid';
 
 const GeneratePageContentInputSchema = z.object({
