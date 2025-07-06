@@ -43,11 +43,13 @@ export default function AdminHeader() {
             <DropdownMenuItem disabled>Profil</DropdownMenuItem>
             <DropdownMenuItem disabled>Ayarlar</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <form action={logoutAction} className="w-full">
-                <button type="submit" className="relative flex w-full cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
-                    <LogOut className="h-4 w-4" />
-                    <span>Çıkış Yap</span>
+            <form action={logoutAction}>
+              <DropdownMenuItem asChild>
+                <button type="submit" className="w-full">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Çıkış Yap</span>
                 </button>
+              </DropdownMenuItem>
             </form>
           </DropdownMenuContent>
         </DropdownMenu>
