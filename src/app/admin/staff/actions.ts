@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { addStaffMember, updateStaffMember, deleteStaffMember, updateStaffParent, type StaffMemberData } from '@/services/staffService';
 import { revalidatePath } from 'next/cache';
 import { uploadFile } from '@/lib/firebase-storage';
+import { v4 as uuidv4 } from 'uuid';
 
 const serverFormSchema = z.object({
   id: z.string().optional(),
@@ -18,24 +19,24 @@ const serverFormSchema = z.object({
 });
 
 export async function handleStaffFormSubmit(prevState: any, formData: FormData) {
-  const rawData = Object.fromEntries(formData.entries());
+  const rawData: { [k: string]: any } = {};
+  formData.forEach((value, key) => {
+    rawData[key] = value;
+  });
   
   if (rawData.id === '') delete rawData.id;
 
-  let imageUrl: string = rawData.photo as string;
   const imageValue = rawData.photo as File | string;
 
   if (imageValue instanceof File && imageValue.size > 0) {
       try {
-          imageUrl = await uploadFile(imageValue, 'staff');
+          rawData.photo = await uploadFile(imageValue, 'staff');
       } catch (e: any) {
           return { success: false, error: 'Resim yüklenirken bir hata oluştu: ' + e.message };
       }
   }
-  
-  const dataToParse = { ...rawData, photo: imageUrl };
 
-  const parsed = serverFormSchema.safeParse(dataToParse);
+  const parsed = serverFormSchema.safeParse(rawData);
 
   if (!parsed.success) {
     return {
@@ -46,13 +47,13 @@ export async function handleStaffFormSubmit(prevState: any, formData: FormData) 
 
   try {
     const { id, ...data } = parsed.data;
-    // Ensure all fields have a default value to maintain data structure consistency
+    
     const dataToSave: StaffMemberData = {
         name: data.name,
         title: data.title,
         department: data.department,
         description: data.description || '',
-        photo: data.photo || 'https://placehold.co/400x400.png', // Default placeholder
+        photo: data.photo || '',
         aiHint: data.aiHint || '',
         parentId: data.parentId
     };
@@ -60,7 +61,7 @@ export async function handleStaffFormSubmit(prevState: any, formData: FormData) 
     if (id) {
       await updateStaffMember(id, dataToSave);
     } else {
-      await addStaffMember(dataToSave);
+      await addStaffMember({ ...dataToSave, id: uuidv4() });
     }
     
     revalidatePath('/staff');
@@ -90,7 +91,6 @@ export async function deleteStaffMemberAction(id: string) {
         return { success: false, error: e.message };
     }
 }
-
 
 export async function updateStaffParentAction(staffId: string, newParentId: string | null) {
     if (!staffId) {
