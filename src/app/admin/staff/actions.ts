@@ -7,14 +7,14 @@ import { revalidatePath } from 'next/cache';
 import { uploadFile } from '@/lib/firebase-storage';
 
 const serverFormSchema = z.object({
-  id: z.string().optional(),
+  id: z.coerce.number().optional(),
   name: z.string().min(1, "İsim gerekli"),
-  role: z.string().min(1, "Rol gerekli"),
+  title: z.string().min(1, "Rol/Unvan gerekli"),
   department: z.string().min(1, "Departman gerekli"),
-  bio: z.string().min(1, "Biyografi gerekli"),
-  image: z.string().url("Geçerli bir resim URL'si olmalı."),
+  description: z.string().min(1, "Biyografi gerekli"),
+  photo: z.string().url("Geçerli bir resim URL'si olmalı."),
   aiHint: z.string().optional(),
-  managerId: z.string().nullable().optional(),
+  parentId: z.string().transform(val => val === 'none' || !val ? null : Number(val)).nullable(),
 });
 
 export async function handleStaffFormSubmit(prevState: any, formData: FormData) {
@@ -23,7 +23,7 @@ export async function handleStaffFormSubmit(prevState: any, formData: FormData) 
   if (rawData.id === '') delete rawData.id;
 
   let imageUrl: string;
-  const imageValue = rawData.image as File | string;
+  const imageValue = rawData.photo as File | string;
 
   if (imageValue instanceof File && imageValue.size > 0) {
       try {
@@ -35,11 +35,7 @@ export async function handleStaffFormSubmit(prevState: any, formData: FormData) 
       imageUrl = imageValue as string;
   }
   
-  // Handle managerId: if it's 'none' or missing, it should be null.
-  const managerValue = rawData.managerId as string | undefined;
-  const processedManagerId = managerValue === 'none' || !managerValue ? null : managerValue;
-
-  const dataToParse = { ...rawData, image: imageUrl, managerId: processedManagerId };
+  const dataToParse = { ...rawData, photo: imageUrl };
 
   const parsed = serverFormSchema.safeParse(dataToParse);
 
@@ -52,23 +48,11 @@ export async function handleStaffFormSubmit(prevState: any, formData: FormData) 
 
   try {
     const { id, ...data } = parsed.data;
-    
-    // Construct a final, type-safe payload for the database service.
-    // This prevents `undefined` values from being sent to Firestore.
-    const finalPayload: StaffMemberData = {
-        name: data.name,
-        role: data.role,
-        department: data.department,
-        bio: data.bio,
-        image: data.image,
-        aiHint: data.aiHint || '',
-        managerId: data.managerId ?? null,
-    };
 
     if (id) {
-      await updateStaffMember(id, finalPayload);
+      await updateStaffMember(id, data);
     } else {
-      await addStaffMember(finalPayload);
+      await addStaffMember(data as StaffMemberData);
     }
     
     revalidatePath('/staff');
@@ -84,7 +68,7 @@ export async function handleStaffFormSubmit(prevState: any, formData: FormData) 
   }
 }
 
-export async function deleteStaffMemberAction(id: string) {
+export async function deleteStaffMemberAction(id: number) {
     if (!id) {
         return { success: false, error: 'ID gerekli.' };
     }

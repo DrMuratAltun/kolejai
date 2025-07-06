@@ -13,11 +13,11 @@ const StaffCard = ({ node }: { node: StaffNode }) => {
       <Card className="p-3 shadow-md bg-background min-w-[180px]">
         <div className="flex flex-col items-center">
           <Avatar className="w-16 h-16 mb-2 border-2 border-primary">
-            <AvatarImage src={node.image} alt={node.name} />
+            <AvatarImage src={node.photo} alt={node.name} />
             <AvatarFallback>{node.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
           </Avatar>
           <p className="font-bold text-sm">{node.name}</p>
-          <p className="text-xs text-muted-foreground">{node.role}</p>
+          <p className="text-xs text-muted-foreground">{node.title}</p>
         </div>
       </Card>
       {node.children && node.children.length > 0 && (

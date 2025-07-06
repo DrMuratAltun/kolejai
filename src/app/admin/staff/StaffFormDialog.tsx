@@ -27,16 +27,16 @@ interface StaffFormDialogProps {
 }
 
 const formSchema = z.object({
-  id: z.string().optional(),
+  id: z.number().optional(),
   name: z.string().min(1, "İsim gerekli"),
-  role: z.string().min(1, "Rol gerekli"),
+  title: z.string().min(1, "Rol/Unvan gerekli"),
   department: z.string().min(1, "Departman gerekli"),
-  bio: z.string().min(1, "Biyografi gerekli"),
-  image: z.any().refine(val => (typeof val === 'string' && val.length > 0) || (typeof window !== 'undefined' && val instanceof File), {
+  description: z.string().min(1, "Biyografi gerekli"),
+  photo: z.any().refine(val => (typeof val === 'string' && val.length > 0) || (typeof window !== 'undefined' && val instanceof File), {
     message: "Resim gerekli.",
   }),
   aiHint: z.string().optional().default(''),
-  managerId: z.string().optional(),
+  parentId: z.string().optional(),
 });
 
 type StaffFormValues = z.infer<typeof formSchema>;
@@ -49,8 +49,8 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
   const form = useForm<StaffFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '', role: '', department: '', bio: '',
-      image: 'https://placehold.co/400x400.png', aiHint: '', managerId: 'none'
+      name: '', title: '', department: '', description: '',
+      photo: 'https://placehold.co/400x400.png', aiHint: '', parentId: 'none'
     }
   });
 
@@ -59,13 +59,13 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
         if (editingStaff) {
             form.reset({
                 ...editingStaff,
-                managerId: editingStaff.managerId || 'none'
+                parentId: editingStaff.parentId?.toString() || 'none'
             });
-            setImagePreview(editingStaff.image);
+            setImagePreview(editingStaff.photo);
         } else {
             form.reset({
-                id: undefined, name: '', role: '', department: '', bio: '',
-                image: 'https://placehold.co/400x400.png', aiHint: '', managerId: 'none'
+                id: undefined, name: '', title: '', department: '', description: '',
+                photo: 'https://placehold.co/400x400.png', aiHint: '', parentId: 'none'
             });
             setImagePreview('https://placehold.co/400x400.png');
         }
@@ -76,10 +76,10 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
     const formData = new FormData();
     Object.entries(values).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        if (key === 'image' && value instanceof File) {
+        if (key === 'photo' && value instanceof File) {
           formData.append(key, value, value.name);
-        } else if (typeof value === 'string') {
-          formData.append(key, value);
+        } else {
+          formData.append(key, String(value));
         }
       }
     });
@@ -105,7 +105,7 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      form.setValue('image', file, { shouldValidate: true });
+      form.setValue('photo', file, { shouldValidate: true });
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -125,10 +125,10 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex-grow flex flex-col overflow-hidden">
             <div className="flex-grow overflow-y-auto space-y-4 p-6">
               <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>İsim Soyisim</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-              <FormField control={form.control} name="role" render={({ field }) => (<FormItem><FormLabel>Rol</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="title" render={({ field }) => (<FormItem><FormLabel>Rol/Unvan</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
               <FormField control={form.control} name="department" render={({ field }) => (<FormItem><FormLabel>Departman</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
               
-              <FormField control={form.control} name="managerId" render={({ field }) => (
+              <FormField control={form.control} name="parentId" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Yöneticisi</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value || 'none'}>
@@ -136,9 +136,9 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
                     <SelectContent>
                       <SelectItem value="none">Yok</SelectItem>
                       {allStaffMembers
-                        .filter(member => member.id !== editingStaff?.id) // Can't be your own manager
+                        .filter(member => member.id !== editingStaff?.id)
                         .map(member => (
-                          <SelectItem key={member.id} value={member.id}>{member.name}</SelectItem>
+                          <SelectItem key={member.id} value={String(member.id)}>{member.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -146,11 +146,11 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
                 </FormItem>
               )} />
 
-              <FormField control={form.control} name="bio" render={({ field }) => (<FormItem><FormLabel>Biyografi</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Biyografi</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
               
               <FormField
                   control={form.control}
-                  name="image"
+                  name="photo"
                   render={() => (
                     <FormItem>
                       <FormLabel>Profil Fotoğrafı</FormLabel>

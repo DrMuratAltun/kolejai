@@ -12,7 +12,7 @@ export interface StaffNode extends StaffMember {
 
 export default async function OrgChartPage() {
   const staff = await getStaffMembers();
-  const staffMap = new Map<string, StaffNode>();
+  const staffMap = new Map<number, StaffNode>();
   const rootNodes: StaffNode[] = [];
 
   staff.forEach(member => {
@@ -22,8 +22,8 @@ export default async function OrgChartPage() {
   staff.forEach(member => {
     const node = staffMap.get(member.id);
     if (node) {
-      if (member.managerId && staffMap.has(member.managerId)) {
-        const managerNode = staffMap.get(member.managerId);
+      if (member.parentId && staffMap.has(member.parentId)) {
+        const managerNode = staffMap.get(member.parentId);
         managerNode?.children.push(node);
       } else {
         rootNodes.push(node);

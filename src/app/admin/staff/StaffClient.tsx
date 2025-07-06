@@ -38,7 +38,7 @@ export default function StaffClient({ initialStaffMembers }: { initialStaffMembe
     setIsDialogOpen(true);
   };
   
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     const result = await deleteStaffMemberAction(id);
     if (result.success) {
       toast({
@@ -81,7 +81,7 @@ export default function StaffClient({ initialStaffMembers }: { initialStaffMembe
             <TableHeader>
               <TableRow>
                 <TableHead>İsim</TableHead>
-                <TableHead>Rol</TableHead>
+                <TableHead>Rol/Unvan</TableHead>
                 <TableHead>Departman</TableHead>
                 <TableHead>Yöneticisi</TableHead>
                 <TableHead className="text-right">İşlemler</TableHead>
@@ -93,15 +93,15 @@ export default function StaffClient({ initialStaffMembers }: { initialStaffMembe
                   <TableCell className="font-medium">
                     <div className='flex items-center gap-3'>
                       <Avatar>
-                        <AvatarImage src={item.image} alt={item.name || 'Personel'} />
+                        <AvatarImage src={item.photo} alt={item.name} />
                         <AvatarFallback>{item.name?.substring(0, 2).toUpperCase() || 'P'}</AvatarFallback>
                       </Avatar>
                       {item.name}
                     </div>
                   </TableCell>
-                  <TableCell>{item.role}</TableCell>
+                  <TableCell>{item.title}</TableCell>
                   <TableCell>{item.department}</TableCell>
-                   <TableCell>{item.managerId ? 'Var' : '-'}</TableCell>
+                   <TableCell>{item.parentId ? 'Var' : '-'}</TableCell>
                   <TableCell className="text-right">
                     <AlertDialog>
                       <DropdownMenu>
