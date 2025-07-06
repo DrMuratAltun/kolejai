@@ -2,11 +2,10 @@
 'use server';
 
 import { z } from 'zod';
-import { addStaffMember, updateStaffMember, deleteStaffMember, type StaffMemberData } from '@/services/staffService';
+import { addStaffMember, updateStaffMember, deleteStaffMember, updateStaffParent, type StaffMemberData } from '@/services/staffService';
 import { revalidatePath } from 'next/cache';
 import { uploadFile } from '@/lib/firebase-storage';
 
-// Schema now expects string IDs and handles parentId correctly
 const serverFormSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, "İsim gerekli"),
@@ -15,7 +14,6 @@ const serverFormSchema = z.object({
   description: z.string().min(1, "Biyografi gerekli"),
   photo: z.string().url("Geçerli bir resim URL'si olmalı."),
   aiHint: z.string().optional(),
-  // parentId will be the document ID (string) or null
   parentId: z.string().transform(val => val === 'none' || !val ? null : val).nullable(),
 });
 
@@ -79,6 +77,21 @@ export async function deleteStaffMemberAction(id: string) {
         revalidatePath('/staff');
         revalidatePath('/admin/staff');
         revalidatePath('/admin/staff/chart');
+        return { success: true, error: null };
+    } catch (e: any) {
+        return { success: false, error: e.message };
+    }
+}
+
+
+export async function updateStaffParentAction(staffId: string, newParentId: string | null) {
+    if (!staffId) {
+        return { success: false, error: 'Personel ID gerekli.' };
+    }
+    try {
+        await updateStaffParent(staffId, newParentId);
+        revalidatePath('/admin/staff/chart');
+        revalidatePath('/admin/staff');
         return { success: true, error: null };
     } catch (e: any) {
         return { success: false, error: e.message };

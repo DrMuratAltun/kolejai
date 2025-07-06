@@ -12,7 +12,7 @@ export interface StaffMember {
   department: string;
   description: string;
   photo: string;
-  aiHint?: string;
+  aiHint: string;
   parentId: string | null;
   createdAt?: string;
 }
@@ -36,6 +36,17 @@ const fromFirestoreObject = (obj: any): StaffMember | null => {
         console.error("Skipping malformed staff object in Firestore:", obj);
         return null; 
     }
+    
+    let parentId = null;
+    if (obj.parentId !== null && typeof obj.parentId !== 'undefined') {
+        const numParentId = Number(obj.parentId);
+        if (!isNaN(numParentId)) {
+            parentId = String(numParentId);
+        } else {
+            console.warn(`Invalid non-numeric parentId found for staff member ${obj.id}:`, obj.parentId);
+        }
+    }
+    
     return {
         id: String(obj.id),
         name: obj.name || 'İsimsiz Personel',
@@ -44,8 +55,8 @@ const fromFirestoreObject = (obj: any): StaffMember | null => {
         description: obj.description || '',
         photo: obj.photo || 'https://placehold.co/400x400.png',
         aiHint: obj.aiHint || '',
-        parentId: obj.parentId !== null && typeof obj.parentId !== 'undefined' ? String(obj.parentId) : null,
-        createdAt: new Date().toISOString(), // This is a fallback as createdAt is not in the DB
+        parentId: parentId,
+        createdAt: new Date().toISOString(),
     };
 };
 
@@ -66,10 +77,14 @@ export const addStaffMember = async (item: StaffMemberData) => {
     const newId = staffArray.length > 0 ? Math.max(...staffArray.map(m => m.id || 0)) + 1 : 1;
 
     const newMember = {
-        ...item,
         id: newId,
-        parentId: item.parentId ? Number(item.parentId) : null,
+        name: item.name,
+        title: item.title,
+        department: item.department,
+        description: item.description,
+        photo: item.photo,
         aiHint: item.aiHint || '',
+        parentId: item.parentId ? Number(item.parentId) : null,
     };
     
     staffArray.push(newMember);
@@ -85,15 +100,14 @@ export const updateStaffMember = async (id: string, item: Partial<StaffMemberDat
         throw new Error("Staff member not found for update.");
     }
     
-    const dataToUpdate = { ...item };
+    const dataToUpdate: any = { ...item };
     if ('parentId' in dataToUpdate) {
-        dataToUpdate.parentId = dataToUpdate.parentId ? String(dataToUpdate.parentId) : null;
+        dataToUpdate.parentId = dataToUpdate.parentId ? Number(dataToUpdate.parentId) : null;
     }
 
     const updatedMember = {
         ...staffArray[memberIndex],
-        ...dataToUpdate,
-        parentId: dataToUpdate.parentId ? Number(dataToUpdate.parentId) : null,
+        ...dataToUpdate
     };
 
     staffArray[memberIndex] = updatedMember;
@@ -104,7 +118,6 @@ export const deleteStaffMember = async (id: string) => {
     let staffArray = await getStaffArray();
     const numericIdToDelete = Number(id);
     
-    // First, handle any children of the member being deleted
     const arrayWithOrphansHandled = staffArray.map(member => {
         if (member.parentId === numericIdToDelete) {
             return { ...member, parentId: null };
@@ -112,8 +125,44 @@ export const deleteStaffMember = async (id: string) => {
         return member;
     });
 
-    // Then, filter out the member to be deleted
     const updatedStaffArray = arrayWithOrphansHandled.filter(m => m.id !== numericIdToDelete);
 
     return await setDoc(staffDocRef, { staff: updatedStaffArray });
+};
+
+export const updateStaffParent = async (staffId: string, newParentId: string | null) => {
+    const staffArray = await getStaffArray();
+    const numericId = Number(staffId);
+    const numericParentId = newParentId ? Number(newParentId) : null;
+
+    if (numericId === numericParentId) {
+        throw new Error("Bir personel kendisine yönetici olarak atanamaz.");
+    }
+
+    const memberIndex = staffArray.findIndex(m => m.id === numericId);
+    if (memberIndex === -1) {
+        throw new Error("Sürüklenen personel bulunamadı.");
+    }
+
+    if (numericParentId !== null) {
+        const parentExists = staffArray.some(m => m.id === numericParentId);
+        if (!parentExists) {
+            throw new Error("Hedef yönetici bulunamadı.");
+        }
+    }
+    
+    // Check for circular dependencies
+    let currentParentIdInLoop = numericParentId;
+    while(currentParentIdInLoop !== null) {
+        if (currentParentIdInLoop === numericId) {
+            throw new Error("Döngüsel bir hiyerarşi oluşturulamaz. (Örn: Bir yönetici kendi altına atanamaz)");
+        }
+        const parent = staffArray.find(m => m.id === currentParentIdInLoop);
+        if (!parent) break; // Reached the top of this branch
+        currentParentIdInLoop = parent.parentId;
+    }
+
+    staffArray[memberIndex].parentId = numericParentId;
+
+    return await setDoc(staffDocRef, { staff: staffArray });
 };
