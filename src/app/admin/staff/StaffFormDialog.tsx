@@ -56,17 +56,29 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
   useEffect(() => {
     if (isOpen) {
         if (editingStaff) {
+            // Defensive reset to prevent controlled/uncontrolled error
             form.reset({
-                ...editingStaff,
+                id: editingStaff.id,
+                name: editingStaff.name || '',
+                title: editingStaff.title || '',
+                department: editingStaff.department || '',
+                description: editingStaff.description || '',
                 photo: editingStaff.photo || '',
-                parentId: editingStaff.parentId || 'none'
+                aiHint: editingStaff.aiHint || '',
+                parentId: editingStaff.parentId || 'none',
             });
             setImagePreview(editingStaff.photo);
         } else {
+            // Reset for new entry is already safe
             form.reset({
-                id: undefined, name: '', title: '', department: '', description: '',
+                id: undefined,
+                name: '',
+                title: '',
+                department: '',
+                description: '',
                 photo: '',
-                aiHint: '', parentId: 'none'
+                aiHint: '',
+                parentId: 'none'
             });
             setImagePreview(null);
         }
