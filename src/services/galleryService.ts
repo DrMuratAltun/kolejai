@@ -8,7 +8,7 @@ export interface GalleryItem {
   src: string;
   alt: string;
   aiHint: string;
-  createdAt?: Timestamp;
+  createdAt?: string | null;
 }
 
 export type GalleryItemData = Omit<GalleryItem, 'id' | 'createdAt'>;
@@ -17,12 +17,13 @@ const galleryCollection = collection(db, "gallery");
 
 const fromFirestore = (snapshot: any): GalleryItem => {
   const data = snapshot.data();
+  const createdAtTimestamp = data.createdAt;
   return {
     id: snapshot.id,
     src: data.src,
     alt: data.alt,
     aiHint: data.aiHint || '',
-    createdAt: data.createdAt,
+    createdAt: createdAtTimestamp ? (createdAtTimestamp.toDate() as Date).toISOString() : null,
   };
 };
 

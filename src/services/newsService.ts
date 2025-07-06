@@ -11,7 +11,7 @@ export interface NewsItem {
   image: string;
   aiHint: string;
   href: string;
-  createdAt?: Timestamp;
+  createdAt?: string | null;
 }
 
 export type NewsItemData = Omit<NewsItem, 'id' | 'createdAt'>;
@@ -20,6 +20,7 @@ const newsCollection = collection(db, "news");
 
 const fromFirestore = (snapshot: any): NewsItem => {
   const data = snapshot.data();
+  const createdAtTimestamp = data.createdAt;
   return {
     id: snapshot.id,
     type: data.type,
@@ -29,6 +30,7 @@ const fromFirestore = (snapshot: any): NewsItem => {
     aiHint: data.aiHint,
     href: data.href || '#',
     date: data.date, // Tarihi string olarak alıyoruz
+    createdAt: createdAtTimestamp ? (createdAtTimestamp.toDate() as Date).toISOString() : null,
   };
 };
 

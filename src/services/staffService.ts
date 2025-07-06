@@ -12,7 +12,7 @@ export interface StaffMember {
   bio: string;
   image: string;
   aiHint: string;
-  createdAt?: Timestamp;
+  createdAt?: string | null;
 }
 
 export type StaffMemberData = Omit<StaffMember, 'id' | 'createdAt'>;
@@ -21,6 +21,7 @@ const staffCollection = collection(db, "staff");
 
 const fromFirestore = (snapshot: any): StaffMember => {
   const data = snapshot.data();
+  const createdAtTimestamp = data.createdAt;
   return {
     id: snapshot.id,
     name: data.name,
@@ -29,6 +30,7 @@ const fromFirestore = (snapshot: any): StaffMember => {
     bio: data.bio,
     image: data.image,
     aiHint: data.aiHint || '',
+    createdAt: createdAtTimestamp ? (createdAtTimestamp.toDate() as Date).toISOString() : null,
   };
 };
 

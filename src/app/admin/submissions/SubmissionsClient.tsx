@@ -37,7 +37,7 @@ export default function SubmissionsClient({ initialSubmissions }: { initialSubmi
               {initialSubmissions.map((item) => (
                 <TableRow key={item.id}>
                   <TableCell>
-                    {item.createdAt ? format(item.createdAt.toDate(), 'dd.MM.yyyy HH:mm') : 'N/A'}
+                    {item.createdAt ? format(new Date(item.createdAt), 'dd.MM.yyyy HH:mm') : 'N/A'}
                   </TableCell>
                   <TableCell className="font-medium">{item.parentName}</TableCell>
                   <TableCell>{item.phone}</TableCell>

@@ -13,7 +13,7 @@ export interface Submission {
   source?: string;
   message?: string;
   kvkk: boolean;
-  createdAt: Timestamp;
+  createdAt: string | null;
 }
 
 export type SubmissionData = Omit<Submission, 'id' | 'createdAt'>;
@@ -22,6 +22,7 @@ const submissionsCollection = collection(db, "submissions");
 
 const fromFirestore = (snapshot: any): Submission => {
   const data = snapshot.data();
+  const createdAtTimestamp = data.createdAt;
   return {
     id: snapshot.id,
     parentName: data.parentName,
@@ -32,7 +33,7 @@ const fromFirestore = (snapshot: any): Submission => {
     source: data.source,
     message: data.message,
     kvkk: data.kvkk,
-    createdAt: data.createdAt,
+    createdAt: createdAtTimestamp ? (createdAtTimestamp.toDate() as Date).toISOString() : null,
   };
 };
 

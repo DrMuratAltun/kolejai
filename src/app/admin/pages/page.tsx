@@ -69,7 +69,7 @@ export default async function PagesListPage() {
                       </a>
                     </TableCell>
                     <TableCell>
-                        {page.createdAt?.toDate().toLocaleDateString('tr-TR')}
+                        {page.createdAt ? new Date(page.createdAt).toLocaleDateString('tr-TR') : 'N/A'}
                     </TableCell>
                     <TableCell>
                         {page.showInMenu && <Badge variant="secondary"><CheckCircle className="h-3 w-3 mr-1"/> Menüde</Badge>}

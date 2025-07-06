@@ -9,7 +9,7 @@ export interface Page {
   showInMenu: boolean;
   parentId: string | null;
   menuOrder: number;
-  createdAt: Timestamp;
+  createdAt: string | null;
 }
 
 export type PageData = Omit<Page, 'id' | 'createdAt'>;
@@ -18,6 +18,7 @@ const pagesCollection = collection(db, "pages");
 
 const fromFirestore = (snapshot: any): Page => {
   const data = snapshot.data();
+  const createdAtTimestamp = data.createdAt;
   return {
     id: snapshot.id,
     title: data.title,
@@ -26,7 +27,7 @@ const fromFirestore = (snapshot: any): Page => {
     showInMenu: data.showInMenu || false,
     parentId: data.parentId || null,
     menuOrder: data.menuOrder || 0,
-    createdAt: data.createdAt,
+    createdAt: createdAtTimestamp ? (createdAtTimestamp.toDate() as Date).toISOString() : null,
   };
 };
 
