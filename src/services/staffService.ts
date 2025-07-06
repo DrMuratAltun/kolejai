@@ -43,12 +43,26 @@ export const getStaffMembers = async (): Promise<StaffMember[]> => {
     const q = query(staffCollection, orderBy("name", "asc"));
     const snapshot = await getDocs(q);
     if (snapshot.empty) {
-        console.log("No staff members found, returning empty array.");
-        return [];
+      return [];
     }
-    return snapshot.docs.map(fromFirestore);
+
+    const members: StaffMember[] = [];
+    snapshot.docs.forEach(doc => {
+      try {
+        // Attempt to parse each document individually.
+        const member = fromFirestore(doc);
+        members.push(member);
+      } catch (e) {
+        // If a single document is malformed, log the error and skip it
+        // instead of crashing the entire page render.
+        console.error(`Skipping malformed staff document with ID: ${doc.id}`, e);
+      }
+    });
+    return members;
+
   } catch (error) {
-    console.error("Error fetching staff members:", error);
+    console.error("Error fetching staff members collection:", error);
+    // If the entire query fails, return an empty array to prevent a crash.
     return [];
   }
 };
