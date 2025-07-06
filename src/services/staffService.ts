@@ -2,150 +2,108 @@
 'use server';
 
 import { db } from "@/lib/firebase";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { 
+  collection, getDocs, addDoc, updateDoc, deleteDoc, doc, 
+  query, orderBy, serverTimestamp, writeBatch, where 
+} from "firebase/firestore";
 import { unstable_noStore as noStore } from 'next/cache';
 
-// Interface for the application's staff member structure
-// This now directly matches the Firestore array object structure
+// NEW DATA MODEL:
+// id: string (Firestore Document ID)
+// parentId: string | null (Document ID of the parent)
 export interface StaffMember {
-  id: number;
+  id: string;
   name: string;
   title: string; 
   department: string;
   description: string; 
   photo: string; 
   aiHint?: string;
-  parentId: number | null; 
+  parentId: string | null; 
+  createdAt?: string;
 }
 
-// Type for creating new staff members, omitting the generated `id`
-export type StaffMemberData = Omit<StaffMember, 'id'>;
+export type StaffMemberData = Omit<StaffMember, 'id' | 'createdAt'>;
 
-const staffDocRef = doc(db, "staff", "staff");
+const staffCollection = collection(db, "staff");
 
-const getStaffArray = async (): Promise<any[]> => {
-    const docSnap = await getDoc(staffDocRef);
-    if (!docSnap.exists()) {
-        console.log("Staff document does not exist, creating one...");
-        // Use setDoc to create the document if it doesn't exist. updateDoc would fail.
-        await setDoc(staffDocRef, { staff: [] });
-        return [];
-    }
-    const data = docSnap.data();
-    return data.staff && Array.isArray(data.staff) ? data.staff : [];
+// Converts a Firestore document snapshot to our StaffMember type
+const fromFirestore = (snapshot: any): StaffMember => {
+  const data = snapshot.data();
+  const createdAtTimestamp = data.createdAt;
+  
+  return {
+    id: snapshot.id,
+    name: data.name || 'İsimsiz Personel',
+    title: data.title || 'Unvan Belirtilmemiş',
+    department: data.department || 'Departman Bilinmiyor',
+    description: data.description || '',
+    photo: data.photo || 'https://placehold.co/400x400.png',
+    aiHint: data.aiHint || '',
+    parentId: data.parentId || null,
+    createdAt: createdAtTimestamp ? (createdAtTimestamp.toDate()).toISOString() : new Date().toISOString(),
+  };
 };
 
-// This function is designed to be extremely robust against malformed data.
-const fromDbObjectToStaffMember = (dbObj: any): StaffMember | null => {
-    // Robust check to ensure dbObj is a processable object
-    if (!dbObj || typeof dbObj !== 'object') {
-        console.error("[StaffService] Skipping invalid (non-object) staff member data found in Firestore:", dbObj);
-        return null;
-    }
-    // Deep check for required fields.
-    if (dbObj.id === undefined || dbObj.id === null || typeof dbObj.name !== 'string' || typeof dbObj.title !== 'string') {
-        console.error("[StaffService] Skipping staff member data with missing or invalid required fields (id, name, title):", dbObj);
-        return null;
-    }
-
-    // Ultra-robust parentId parsing to prevent NaN serialization errors.
-    const parsedParentId = Number(dbObj.parentId);
-    let finalParentId: number | null;
-
-    if (dbObj.parentId === undefined || dbObj.parentId === '' || dbObj.parentId === null) {
-        finalParentId = null;
-    } else if (isNaN(parsedParentId)) {
-        console.error(`[StaffService] ERROR: Invalid parentId for staff member ID ${dbObj.id}. The value was "${dbObj.parentId}", which is not a number. Defaulting to null to prevent crash.`);
-        finalParentId = null;
-    } else {
-        finalParentId = parsedParentId;
-    }
-    
-    return {
-        id: Number(dbObj.id), // Ensure it's a number
-        name: dbObj.name || 'İsimsiz Personel',
-        title: dbObj.title || 'Unvan Belirtilmemiş',
-        department: dbObj.department || 'Departman Bilinmiyor',
-        description: dbObj.description || '',
-        photo: dbObj.photo || 'https://placehold.co/400x400.png',
-        aiHint: dbObj.aiHint || '',
-        parentId: finalParentId,
-    };
-};
-
+// GET all staff members, ordered by name
 export const getStaffMembers = async (): Promise<StaffMember[]> => {
   noStore();
   try {
-    const staffArray = await getStaffArray();
-    
-    // Map and then filter out any null values resulting from malformed data
-    const members = staffArray
-        .map(fromDbObjectToStaffMember)
-        .filter((member): member is StaffMember => member !== null);
-
-    // Safely sort the valid members
-    members.sort((a, b) => a.name.localeCompare(b.name));
-    
-    return members;
+    const q = query(staffCollection, orderBy("name", "asc"));
+    const snapshot = await getDocs(q);
+    if (snapshot.empty) {
+        return [];
+    }
+    return snapshot.docs.map(fromFirestore);
   } catch (error) {
-    console.error("FATAL ERROR fetching staff members, returning empty array to prevent crash.", error);
-    // Return an empty array on error to ensure the page can still render
-    return [];
+    console.error("Error fetching staff members:", error);
+    return []; // Return empty array on error to prevent page crash
   }
 };
 
+// ADD a new staff member
 export const addStaffMember = async (item: StaffMemberData) => {
-    const staffArray = await getStaffArray();
-    const maxId = staffArray.reduce((max, member) => ((member?.id || 0) > max ? member.id : max), 0);
-    
-    // Create a fully-formed object to prevent any 'undefined' fields or structural inconsistencies.
-    // This is the most robust way to ensure data consistency upon creation.
-    const newMember: StaffMember = {
-        id: maxId + 1,
-        name: item.name,
-        title: item.title,
-        department: item.department,
-        description: item.description,
-        photo: item.photo,
-        aiHint: item.aiHint || '',
-        parentId: item.parentId ?? null,
-    };
-
-    const newStaffArray = [...staffArray, newMember];
-    return await updateDoc(staffDocRef, { staff: newStaffArray });
+  // Ensure all fields are present with default values to maintain a consistent data structure
+  const dataToSave = {
+    ...item,
+    aiHint: item.aiHint || '',
+    parentId: item.parentId || null,
+    createdAt: serverTimestamp()
+  };
+  return await addDoc(staffCollection, dataToSave);
 };
 
-export const updateStaffMember = async (id: number, item: Partial<StaffMemberData>) => {
-  const staffArray = await getStaffArray();
-  const memberIndex = staffArray.findIndex(member => member.id === id);
+// UPDATE an existing staff member
+export const updateStaffMember = async (id: string, item: Partial<StaffMemberData>) => {
+  const docRef = doc(db, "staff", id);
+  const dataToUpdate = {...item};
+  // Ensure parentId is not undefined, which can cause issues.
+  if ('parentId' in dataToUpdate && dataToUpdate.parentId === undefined) {
+    dataToUpdate.parentId = null;
+  }
+  return await updateDoc(docRef, dataToUpdate);
+};
 
-  if (memberIndex === -1) {
-    throw new Error("Staff member not found for update.");
+// DELETE a staff member and handle orphaned children
+export const deleteStaffMember = async (id: string) => {
+  const batch = writeBatch(db);
+
+  // 1. Delete the staff member itself
+  const docRef = doc(db, "staff", id);
+  batch.delete(docRef);
+
+  // 2. Find any children who had this member as a parent
+  const q = query(staffCollection, where("parentId", "==", id));
+  const childrenSnapshot = await getDocs(q);
+
+  // 3. Update their parentId to null
+  if (!childrenSnapshot.empty) {
+    childrenSnapshot.forEach(childDoc => {
+      const childRef = doc(db, "staff", childDoc.id);
+      batch.update(childRef, { parentId: null });
+    });
   }
   
-  // Ensure the updated object remains fully formed and consistent
-  const updatedMember = { 
-      ...staffArray[memberIndex], 
-      ...item,
-      id, // ensure id remains
-      parentId: item.parentId === undefined ? staffArray[memberIndex].parentId : item.parentId ?? null,
-  };
-
-  const newStaffArray = [...staffArray];
-  newStaffArray[memberIndex] = updatedMember;
-
-  return await updateDoc(staffDocRef, { staff: newStaffArray });
-};
-
-export const deleteStaffMember = async (id: number) => {
-    const staffArray = await getStaffArray();
-    const newStaffArray = staffArray.filter(member => member.id !== id);
-    // After deleting, check for any children that pointed to the deleted member and nullify their parentId
-    const updatedStaffArray = newStaffArray.map(member => {
-        if (member.parentId === id) {
-            return { ...member, parentId: null };
-        }
-        return member;
-    });
-    return await updateDoc(staffDocRef, { staff: updatedStaffArray });
+  // 4. Commit all operations as a single batch
+  return await batch.commit();
 };

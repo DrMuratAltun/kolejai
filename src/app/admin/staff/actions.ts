@@ -6,15 +6,17 @@ import { addStaffMember, updateStaffMember, deleteStaffMember, type StaffMemberD
 import { revalidatePath } from 'next/cache';
 import { uploadFile } from '@/lib/firebase-storage';
 
+// Schema now expects string IDs and handles parentId correctly
 const serverFormSchema = z.object({
-  id: z.coerce.number().optional(),
+  id: z.string().optional(),
   name: z.string().min(1, "İsim gerekli"),
   title: z.string().min(1, "Rol/Unvan gerekli"),
   department: z.string().min(1, "Departman gerekli"),
   description: z.string().min(1, "Biyografi gerekli"),
   photo: z.string().url("Geçerli bir resim URL'si olmalı."),
   aiHint: z.string().optional(),
-  parentId: z.string().transform(val => val === 'none' || !val ? null : Number(val)).nullable(),
+  // parentId will be the document ID (string) or null
+  parentId: z.string().transform(val => val === 'none' || !val ? null : val).nullable(),
 });
 
 export async function handleStaffFormSubmit(prevState: any, formData: FormData) {
@@ -68,7 +70,7 @@ export async function handleStaffFormSubmit(prevState: any, formData: FormData) 
   }
 }
 
-export async function deleteStaffMemberAction(id: number) {
+export async function deleteStaffMemberAction(id: string) {
     if (!id) {
         return { success: false, error: 'ID gerekli.' };
     }

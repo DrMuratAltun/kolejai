@@ -26,8 +26,9 @@ interface StaffFormDialogProps {
   allStaffMembers: StaffMember[];
 }
 
+// Schema now uses string for id and parentId
 const formSchema = z.object({
-  id: z.number().optional(),
+  id: z.string().optional(),
   name: z.string().min(1, "İsim gerekli"),
   title: z.string().min(1, "Rol/Unvan gerekli"),
   department: z.string().min(1, "Departman gerekli"),
@@ -59,7 +60,7 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
         if (editingStaff) {
             form.reset({
                 ...editingStaff,
-                parentId: editingStaff.parentId?.toString() || 'none'
+                parentId: editingStaff.parentId || 'none'
             });
             setImagePreview(editingStaff.photo);
         } else {
@@ -138,7 +139,7 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
                       {allStaffMembers
                         .filter(member => member.id !== editingStaff?.id)
                         .map(member => (
-                          <SelectItem key={member.id} value={String(member.id)}>{member.name}</SelectItem>
+                          <SelectItem key={member.id} value={member.id}>{member.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>

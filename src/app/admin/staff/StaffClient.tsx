@@ -38,7 +38,8 @@ export default function StaffClient({ initialStaffMembers }: { initialStaffMembe
     setIsDialogOpen(true);
   };
   
-  const handleDelete = async (id: number) => {
+  // ID is now a string
+  const handleDelete = async (id: string) => {
     const result = await deleteStaffMemberAction(id);
     if (result.success) {
       toast({

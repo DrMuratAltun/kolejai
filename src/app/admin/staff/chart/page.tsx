@@ -12,7 +12,8 @@ export interface StaffNode extends StaffMember {
 
 export default async function OrgChartPage() {
   const staff = await getStaffMembers();
-  const staffMap = new Map<number, StaffNode>();
+  // Map key is now string (document ID)
+  const staffMap = new Map<string, StaffNode>();
   const rootNodes: StaffNode[] = [];
 
   staff.forEach(member => {
