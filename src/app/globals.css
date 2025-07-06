@@ -31,6 +31,13 @@
     --feature-4: 196 92% 52%;
     --feature-5: 262 84% 58%;
     --feature-6: 48 96% 53%;
+
+    --sidebar: 220 14% 96%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-accent: 220 13% 91%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-ring: 221 83% 53%;
   }
   .dark {
     --background: 222 47% 11%;
@@ -59,6 +66,13 @@
     --feature-4: 196 80% 60%;
     --feature-5: 262 80% 70%;
     --feature-6: 48 90% 60%;
+
+    --sidebar: 222 47% 11%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 17%;
+    --sidebar-accent: 217 33% 22%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-ring: 221 83% 53%;
   }
 }
 
