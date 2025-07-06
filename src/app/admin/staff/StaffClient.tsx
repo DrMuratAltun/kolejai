@@ -88,15 +88,15 @@ export default function StaffClient({ initialStaffMembers }: { initialStaffMembe
                   <TableCell className="font-medium">
                     <div className='flex items-center gap-3'>
                       <Avatar>
-                        <AvatarImage src={item.image} alt={item.name} />
-                        <AvatarFallback>{item.name ? item.name.split(' ').map(n => n[0]).join('') : 'P'}</AvatarFallback>
+                        <AvatarImage src={item.image} alt={item.name || 'Personel'} />
+                        <AvatarFallback>{item.name?.substring(0, 2).toUpperCase() || 'P'}</AvatarFallback>
                       </Avatar>
                       {item.name}
                     </div>
                   </TableCell>
                   <TableCell>{item.role}</TableCell>
                   <TableCell>{item.department}</TableCell>
-                   <TableCell>{initialStaffMembers.find(m => m.id === item.managerId)?.name || '-'}</TableCell>
+                   <TableCell>{item.managerId ? 'Var' : '-'}</TableCell>
                   <TableCell className="text-right">
                     <AlertDialog>
                       <DropdownMenu>
