@@ -15,8 +15,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Loader2 } from 'lucide-react';
+import { CalendarIcon, Loader2 } from 'lucide-react';
 import AiTextEditor from '@/components/ai/AiTextEditor';
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { tr } from "date-fns/locale";
+import { cn } from "@/lib/utils";
+
 
 interface NewsFormDialogProps {
   isOpen: boolean;
@@ -47,7 +53,7 @@ export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialo
   const form = useForm<NewsFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: '', description: '', type: 'Haber', date: new Date().toLocaleDateString('fr-CA'), // YYYY-MM-DD
+      title: '', description: '', type: 'Haber', date: format(new Date(), 'yyyy-MM-dd'),
       image: 'https://placehold.co/600x400.png', aiHint: '', href: '#'
     }
   });
@@ -61,7 +67,7 @@ export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialo
             setImagePreview(editingNews.image);
         } else {
             form.reset({
-                id: undefined, title: '', description: '', type: 'Haber', date: new Date().toLocaleDateString('fr-CA'),
+                id: undefined, title: '', description: '', type: 'Haber', date: format(new Date(), 'yyyy-MM-dd'),
                 image: 'https://placehold.co/600x400.png', aiHint: '', href: '#'
             });
             setImagePreview('https://placehold.co/600x400.png');
@@ -152,13 +158,44 @@ export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialo
                   <FormMessage />
                 </FormItem>
               )} />
-              <FormField control={form.control} name="date" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tarih (GG.AA.YYYY)</FormLabel>
-                  <FormControl><Input placeholder="örn: 15.06.2024" {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
+               <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col pt-2">
+                    <FormLabel>Yayın Tarihi</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-full pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(new Date(field.value), "PPP", { locale: tr })
+                            ) : (
+                              <span>Bir tarih seçin</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value ? new Date(field.value) : undefined}
+                          onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
             
             <FormItem>
