@@ -1,21 +1,22 @@
 "use client";
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { NewsItem } from '@/services/newsService';
 import { useToast } from "@/hooks/use-toast";
 import { handleFormSubmit } from './actions';
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useForm } from 'react-hook-form';
+import Image from 'next/image';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Loader2 } from 'lucide-react';
+import AiTextEditor from '@/components/ai/AiTextEditor';
 
 interface NewsFormDialogProps {
   isOpen: boolean;
@@ -29,7 +30,9 @@ const formSchema = z.object({
   description: z.string().min(1, "Açıklama gerekli"),
   type: z.enum(["Haber", "Etkinlik", "Duyuru"], { required_error: "Tür seçimi gerekli" }),
   date: z.string().min(1, "Tarih gerekli"),
-  image: z.string().url({ message: "Geçerli bir resim URL'si giriniz." }),
+  image: z.any().refine(val => (typeof val === 'string' && val.length > 0) || (typeof window !== 'undefined' && val instanceof File), {
+    message: "Resim gerekli.",
+  }),
   aiHint: z.string().optional().default(''),
   href: z.string().default('#'),
 });
@@ -39,6 +42,7 @@ type NewsFormValues = z.infer<typeof formSchema>;
 export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialogProps) {
   const { toast } = useToast();
   const [isPending, startTransition] = React.useTransition();
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   
   const form = useForm<NewsFormValues>({
     resolver: zodResolver(formSchema),
@@ -54,20 +58,27 @@ export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialo
             form.reset({
                 ...editingNews,
             });
+            setImagePreview(editingNews.image);
         } else {
             form.reset({
                 id: undefined, title: '', description: '', type: 'Haber', date: new Date().toLocaleDateString('fr-CA'),
                 image: 'https://placehold.co/600x400.png', aiHint: '', href: '#'
             });
+            setImagePreview('https://placehold.co/600x400.png');
         }
     }
   }, [editingNews, isOpen, form]);
 
   const onSubmit = (values: NewsFormValues) => {
     const formData = new FormData();
+    // Append all values to FormData, including the file object
     Object.entries(values).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        formData.append(key, value as string);
+        if (key === 'image' && value instanceof File) {
+          formData.append(key, value, value.name);
+        } else if (typeof value === 'string') {
+          formData.append(key, value);
+        }
       }
     });
 
@@ -89,9 +100,21 @@ export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialo
     });
   };
 
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      form.setValue('image', file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[625px]">
+      <DialogContent className="sm:max-w-[800px]">
         <DialogHeader>
           <DialogTitle>{editingNews ? 'Kaydı Düzenle' : 'Yeni Kayıt Ekle'}</DialogTitle>
           <DialogDescription>Haber, etkinlik veya duyuru bilgilerini buradan yönetin.</DialogDescription>
@@ -99,7 +122,21 @@ export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialo
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField control={form.control} name="title" render={({ field }) => (<FormItem><FormLabel>Başlık</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-            <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Açıklama</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
+            
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Açıklama</FormLabel>
+                  <FormControl>
+                    <AiTextEditor form={form} fieldName="description" initialValue={field.value} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="type" render={({ field }) => (
                 <FormItem>
@@ -123,7 +160,20 @@ export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialo
                 </FormItem>
               )} />
             </div>
-            <FormField control={form.control} name="image" render={({ field }) => (<FormItem><FormLabel>Resim URL</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+            
+            <FormItem>
+              <FormLabel>Görsel</FormLabel>
+              <FormControl>
+                <Input type="file" accept="image/*" onChange={handleImageChange} />
+              </FormControl>
+              {imagePreview && (
+                <div className="mt-4">
+                  <Image src={imagePreview} alt="Görsel Önizleme" width={200} height={120} className="rounded-md object-cover"/>
+                </div>
+              )}
+              <FormMessage />
+            </FormItem>
+
             <FormField control={form.control} name="aiHint" render={({ field }) => (<FormItem><FormLabel>AI İpucu (isteğe bağlı)</FormLabel><FormControl><Input {...field} placeholder="e.g. robotics competition" /></FormControl><FormMessage /></FormItem>)} />
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={() => setIsOpen(false)}>İptal</Button>

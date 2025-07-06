@@ -3,6 +3,7 @@
 import { z } from 'zod';
 import { addNewsItem, updateNewsItem, deleteNewsItem } from '@/services/newsService';
 import { revalidatePath } from 'next/cache';
+import { uploadFile } from '@/lib/firebase-storage';
 
 const formSchema = z.object({
   id: z.string().optional(),
@@ -10,7 +11,7 @@ const formSchema = z.object({
   description: z.string().min(1, "Açıklama gerekli"),
   type: z.enum(["Haber", "Etkinlik", "Duyuru"]),
   date: z.string().min(1, "Tarih gerekli"),
-  image: z.string().url("Geçerli bir URL olmalı"),
+  image: z.any(),
   aiHint: z.string().optional(),
   href: z.string().default('#'),
 });
@@ -18,11 +19,21 @@ const formSchema = z.object({
 export async function handleFormSubmit(prevState: any, formData: FormData) {
   const rawData = Object.fromEntries(formData.entries());
   
-  // Handle empty optional fields
   if (rawData.id === '') delete rawData.id;
   if (rawData.aiHint === '') delete rawData.aiHint;
 
-  const parsed = formSchema.safeParse(rawData);
+  let imageUrl = rawData.image as string | File;
+  if (rawData.image instanceof File) {
+      try {
+          imageUrl = await uploadFile(rawData.image, 'news');
+      } catch (e: any) {
+          return { success: false, error: 'Resim yüklenirken bir hata oluştu: ' + e.message };
+      }
+  }
+
+  const dataToParse = { ...rawData, image: imageUrl };
+
+  const parsed = formSchema.safeParse(dataToParse);
 
   if (!parsed.success) {
     return {
