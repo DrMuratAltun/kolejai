@@ -2,8 +2,8 @@
 {
   "indexes": [
     {
-      "collectionGroup": "pages",
-      "queryScope": "COLLECTION_GROUP",
+      "collectionId": "pages",
+      "queryScope": "COLLECTION",
       "fields": [
         {
           "fieldPath": "showInMenu",
@@ -11,10 +11,6 @@
         },
         {
           "fieldPath": "menuOrder",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "__name__",
           "order": "ASCENDING"
         }
       ]
