@@ -85,7 +85,7 @@ const PageRow = ({ page, level }: { page: PageNode, level: number }) => {
               <DropdownMenuItem asChild>
                 <Link href={`/admin/pages/edit/${page.id}`}>
                   <Pencil className="mr-2 h-4 w-4" />
-                  Düzenle & Sırala
+                  Düzenle
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -108,7 +108,7 @@ export default async function PagesListPage() {
         <div>
           <h1 className="text-3xl font-bold">Sayfa & Menü Yönetimi</h1>
           <p className="text-muted-foreground">
-            Sayfalarınızı yönetin ve menü hiyerarşisini düzenleyin.
+            Web sitenizdeki sayfaları ve bu sayfaların menüdeki hiyerarşik yapısını buradan yönetin.
           </p>
         </div>
         <Button asChild>
@@ -117,9 +117,9 @@ export default async function PagesListPage() {
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Sayfa Hiyerarşisi</CardTitle>
+          <CardTitle>Sayfalar ve Menü Yapısı</CardTitle>
           <CardDescription>
-            Menüdeki ana ve alt sayfaları buradan görebilirsiniz. Sıralamayı ve hiyerarşiyi düzenlemek için bir sayfanın "Düzenle & Sırala" butonuna tıklayın.
+            Bir sayfanın içeriğini, menüdeki yerini ve sırasını değiştirmek için 'Düzenle' butonuna tıklayın.
           </CardDescription>
         </CardHeader>
         <CardContent>
