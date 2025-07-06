@@ -96,10 +96,21 @@ export const getStaffMembers = async (): Promise<StaffMember[]> => {
 export const addStaffMember = async (item: StaffMemberData) => {
     const staffArray = await getStaffArray();
     const maxId = staffArray.reduce((max, member) => (member.id > max ? member.id : max), 0);
+    
+    // Defensively and explicitly construct the new member object.
+    // This ensures that no fields are 'undefined' and accidentally omitted when writing to Firestore,
+    // which was the likely cause of the "add new" operation creating a malformed record.
     const newMember: StaffMember = {
-        ...item,
         id: maxId + 1,
+        name: item.name,
+        title: item.title,
+        department: item.department,
+        description: item.description,
+        photo: item.photo,
+        aiHint: item.aiHint || '', // Ensure aiHint is saved as an empty string if not provided.
+        parentId: item.parentId === undefined ? null : item.parentId, // Ensure parentId is explicitly null if undefined.
     };
+
     const newStaffArray = [...staffArray, newMember];
     return await updateDoc(staffDocRef, { staff: newStaffArray });
 };
