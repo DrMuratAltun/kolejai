@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -31,7 +30,7 @@ const menuItems = [
   { href: "/admin/chatbot", label: "Yönetici Chatbot", icon: Bot },
   { href: "/admin/news", label: "Haber Yönetimi", icon: Newspaper },
   { href: "/admin/staff", label: "Kadro Yönetimi", icon: Users },
-  { href: "#", label: "Galeri Yönetimi", icon: GalleryHorizontal },
+  { href: "/admin/gallery", label: "Galeri Yönetimi", icon: GalleryHorizontal },
   { href: "#", label: "Gelen Formlar", icon: Mail },
 ];
 
