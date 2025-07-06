@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useForm } from 'react-hook-form';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
@@ -17,12 +18,23 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { CalendarIcon, Loader2, Sparkles } from 'lucide-react';
-import AiTextEditor from '@/components/ai/AiTextEditor';
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { Skeleton } from '@/components/ui/skeleton';
+
+const AiTextEditor = dynamic(() => import('@/components/ai/AiTextEditor'), {
+  ssr: false,
+  loading: () => (
+      <div className="space-y-2">
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-[200px] w-full" />
+        <Skeleton className="h-10 w-full" />
+      </div>
+  ),
+});
 
 // Helper to convert Data URL to File object
 const dataURLtoFile = (dataurl: string, filename: string): File => {
@@ -193,6 +205,7 @@ export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialo
             title: "Hata!",
             description: "Görsel üretilirken bir hata oluştu. Lütfen tekrar deneyin.",
         });
+        setImagePreview('https://placehold.co/600x400.png'); // Show placeholder on error
     } finally {
         setIsGeneratingImage(false);
     }
@@ -309,8 +322,14 @@ export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialo
                       </div>
                     )}
                     {!isGeneratingImage && imagePreview && (
-                      <div className="mt-4">
-                        <Image src={imagePreview} alt="Görsel Önizleme" width={200} height={120} className="rounded-md object-cover"/>
+                      <div className="mt-4 relative w-[200px] h-[120px]">
+                        <Image 
+                          src={imagePreview} 
+                          alt="Görsel Önizleme" 
+                          fill
+                          sizes="200px"
+                          className="rounded-md object-cover"
+                        />
                       </div>
                     )}
                     <FormMessage />
@@ -319,7 +338,7 @@ export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialo
               />
             </div>
             
-            <DialogFooter className="p-6 border-t flex-shrink-0">
+            <DialogFooter className="p-6 border-t flex-shrink-0 bg-background">
               <Button type="button" variant="ghost" onClick={() => setIsOpen(false)}>İptal</Button>
               <Button type="submit" disabled={isPending || isGeneratingImage}>
                 {(isPending || isGeneratingImage) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

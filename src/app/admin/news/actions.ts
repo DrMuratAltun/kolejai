@@ -5,13 +5,15 @@ import { addNewsItem, updateNewsItem, deleteNewsItem } from '@/services/newsServ
 import { revalidatePath } from 'next/cache';
 import { uploadFile } from '@/lib/firebase-storage';
 
-const formSchema = z.object({
+// This schema is used on the server, after the image has been processed.
+// The image field must be a URL string.
+const serverFormSchema = z.object({
   id: z.string().optional(),
   title: z.string().min(1, "Başlık gerekli"),
   description: z.string().min(1, "Açıklama gerekli"),
   type: z.enum(["Haber", "Etkinlik", "Duyuru"]),
   date: z.string().min(1, "Tarih gerekli"),
-  image: z.any(),
+  image: z.string().url("Geçerli bir resim URL'si olmalı."),
   aiHint: z.string().optional(),
   href: z.string().default('#'),
 });
@@ -22,18 +24,25 @@ export async function handleFormSubmit(prevState: any, formData: FormData) {
   if (rawData.id === '') delete rawData.id;
   if (rawData.aiHint === '') delete rawData.aiHint;
 
-  let imageUrl = rawData.image as string | File;
-  if (rawData.image instanceof File) {
+  let imageUrl: string;
+  const imageValue = rawData.image as File | string;
+
+  // Check if a new file has been uploaded. A File object will have a 'size' property.
+  if (imageValue instanceof File && imageValue.size > 0) {
       try {
-          imageUrl = await uploadFile(rawData.image, 'news');
+          imageUrl = await uploadFile(imageValue, 'news');
       } catch (e: any) {
+          console.error("Image upload failed:", e);
           return { success: false, error: 'Resim yüklenirken bir hata oluştu: ' + e.message };
       }
+  } else {
+      // No new file, so it must be the existing string URL.
+      imageUrl = imageValue as string;
   }
 
   const dataToParse = { ...rawData, image: imageUrl };
 
-  const parsed = formSchema.safeParse(dataToParse);
+  const parsed = serverFormSchema.safeParse(dataToParse);
 
   if (!parsed.success) {
     return {
@@ -55,9 +64,10 @@ export async function handleFormSubmit(prevState: any, formData: FormData) {
 
     return { success: true, error: null };
   } catch (e: any) {
+    console.error("Firestore operation failed:", e);
     return {
         success: false,
-        error: e.message
+        error: "Veritabanı işlemi sırasında bir hata oluştu: " + e.message
     };
   }
 }
