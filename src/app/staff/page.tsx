@@ -8,17 +8,20 @@ import { getStaffMembers, StaffMember } from "@/services/staffService";
 // Helper function to build the hierarchy
 const buildHierarchy = (staff: StaffMember[]) => {
   const staffMap = new Map<string, StaffMember & { children: StaffMember[] }>();
-  const rootStaff: StaffMember[] = [];
   
   staff.forEach(s => {
     staffMap.set(s.id, { ...s, children: [] });
   });
 
   const managers: (StaffMember & { children: StaffMember[] })[] = [];
+  const rootStaff: StaffMember[] = [];
 
   staff.forEach(s => {
     if (s.parentId && staffMap.has(s.parentId)) {
-      staffMap.get(s.parentId)!.children.push(s);
+        const parent = staffMap.get(s.parentId);
+        if (parent) {
+            parent.children.push(staffMap.get(s.id)!);
+        }
     } else {
       rootStaff.push(s);
     }
@@ -47,14 +50,20 @@ const groupRootStaffByDepartment = (staff: StaffMember[]) => {
 function StaffCard({ member }: { member: StaffMember }) {
   return (
     <div className="relative rounded-xl overflow-hidden shadow-lg group transform transition-transform duration-300 hover:-translate-y-2 h-full">
-      <Image
-        src={member.photo}
-        alt={member.name}
-        width={400}
-        height={400}
-        className="w-full h-full object-cover"
-        data-ai-hint={member.aiHint}
-      />
+      {member.photo ? (
+        <Image
+          src={member.photo}
+          alt={member.name}
+          width={400}
+          height={400}
+          className="w-full h-full object-cover"
+          data-ai-hint={member.aiHint}
+        />
+      ) : (
+        <div className="w-full h-full bg-secondary flex items-center justify-center">
+            <Users className="h-24 w-24 text-muted-foreground" />
+        </div>
+      )}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
       <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
         <h3 className="text-xl font-bold">{member.name}</h3>

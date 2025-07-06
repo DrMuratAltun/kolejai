@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Loader2 } from 'lucide-react';
+import { Loader2, User } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface StaffFormDialogProps {
@@ -26,16 +26,13 @@ interface StaffFormDialogProps {
   allStaffMembers: StaffMember[];
 }
 
-// Schema now uses string for id and parentId
 const formSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, "İsim gerekli"),
   title: z.string().min(1, "Rol/Unvan gerekli"),
   department: z.string().min(1, "Departman gerekli"),
   description: z.string().min(1, "Biyografi gerekli"),
-  photo: z.any().refine(val => (typeof val === 'string' && val.length > 0) || (typeof window !== 'undefined' && val instanceof File), {
-    message: "Resim gerekli.",
-  }),
+  photo: z.any().optional(),
   aiHint: z.string().optional().default(''),
   parentId: z.string().optional(),
 });
@@ -51,7 +48,8 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '', title: '', department: '', description: '',
-      photo: 'https://placehold.co/400x400.png', aiHint: '', parentId: 'none'
+      photo: '', 
+      aiHint: '', parentId: 'none'
     }
   });
 
@@ -60,15 +58,17 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
         if (editingStaff) {
             form.reset({
                 ...editingStaff,
+                photo: editingStaff.photo || '',
                 parentId: editingStaff.parentId || 'none'
             });
             setImagePreview(editingStaff.photo);
         } else {
             form.reset({
                 id: undefined, name: '', title: '', department: '', description: '',
-                photo: 'https://placehold.co/400x400.png', aiHint: '', parentId: 'none'
+                photo: '',
+                aiHint: '', parentId: 'none'
             });
-            setImagePreview('https://placehold.co/400x400.png');
+            setImagePreview(null);
         }
     }
   }, [editingStaff, isOpen, form]);
@@ -158,17 +158,19 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
                       <FormControl>
                         <Input type="file" accept="image/*" onChange={handleImageChange} disabled={isPending} />
                       </FormControl>
-                      {imagePreview && (
-                        <div className="mt-4 relative w-32 h-32">
-                          <Image 
-                            src={imagePreview} 
-                            alt="Görsel Önizleme" 
-                            fill
-                            sizes="128px"
-                            className="rounded-full object-cover"
-                          />
-                        </div>
-                      )}
+                      <div className="mt-4 relative w-32 h-32 rounded-full overflow-hidden bg-muted flex items-center justify-center">
+                          {imagePreview ? (
+                            <Image 
+                              src={imagePreview} 
+                              alt="Görsel Önizleme" 
+                              fill
+                              sizes="128px"
+                              className="object-cover"
+                            />
+                          ) : (
+                             <User className="h-16 w-16 text-muted-foreground" />
+                          )}
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}

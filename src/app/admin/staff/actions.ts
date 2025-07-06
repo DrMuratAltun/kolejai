@@ -12,7 +12,7 @@ const serverFormSchema = z.object({
   title: z.string().min(1, "Rol/Unvan gerekli"),
   department: z.string().min(1, "Departman gerekli"),
   description: z.string().min(1, "Biyografi gerekli"),
-  photo: z.string().url("Geçerli bir resim URL'si olmalı."),
+  photo: z.string().optional(),
   aiHint: z.string().optional(),
   parentId: z.string().transform(val => val === 'none' || !val ? null : val).nullable(),
 });
@@ -22,7 +22,7 @@ export async function handleStaffFormSubmit(prevState: any, formData: FormData) 
   
   if (rawData.id === '') delete rawData.id;
 
-  let imageUrl: string;
+  let imageUrl: string = rawData.photo as string;
   const imageValue = rawData.photo as File | string;
 
   if (imageValue instanceof File && imageValue.size > 0) {
@@ -31,8 +31,6 @@ export async function handleStaffFormSubmit(prevState: any, formData: FormData) 
       } catch (e: any) {
           return { success: false, error: 'Resim yüklenirken bir hata oluştu: ' + e.message };
       }
-  } else {
-      imageUrl = imageValue as string;
   }
   
   const dataToParse = { ...rawData, photo: imageUrl };
@@ -50,7 +48,7 @@ export async function handleStaffFormSubmit(prevState: any, formData: FormData) 
     const { id, ...data } = parsed.data;
 
     if (id) {
-      await updateStaffMember(id, data);
+      await updateStaffMember(id, data as Partial<StaffMemberData>);
     } else {
       await addStaffMember(data as StaffMemberData);
     }
