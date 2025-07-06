@@ -3,7 +3,7 @@
   "indexes": [
     {
       "collectionGroup": "pages",
-      "queryScope": "COLLECTION",
+      "queryScope": "COLLECTION_GROUP",
       "fields": [
         {
           "fieldPath": "showInMenu",
