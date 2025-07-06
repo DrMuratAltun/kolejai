@@ -23,17 +23,24 @@ const staffCollection = collection(db, "staff");
 
 const fromFirestore = (snapshot: any): StaffMember => {
   const data = snapshot.data() || {};
-  const createdAtTimestamp = data.createdAt;
+  
+  let createdAtISO: string | null = null;
+  // This is the key change: only call toDate() if it's a function on a valid object.
+  // This prevents crashes if createdAt is missing, null, or not a Firestore Timestamp.
+  if (data.createdAt && typeof data.createdAt.toDate === 'function') {
+      createdAtISO = (data.createdAt.toDate() as Date).toISOString();
+  }
+
   return {
     id: snapshot.id,
-    name: data.name || '',
-    role: data.role || '',
-    department: data.department || '',
-    bio: data.bio || '',
-    image: data.image || 'https://placehold.co/400x400.png',
-    aiHint: data.aiHint || '',
-    managerId: data.managerId || null,
-    createdAt: createdAtTimestamp ? (createdAtTimestamp.toDate() as Date).toISOString() : null,
+    name: typeof data.name === 'string' ? data.name : '',
+    role: typeof data.role === 'string' ? data.role : '',
+    department: typeof data.department === 'string' ? data.department : '',
+    bio: typeof data.bio === 'string' ? data.bio : '',
+    image: typeof data.image === 'string' && data.image ? data.image : 'https://placehold.co/400x400.png',
+    aiHint: typeof data.aiHint === 'string' ? data.aiHint : '',
+    managerId: typeof data.managerId === 'string' ? data.managerId : null,
+    createdAt: createdAtISO,
   };
 };
 
@@ -50,11 +57,11 @@ export const getStaffMembers = async (): Promise<StaffMember[]> => {
     snapshot.docs.forEach(doc => {
       try {
         // Attempt to parse each document individually.
+        // fromFirestore is now robust enough to handle malformed data without crashing.
         const member = fromFirestore(doc);
         members.push(member);
       } catch (e) {
-        // If a single document is malformed, log the error and skip it
-        // instead of crashing the entire page render.
+        // This catch is an extra safety layer, but fromFirestore should prevent most errors.
         console.error(`Skipping malformed staff document with ID: ${doc.id}`, e);
       }
     });
