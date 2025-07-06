@@ -1,5 +1,5 @@
 import { getPageById, getPages } from "@/services/pageService"
-import PageEditor from "../../PageEditor";
+import MenuItemEditor from "../../MenuItemEditor";
 import { notFound } from "next/navigation";
 
 export default async function EditPage({ params }: { params: { id: string } }) {
@@ -13,6 +13,6 @@ export default async function EditPage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <PageEditor page={page} allPages={allPages} />
+    <MenuItemEditor page={page} allPages={allPages} />
   );
 }

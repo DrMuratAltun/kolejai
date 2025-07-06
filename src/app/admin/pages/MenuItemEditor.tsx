@@ -145,7 +145,6 @@ export default function MenuItemEditor({ page, allPages }: MenuItemEditorProps) 
       <form action={formAction}>
         <input type="hidden" name="id" value={page?.id || ''} />
         <input type="hidden" name="htmlContent" value={htmlContent} />
-        <input type="hidden" name="type" value={menuItemType} />
         
         <Card>
             <CardHeader>
@@ -160,7 +159,7 @@ export default function MenuItemEditor({ page, allPages }: MenuItemEditorProps) 
                     <h3 className="text-lg font-medium text-foreground">Öğe Tipi ve Başlığı</h3>
                      <div className="space-y-2">
                         <Label>Menü Öğesi Tipi</Label>
-                        <RadioGroup name="type" defaultValue={menuItemType} onValueChange={(value) => setMenuItemType(value as Page['type'])} className="flex gap-4">
+                        <RadioGroup name="type" value={menuItemType} onValueChange={(value) => setMenuItemType(value as Page['type'])} className="flex gap-4">
                             <div className="flex items-center space-x-2"><RadioGroupItem value="page" id="r1" /><Label htmlFor="r1">Sayfa (İçerik var)</Label></div>
                             <div className="flex items-center space-x-2"><RadioGroupItem value="link" id="r2" /><Label htmlFor="r2">Bağlantı (URL)</Label></div>
                             <div className="flex items-center space-x-2"><RadioGroupItem value="container" id="r3" /><Label htmlFor="r3">Kapsayıcı (Alt menüler için)</Label></div>

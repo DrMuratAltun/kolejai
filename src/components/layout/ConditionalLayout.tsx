@@ -4,15 +4,14 @@ import { usePathname } from 'next/navigation';
 import HeaderClient from "@/components/layout/HeaderClient";
 import Footer from "@/components/layout/Footer";
 import VisitorChatbot from '@/components/chat/VisitorChatbot';
-import type { NavItem, NavLink } from './HeaderClient';
+import type { NavItem } from './HeaderClient';
 
 interface ConditionalLayoutProps {
   children: React.ReactNode;
-  staticLinks: NavLink[];
   dynamicNavItems: NavItem[];
 }
 
-export default function ConditionalLayout({ children, staticLinks, dynamicNavItems }: ConditionalLayoutProps) {
+export default function ConditionalLayout({ children, dynamicNavItems }: ConditionalLayoutProps) {
     const pathname = usePathname();
     const isAdminPage = pathname.startsWith('/admin');
 
@@ -22,7 +21,7 @@ export default function ConditionalLayout({ children, staticLinks, dynamicNavIte
 
     return (
         <div className="flex flex-col min-h-screen">
-          <HeaderClient staticLinks={staticLinks} dynamicNavItems={dynamicNavItems} />
+          <HeaderClient dynamicNavItems={dynamicNavItems} />
           <div className="flex-grow">
             <main>{children}</main>
           </div>

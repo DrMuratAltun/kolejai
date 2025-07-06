@@ -1,19 +1,39 @@
 'use server';
 
 import { z } from 'zod';
-import { addPage, updatePage, PageData } from '@/services/pageService';
+import { addPage, updatePage, PageData, getPages } from '@/services/pageService';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-const formSchema = z.object({
+const baseSchema = z.object({
   id: z.string().optional(),
   title: z.string().min(1, 'Başlık gerekli'),
-  slug: z.string().min(1, 'URL adresi gerekli'),
-  htmlContent: z.string().min(1, 'Sayfa içeriği boş olamaz'),
   showInMenu: z.preprocess((val) => val === 'on', z.boolean()).optional().default(false),
   parentId: z.string().optional(),
   menuOrder: z.coerce.number().default(0),
 });
+
+const formSchema = z.discriminatedUnion("type", [
+  baseSchema.extend({
+    type: z.literal('page'),
+    slug: z.string().min(1, 'URL adresi (slug) gerekli'),
+    htmlContent: z.string().min(1, 'Sayfa içeriği boş olamaz'),
+    href: z.string().optional(),
+  }),
+  baseSchema.extend({
+    type: z.literal('link'),
+    href: z.string().min(1, 'URL adresi gerekli'),
+    slug: z.string().optional(),
+    htmlContent: z.string().optional(),
+  }),
+  baseSchema.extend({
+    type: z.literal('container'),
+    slug: z.string().optional(),
+    href: z.string().optional(),
+    htmlContent: z.string().optional(),
+  }),
+]);
+
 
 export async function savePageAction(prevState: any, formData: FormData) {
   const rawData = Object.fromEntries(formData.entries());
@@ -24,7 +44,7 @@ export async function savePageAction(prevState: any, formData: FormData) {
   if (!parsed.success) {
     return {
       success: false,
-      error: parsed.error.errors.map((e) => e.message).join(', '),
+      error: parsed.error.errors.map((e) => `${e.path.join('.')}: ${e.message}`).join(', '),
     };
   }
 
@@ -52,6 +72,22 @@ export async function savePageAction(prevState: any, formData: FormData) {
     };
   }
   
-  // Redirect after successful save
   redirect('/admin/pages');
+}
+
+
+export async function updatePageOrderAndParentAction(pageId: string, parentId: string | null) {
+  noStore();
+  try {
+    // This is a simplified version. A real implementation would need to handle re-ordering of siblings.
+    const pageRef = doc(db, "pages", pageId);
+    await updateDoc(pageRef, { parentId: parentId });
+
+    revalidatePath('/admin/pages');
+    revalidatePath('/');
+    return { success: true };
+  } catch (e: any) {
+    console.error("Error updating page parent:", e);
+    return { success: false, error: e.message };
+  }
 }

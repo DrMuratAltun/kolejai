@@ -34,8 +34,13 @@ export interface NavLink {
 }
 
 interface HeaderClientProps {
-    staticLinks: NavLink[];
     dynamicNavItems: NavItem[];
+}
+
+const getHref = (page: Page): string => {
+    if (page.type === 'link') return page.href || '#';
+    if (page.type === 'page') return `/p/${page.slug}`;
+    return '#'; // For containers
 }
 
 const ListItem = React.forwardRef<
@@ -65,7 +70,7 @@ const ListItem = React.forwardRef<
 ListItem.displayName = "ListItem";
 
 
-export default function HeaderClient({ staticLinks, dynamicNavItems }: HeaderClientProps) {
+export default function HeaderClient({ dynamicNavItems }: HeaderClientProps) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const isHomePage = pathname === '/';
@@ -90,16 +95,6 @@ export default function HeaderClient({ staticLinks, dynamicNavItems }: HeaderCli
           <div className="hidden md:block">
             <NavigationMenu>
               <NavigationMenuList>
-                {staticLinks.map((link) => (
-                  <NavigationMenuItem key={link.href}>
-                    <NavigationMenuLink asChild>
-                      <Link href={link.href} className={cn(navigationMenuTriggerStyle(), isHomePage && "bg-transparent text-white hover:bg-white/10")}>
-                        {link.title}
-                      </Link>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                ))}
-                
                 {dynamicNavItems.map(item => (
                   <NavigationMenuItem key={item.page.id}>
                     {item.children.length > 0 ? (
@@ -110,7 +105,7 @@ export default function HeaderClient({ staticLinks, dynamicNavItems }: HeaderCli
                         <NavigationMenuContent>
                           <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] grid-cols-1">
                             {item.children.map(childItem => (
-                               <ListItem key={childItem.page.id} href={`/p/${childItem.page.slug}`} title={childItem.page.title}>
+                               <ListItem key={childItem.page.id} href={getHref(childItem.page)} title={childItem.page.title}>
                                  {/* Description could go here if available */}
                                </ListItem>
                             ))}
@@ -119,7 +114,7 @@ export default function HeaderClient({ staticLinks, dynamicNavItems }: HeaderCli
                       </>
                     ) : (
                       <NavigationMenuLink asChild>
-                        <Link href={`/p/${item.page.slug}`} className={cn(navigationMenuTriggerStyle(), isHomePage && "bg-transparent text-white hover:bg-white/10")}>
+                        <Link href={getHref(item.page)} className={cn(navigationMenuTriggerStyle(), isHomePage && "bg-transparent text-white hover:bg-white/10")}>
                           {item.page.title}
                         </Link>
                       </NavigationMenuLink>
@@ -146,20 +141,15 @@ export default function HeaderClient({ staticLinks, dynamicNavItems }: HeaderCli
         </div>
         <CollapsibleContent className="md:hidden animate-in fade-in-20 slide-in-from-top-4 duration-300">
           <nav className="flex flex-col gap-1 border-t bg-background p-4">
-             {staticLinks.map((link) => (
-              <Link key={link.href} href={link.href} className="w-full rounded-md p-3 text-left font-medium transition-colors hover:bg-accent hover:text-accent-foreground" onClick={() => setIsOpen(false)}>
-                {link.title}
-              </Link>
-            ))}
             {dynamicNavItems.map((item) => (
               <React.Fragment key={item.page.id}>
-                <Link href={`/p/${item.page.slug}`} className="w-full rounded-md p-3 text-left font-medium transition-colors hover:bg-accent hover:text-accent-foreground" onClick={() => setIsOpen(false)}>
+                <Link href={getHref(item.page)} className="w-full rounded-md p-3 text-left font-medium transition-colors hover:bg-accent hover:text-accent-foreground" onClick={() => setIsOpen(false)}>
                   {item.page.title}
                 </Link>
                 {item.children.length > 0 && (
                   <div className="pl-6 flex flex-col gap-1">
                     {item.children.map(childItem => (
-                       <Link key={childItem.page.id} href={`/p/${childItem.page.slug}`} className="w-full rounded-md p-2 text-left font-medium text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground" onClick={() => setIsOpen(false)}>
+                       <Link key={childItem.page.id} href={getHref(childItem.page)} className="w-full rounded-md p-2 text-left font-medium text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground" onClick={() => setIsOpen(false)}>
                          - {childItem.page.title}
                        </Link>
                     ))}

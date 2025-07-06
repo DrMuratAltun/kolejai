@@ -1,5 +1,10 @@
 
+'use client'
+
+import React, { useMemo } from 'react';
 import Link from 'next/link';
+import { DndContext, useDraggable, useDroppable, type DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -8,18 +13,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { getPages, type Page } from '@/services/pageService';
-import { MoreHorizontal, Pencil, CheckCircle } from 'lucide-react';
+import { getPages, type Page, updatePageOrderAndParent } from '@/services/pageService';
+import { MoreHorizontal, Pencil, CheckCircle, GripVertical, Link as LinkIcon, FileText, BoxSelect } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useToast } from "@/hooks/use-toast";
+import { cn } from '@/lib/utils';
+
 
 interface PageNode extends Page {
   children: PageNode[];
@@ -45,108 +45,172 @@ const buildPageTree = (pages: Page[]): PageNode[] => {
     }
   });
 
-  const sortByMenuOrder = (a: PageNode, b: PageNode) => a.menuOrder - b.menuOrder;
+  const sortByMenuOrder = (a: PageNode, b: PageNode) => (a.menuOrder || 0) - (b.menuOrder || 0);
   rootNodes.sort(sortByMenuOrder);
   pageMap.forEach(node => node.children.sort(sortByMenuOrder));
 
   return rootNodes;
 };
 
-const PageRow = ({ page, level }: { page: PageNode, level: number }) => {
-  return (
-    <>
-      <TableRow key={page.id}>
-        <TableCell className="font-medium">
-          <div className="flex items-center gap-2" style={{ paddingLeft: `${level * 1.5}rem` }}>
-             { level > 0 && <span className="text-muted-foreground">└─</span> }
-            <span>{page.title}</span>
+function PageRow({ page, level, allPages }: { page: PageNode, level: number, allPages: Page[] }) {
+    const { attributes, listeners, setNodeRef: setDraggableNodeRef, transform, isDragging } = useDraggable({
+        id: page.id,
+    });
+    const { setNodeRef: setDroppableNodeRef, isOver } = useDroppable({
+        id: page.id,
+    });
+
+    const style = {
+        transform: CSS.Translate.toString(transform),
+        opacity: isDragging ? 0.5 : 1,
+        zIndex: isDragging ? 1000 : 1
+    };
+    
+    const getIcon = (type: Page['type']) => {
+        switch (type) {
+            case 'page': return <FileText className="h-4 w-4 mr-2 text-sky-500"/>;
+            case 'link': return <LinkIcon className="h-4 w-4 mr-2 text-green-500"/>;
+            case 'container': return <BoxSelect className="h-4 w-4 mr-2 text-orange-500"/>;
+            default: return <FileText className="h-4 w-4 mr-2 text-sky-500"/>;
+        }
+    }
+
+    const getLink = (page: Page) => {
+      if (page.type === 'link') return page.href;
+      if (page.type === 'page' && page.slug) return `/p/${page.slug}`;
+      return '#';
+    }
+    
+    const canBeDroppedOn = page.type === 'container' || page.type === 'page';
+
+    return (
+      <div ref={setDraggableNodeRef} style={style}>
+          <div ref={canBeDroppedOn ? setDroppableNodeRef : null} className={cn('bg-card rounded-md my-1', isOver && canBeDroppedOn && 'ring-2 ring-primary')}>
+              <div className="flex items-center border rounded-md p-2">
+                  <div className="flex-grow flex items-center" style={{ paddingLeft: `${level * 2}rem` }}>
+                      <div className="flex items-center gap-2 w-full">
+                          <GripVertical {...attributes} {...listeners} className="cursor-grab text-muted-foreground" />
+                          {level > 0 && <span className="text-muted-foreground">└─</span>}
+                          {getIcon(page.type)}
+                          <span className="font-medium">{page.title}</span>
+                          <Badge variant="outline" className="ml-2">{page.type}</Badge>
+                      </div>
+                  </div>
+                  <div className="flex-shrink-0 flex items-center gap-4">
+                      <a href={getLink(page)} target="_blank" rel="noopener noreferrer">
+                          <Badge variant={getLink(page) === '#' ? 'destructive' : 'secondary'}>
+                              {getLink(page) === '#' ? 'Bağlantı Yok' : (getLink(page)?.startsWith('/') ? getLink(page) : 'Dış Bağlantı')}
+                          </Badge>
+                      </a>
+                       <Badge variant={page.showInMenu ? "secondary" : "outline"}>
+                          {page.showInMenu && <CheckCircle className="h-3 w-3 mr-1"/>}
+                          {page.showInMenu ? 'Menüde' : 'Gizli'}
+                      </Badge>
+                       <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                              <DropdownMenuItem asChild>
+                                  <Link href={`/admin/pages/edit/${page.id}`}><Pencil className="mr-2 h-4 w-4" /> Düzenle</Link>
+                              </DropdownMenuItem>
+                          </DropdownMenuContent>
+                      </DropdownMenu>
+                  </div>
+              </div>
           </div>
-        </TableCell>
-        <TableCell>
-          <a href={`/p/${page.slug}`} target="_blank" rel="noopener noreferrer">
-            <Badge variant="outline">/p/{page.slug}</Badge>
-          </a>
-        </TableCell>
-         <TableCell>
-            <Badge variant={page.showInMenu ? "secondary" : "outline"}>
-                {page.showInMenu && <CheckCircle className="h-3 w-3 mr-1"/>}
-                {page.showInMenu ? 'Menüde Gösteriliyor' : 'Menüde Gizli'}
-            </Badge>
-        </TableCell>
-        <TableCell>{page.menuOrder}</TableCell>
-        <TableCell className="text-right">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
-                <Link href={`/admin/pages/edit/${page.id}`}>
-                  <Pencil className="mr-2 h-4 w-4" />
-                  Düzenle
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </TableCell>
-      </TableRow>
-      {page.children.map(child => <PageRow key={child.id} page={child} level={level + 1} />)}
-    </>
-  );
+          {page.children.length > 0 && (
+              <div style={{ paddingLeft: `${level > 0 ? 2 : 0}rem` }}>
+                  {page.children.map(child => <PageRow key={child.id} page={child} level={level + 1} allPages={allPages}/>)}
+              </div>
+          )}
+      </div>
+    );
 };
 
 
-export default async function PagesListPage() {
-  const pages = await getPages();
-  const pageTree = buildPageTree(pages);
+export default function PagesListPage() {
+  const [pages, setPages] = React.useState<Page[]>([]);
+  const { toast } = useToast();
+
+  React.useEffect(() => {
+    getPages().then(setPages);
+  }, []);
+  
+  const pageTree = useMemo(() => buildPageTree(pages), [pages]);
+  
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active && over && active.id !== over.id) {
+        const activePage = pages.find(p => p.id === active.id);
+        const overPage = pages.find(p => p.id === over.id);
+
+        if (!activePage || !overPage) return;
+        
+        // You can only drop on containers or pages, not simple links
+        if (overPage.type === 'link') {
+            toast({ variant: 'destructive', title: 'Geçersiz Hedef', description: 'Bir öğeyi basit bir bağlantının altına taşıyamazsınız.'});
+            return;
+        }
+
+        const newParentId = over.id as string;
+        
+        toast({ title: 'Menü güncelleniyor...' });
+        
+        const result = await updatePageOrderAndParent(active.id as string, newParentId, activePage.menuOrder);
+
+        if (result.success) {
+            toast({ title: "Başarılı!", description: "Menü hiyerarşisi güncellendi." });
+            // Refresh pages from server
+            getPages().then(setPages);
+        } else {
+            toast({ variant: "destructive", title: "Hata!", description: result.error });
+        }
+    }
+  };
+
 
   return (
     <div className="animate-in fade-in duration-500">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Sayfa & Menü Yönetimi</h1>
+          <h1 className="text-3xl font-bold">Menü Oluşturucu</h1>
           <p className="text-muted-foreground">
-            Web sitenizdeki sayfaları ve bu sayfaların menüdeki hiyerarşik yapısını buradan yönetin.
+            Sürükle-bırak ile menü hiyerarşinizi yönetin. Bir öğeyi diğerinin altına taşımak için sürükleyin.
           </p>
         </div>
         <Button asChild>
-          <Link href="/admin/pages/new">Yeni Sayfa Oluştur</Link>
+          <Link href="/admin/pages/new">Yeni Menü Öğesi Oluştur</Link>
         </Button>
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Sayfalar ve Menü Yapısı</CardTitle>
+          <CardTitle>Menü Yapısı</CardTitle>
           <CardDescription>
-            Bir sayfanın içeriğini, menüdeki yerini ve sırasını değiştirmek için 'Düzenle' butonuna tıklayın.
+            Menüdeki öğeleri sürükleyip bırakarak yeniden sıralayabilir veya hiyerarşisini değiştirebilirsiniz.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Sayfa Başlığı</TableHead>
-                <TableHead>URL</TableHead>
-                <TableHead>Menü Durumu</TableHead>
-                <TableHead>Sıra</TableHead>
-                <TableHead className="text-right">İşlemler</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+           <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
               {pageTree.length === 0 ? (
-                 <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center">
-                    Henüz hiç sayfa oluşturulmamış.
-                    </TableCell>
-                </TableRow>
+                 <div className="h-24 text-center flex items-center justify-center">
+                  Henüz hiç menü öğesi oluşturulmamış.
+                 </div>
               ) : (
                 pageTree.map((page) => (
-                  <PageRow key={page.id} page={page} level={0} />
+                  <PageRow key={page.id} page={page} level={0} allPages={pages} />
                 ))
               )}
-            </TableBody>
-          </Table>
+            </DndContext>
         </CardContent>
       </Card>
     </div>

@@ -33,7 +33,7 @@ export default async function RootLayout({
       }
     });
 
-    const sortByMenuOrder = (a: NavItem, b: NavItem) => a.page.menuOrder - b.page.menuOrder;
+    const sortByMenuOrder = (a: NavItem, b: NavItem) => (a.page.menuOrder || 0) - (b.page.menuOrder || 0);
     rootItems.sort(sortByMenuOrder);
     Object.values(pageMap).forEach(item => item.children.sort(sortByMenuOrder));
 
@@ -42,13 +42,6 @@ export default async function RootLayout({
 
   const menuTree = buildMenuTree(flatPages);
   
-  const staticLinks = [
-    { title: "Anasayfa", href: "/" },
-    { title: "Hakkımızda", href: "/#hakkimizda" },
-    { title: "Kadromuz", href: "/staff" },
-    { title: "Galeri", href: "/gallery" },
-  ];
-
   return (
     <html lang="tr" suppressHydrationWarning>
       <head>
@@ -57,7 +50,7 @@ export default async function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <ConditionalLayout staticLinks={staticLinks} dynamicNavItems={menuTree}>{children}</ConditionalLayout>
+        <ConditionalLayout dynamicNavItems={menuTree}>{children}</ConditionalLayout>
         <Toaster />
       </body>
     </html>
