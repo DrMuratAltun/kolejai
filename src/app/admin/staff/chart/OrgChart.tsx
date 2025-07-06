@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { updateStaffParentAction } from '../actions';
 import type { StaffNode } from './page';
 import { cn } from '@/lib/utils';
+import { Network, ArrowDown } from 'lucide-react';
 
 function StaffNodeCard({ node }: { node: StaffNode }) {
     const { attributes, listeners, setNodeRef: setDraggableNodeRef, transform, isDragging } = useDraggable({
@@ -30,7 +31,7 @@ function StaffNodeCard({ node }: { node: StaffNode }) {
     return (
         <div ref={setDraggableNodeRef} style={style} {...attributes} {...listeners}>
             <div ref={setDroppableNodeRef}>
-                <Card className={`p-3 shadow-md bg-background min-w-[180px] transition-all duration-200 ${isOver ? 'ring-2 ring-primary ring-offset-2' : ''} ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}>
+                <Card className={cn('p-3 shadow-md bg-background min-w-[180px] transition-all duration-200', isOver && 'ring-2 ring-primary ring-offset-2', isDragging ? 'cursor-grabbing' : 'cursor-grab')}>
                     <div className="flex flex-col items-center">
                         <Avatar className="w-16 h-16 mb-2 border-2 border-primary">
                             <AvatarImage src={node.photo} alt={node.name} />
@@ -48,43 +49,30 @@ function StaffNodeCard({ node }: { node: StaffNode }) {
 function ChartBranch({ node }: { node: StaffNode }) {
   return (
     <div className="flex flex-col items-center text-center">
-      {/* Add padding here to create space between sibling nodes */}
       <div className="px-4 md:px-8">
         <StaffNodeCard node={node} />
       </div>
 
       {node.children && node.children.length > 0 && (
         <>
-          {/* Vertical line from parent down to the horizontal connector */}
           <div className="w-px h-8 bg-slate-300" />
-
-          {/* Container for all children branches */}
           <div className="flex justify-center">
             {node.children.map((child, index) => {
               let horizontalLineClass = '';
-              // This logic draws the horizontal line connecting sibling nodes
               if (node.children.length > 1) {
                 if (index === 0) {
-                  // First child: line from center to right
                   horizontalLineClass = 'left-1/2 right-0';
                 } else if (index === node.children.length - 1) {
-                  // Last child: line from left to center
                   horizontalLineClass = 'left-0 right-1/2';
                 } else {
-                  // Middle child: line spans full width
                   horizontalLineClass = 'left-0 right-0';
                 }
               }
 
               return (
                 <div key={child.id} className="flex-shrink-0 relative">
-                  {/* Vertical line from child up to the horizontal line */}
                   <div className="absolute top-0 left-1/2 w-px h-8 -translate-x-1/2 bg-slate-300" />
-                  
-                  {/* The horizontal line segment for this child */}
                   <div className={cn("absolute top-0 h-px bg-slate-300", horizontalLineClass)} />
-
-                  {/* Recursive call for the child node and its children */}
                   <ChartBranch node={child} />
                 </div>
               );
@@ -94,6 +82,26 @@ function ChartBranch({ node }: { node: StaffNode }) {
       )}
     </div>
   );
+}
+
+function RootDropZone() {
+    const {setNodeRef, isOver} = useDroppable({
+        id: '--root--',
+    });
+
+    return (
+        <div
+            ref={setNodeRef}
+            className={cn(
+                'border-2 border-dashed rounded-lg p-8 w-full flex flex-col items-center justify-center text-muted-foreground transition-colors duration-300 mb-12',
+                isOver ? 'border-primary bg-primary/10 text-primary' : 'border-border'
+            )}
+        >
+            <Network className="h-10 w-10 mb-2"/>
+            <p className="font-semibold">Hiyerarşiden Çıkarmak İçin Buraya Sürükleyin</p>
+            <p className="text-sm">Personeli bağımsız (kök) bir eleman yapmak için kartını buraya bırakın.</p>
+        </div>
+    )
 }
 
 
@@ -112,12 +120,12 @@ export default function InteractiveOrgChart({ rootNodes }: { rootNodes: StaffNod
 
         if (over && active.id !== over.id) {
             const staffId = active.id as string;
-            const newParentId = over.id as string;
+            const newParentId = over.id === '--root--' ? null : over.id as string;
             const staffName = active.data.current?.name || 'Personel';
             
             toast({
                 title: "Hiyerarşi Güncelleniyor...",
-                description: `${staffName} yeni yöneticisine atanıyor.`,
+                description: `${staffName} yeni konumuna atanıyor.`,
             });
 
             const result = await updateStaffParentAction(staffId, newParentId);
@@ -139,7 +147,8 @@ export default function InteractiveOrgChart({ rootNodes }: { rootNodes: StaffNod
 
     return (
         <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
-             <div className="flex justify-center items-start">
+             <RootDropZone />
+             <div className="flex flex-wrap justify-center items-start gap-x-8 gap-y-16">
                 {rootNodes.map(node => <ChartBranch key={node.id} node={node} />)}
             </div>
         </DndContext>
