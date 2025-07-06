@@ -47,9 +47,15 @@ export const getPages = async (): Promise<Page[]> => {
 export const getMenuPages = async (): Promise<Page[]> => {
     noStore();
     try {
-        const q = query(pagesCollection, where("showInMenu", "==", true), orderBy("menuOrder", "asc"));
+        // First, query for pages to be shown in the menu
+        const q = query(pagesCollection, where("showInMenu", "==", true));
         const snapshot = await getDocs(q);
-        return snapshot.docs.map(fromFirestore);
+        
+        // Then, map and sort the results in application code
+        const pages = snapshot.docs.map(fromFirestore);
+        pages.sort((a, b) => a.menuOrder - b.menuOrder);
+
+        return pages;
     } catch (error) {
         console.error("Error fetching menu pages:", error);
         return [];

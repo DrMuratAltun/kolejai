@@ -1,24 +1,5 @@
 
 {
-  "indexes": [
-    {
-      "collectionId": "pages",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "showInMenu",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "menuOrder",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "__name__",
-          "order": "ASCENDING"
-        }
-      ]
-    }
-  ],
+  "indexes": [],
   "fieldOverrides": []
 }
