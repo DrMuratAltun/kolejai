@@ -124,7 +124,7 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
         onContentChange(editor.getHTML());
       }
     },
-  });
+  }, [onContentChange]);
 
   useEffect(() => {
     if (editor && content !== editor.getHTML()) {
