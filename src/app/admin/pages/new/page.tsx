@@ -15,6 +15,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowLeft, Loader2, Sparkles, Wand2 } from 'lucide-react';
 import { generatePageContent } from '@/ai/flows/page-generator';
 import { useToast } from '@/hooks/use-toast';
@@ -147,7 +148,11 @@ export default function NewPage() {
                     required
                   />
                 </div>
-                <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                    <Checkbox id="showInMenu" name="showInMenu" />
+                    <Label htmlFor="showInMenu">Ana menüde göster</Label>
+                </div>
+                <div className="space-y-2 pt-4">
                   <Label htmlFor="topic">
                     İçerik Konusu (Yapay Zeka İçin)
                   </Label>

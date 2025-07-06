@@ -16,7 +16,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { getPages } from '@/services/pageService';
-import { MoreHorizontal, Pencil } from 'lucide-react';
+import { MoreHorizontal, Pencil, CheckCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
@@ -48,13 +48,14 @@ export default async function PagesListPage() {
                 <TableHead>Sayfa Başlığı</TableHead>
                 <TableHead>URL Adresi</TableHead>
                 <TableHead>Oluşturulma Tarihi</TableHead>
+                <TableHead>Durum</TableHead>
                 <TableHead className="text-right">İşlemler</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {pages.length === 0 ? (
                  <TableRow>
-                    <TableCell colSpan={4} className="h-24 text-center">
+                    <TableCell colSpan={5} className="h-24 text-center">
                     Henüz hiç sayfa oluşturulmamış.
                     </TableCell>
                 </TableRow>
@@ -63,10 +64,15 @@ export default async function PagesListPage() {
                     <TableRow key={page.id}>
                     <TableCell className="font-medium">{page.title}</TableCell>
                     <TableCell>
-                      <Badge variant="outline">/p/{page.slug}</Badge>
+                      <a href={`/p/${page.slug}`} target="_blank" rel="noopener noreferrer">
+                        <Badge variant="outline">/p/{page.slug}</Badge>
+                      </a>
                     </TableCell>
                     <TableCell>
                         {page.createdAt?.toDate().toLocaleDateString('tr-TR')}
+                    </TableCell>
+                    <TableCell>
+                        {page.showInMenu && <Badge variant="secondary"><CheckCircle className="h-3 w-3 mr-1"/> Menüde</Badge>}
                     </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>

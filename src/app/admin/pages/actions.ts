@@ -10,6 +10,7 @@ const formSchema = z.object({
   title: z.string().min(1, 'Başlık gerekli'),
   slug: z.string().min(1, 'URL adresi gerekli'),
   htmlContent: z.string().min(1, 'Sayfa içeriği boş olamaz'),
+  showInMenu: z.preprocess((val) => val === 'on', z.boolean()).optional().default(false),
 });
 
 export async function savePageAction(prevState: any, formData: FormData) {
@@ -33,6 +34,7 @@ export async function savePageAction(prevState: any, formData: FormData) {
 
     revalidatePath('/admin/pages');
     revalidatePath(`/p/${data.slug}`);
+    revalidatePath('/'); // Revalidate home page to update header menu
   } catch (e: any) {
     return {
       success: false,

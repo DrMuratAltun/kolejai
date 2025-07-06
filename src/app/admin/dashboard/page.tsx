@@ -18,7 +18,8 @@ import {
   Palette,
   Bot,
   Database,
-  School
+  School,
+  Users
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -26,6 +27,7 @@ const quickAccessItems = [
   { href: '/admin/news', label: 'Haber, Duyuru & Etkinlik', icon: Newspaper, borderColor: 'border-blue-500', textColor: 'text-blue-500' },
   { href: '/admin/pages', label: 'Sayfalar', icon: Files, borderColor: 'border-orange-500', textColor: 'text-orange-500', disabled: false },
   { href: '/admin/gallery', label: 'Galeri', icon: GalleryHorizontal, borderColor: 'border-pink-500', textColor: 'text-pink-500' },
+  { href: '/admin/staff', label: 'Personel', icon: Users, borderColor: 'border-green-500', textColor: 'text-green-500' },
   { href: '#', label: 'Müdür Mesajı', icon: User, borderColor: 'border-red-500', textColor: 'text-red-500', disabled: true },
   { href: '/admin/submissions', label: 'İletişim Bilgileri', icon: Mail, borderColor: 'border-orange-500', textColor: 'text-orange-500' },
   { href: '/admin/submissions', label: 'Mesajlar', icon: MessageSquare, borderColor: 'border-teal-500', textColor: 'text-teal-500' },

@@ -1,5 +1,3 @@
-'use server';
-
 import { db } from "@/lib/firebase";
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, Timestamp, query, orderBy, serverTimestamp, where, getDoc, limit } from "firebase/firestore";
 
@@ -8,6 +6,7 @@ export interface Page {
   title: string;
   slug: string;
   htmlContent: string;
+  showInMenu: boolean;
   createdAt: Timestamp;
 }
 
@@ -22,6 +21,7 @@ const fromFirestore = (snapshot: any): Page => {
     title: data.title,
     slug: data.slug,
     htmlContent: data.htmlContent,
+    showInMenu: data.showInMenu || false,
     createdAt: data.createdAt,
   };
 };
@@ -35,6 +35,17 @@ export const getPages = async (): Promise<Page[]> => {
     console.error("Error fetching pages:", error);
     return [];
   }
+};
+
+export const getMenuPages = async (): Promise<Page[]> => {
+    try {
+        const q = query(pagesCollection, where("showInMenu", "==", true), orderBy("createdAt", "asc"));
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(fromFirestore);
+    } catch (error) {
+        console.error("Error fetching menu pages:", error);
+        return [];
+    }
 };
 
 export const getPageBySlug = async (slug: string): Promise<Page | null> => {
