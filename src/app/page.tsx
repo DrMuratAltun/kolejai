@@ -224,7 +224,7 @@ export default function Home() {
             <section id="kurumlarimiz">
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
                     {institutions.map((inst, index) => (
-                        <Link href={inst.href} key={index} className="relative block aspect-[3/4] rounded-xl overflow-hidden group shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
+                        <Link href={inst.href} key={index} className="relative block aspect-[3/4] rounded-xl overflow-hidden group shadow-lg transform transition-transform duration-300 hover:-translate-y-2 z-0">
                             <Image
                                 src={inst.image}
                                 alt={inst.title}
@@ -252,9 +252,9 @@ export default function Home() {
                 <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Kolejimizin Öne Çıkan Özellikleri</h2>
                 <div className="w-20 h-1 bg-primary mx-auto"></div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {features.map((feature, index) => (
-                  <div key={index} className="group h-80 [perspective:1000px]">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {features.map((feature) => (
+                  <div key={feature.title} className="group h-80 [perspective:1000px]">
                     <div className="relative h-full w-full rounded-xl shadow-xl transition-all duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
                       {/* Front Side */}
                       <div 
