@@ -34,7 +34,7 @@ const quickAccessItems = [
   { href: '#', label: 'Müdür Mesajı', icon: User, borderColor: 'border-red-500', textColor: 'text-red-500', disabled: true },
   { href: '/admin/submissions', label: 'İletişim Bilgileri', icon: Mail, borderColor: 'border-orange-500', textColor: 'text-orange-500' },
   { href: '/admin/submissions', label: 'Mesajlar', icon: MessageSquare, borderColor: 'border-teal-500', textColor: 'text-teal-500' },
-  { href: '#', label: 'Menü Yapısı', icon: Menu, borderColor: 'border-slate-500', textColor: 'text-slate-500', disabled: true },
+  { href: '/admin/pages', label: 'Menü Yapısı', icon: Menu, borderColor: 'border-slate-500', textColor: 'text-slate-500' },
   { href: '#', label: 'Site Görünümü', icon: Palette, borderColor: 'border-rose-500', textColor: 'text-rose-500', disabled: true },
   { href: '/admin/chatbot', label: 'Chatbot Ayarları', icon: Bot, borderColor: 'border-cyan-500', textColor: 'text-cyan-500' },
   { href: '#', label: 'Veritabanı Güncelle', icon: Database, borderColor: 'border-indigo-500', textColor: 'text-indigo-500', disabled: true },
