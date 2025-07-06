@@ -105,55 +105,41 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
   }, [editingStaff, isOpen, form]);
 
   const onSubmit = (values: StaffFormValues) => {
-    const formData = new FormData();
-    Object.entries(values).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        if (key === 'photo' && value instanceof File) {
-          formData.append(key, value, value.name);
-        } else if (typeof value === 'string') {
-          formData.append(key, value);
-        }
+      const formData = new FormData();
+
+      // Explicitly append each field to ensure correct handling
+      formData.append('name', values.name);
+      formData.append('title', values.title);
+      formData.append('department', values.department);
+      
+      if (values.id) formData.append('id', values.id);
+      if (values.description) formData.append('description', values.description);
+      if (values.aiHint) formData.append('aiHint', values.aiHint);
+      if (values.parentId) formData.append('parentId', values.parentId);
+
+      // Handle the photo field, which can be a File or a string URL
+      if (values.photo instanceof File) {
+          formData.append('photo', values.photo, values.photo.name);
+      } else if (typeof values.photo === 'string') {
+          formData.append('photo', values.photo);
       }
-    });
 
-    startTransition(async () => {
-      const result = await handleStaffFormSubmit(null, formData);
-      if (result.success) {
-        toast({
-          title: "Başarılı!",
-          description: `Personel başarıyla ${editingStaff ? 'güncellendi' : 'oluşturuldu'}.`,
-        });
-        setIsOpen(false);
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Hata!",
-          description: result.error,
-        });
-      }
-    });
-  };
-
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > MAX_FILE_SIZE) {
-      form.setError("photo", { message: `Lütfen 2MB'den küçük bir resim dosyası seçin.`});
-      return;
-    }
-
-    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-      form.setError("photo", { message: "Lütfen .jpg, .jpeg, .png veya .webp formatında bir resim seçin." });
-      return;
-    }
-
-    form.setValue('photo', file, { shouldValidate: true });
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+      startTransition(async () => {
+          const result = await handleStaffFormSubmit(null, formData);
+          if (result.success) {
+              toast({
+                  title: "Başarılı!",
+                  description: `Personel başarıyla ${editingStaff ? 'güncellendi' : 'oluşturuldu'}.`,
+              });
+              setIsOpen(false);
+          } else {
+              toast({
+                  variant: "destructive",
+                  title: "Hata!",
+                  description: result.error,
+              });
+          }
+      });
   };
 
   return (
@@ -188,36 +174,56 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
                 </FormItem>
               )} />
 
-              <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Biyografi</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Biyografi</FormLabel><FormControl><Textarea {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
               
               <FormField
-                  control={form.control}
-                  name="photo"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Profil Fotoğrafı</FormLabel>
-                      <FormControl>
-                        <Input type="file" accept="image/png, image/jpeg, image/webp" onChange={handleImageChange} disabled={isPending} />
-                      </FormControl>
-                      <div className="mt-4 relative w-32 h-32 rounded-full overflow-hidden bg-muted flex items-center justify-center">
-                          {imagePreview ? (
-                            <Image 
-                              src={imagePreview} 
-                              alt="Görsel Önizleme" 
-                              fill
-                              sizes="128px"
-                              className="object-cover"
-                            />
-                          ) : (
-                             <Users className="h-16 w-16 text-muted-foreground" />
-                          )}
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                control={form.control}
+                name="photo"
+                render={({ field: { value, onChange, ...fieldProps } }) => (
+                  <FormItem>
+                    <FormLabel>Profil Fotoğrafı</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...fieldProps}
+                        type="file"
+                        accept="image/png, image/jpeg, image/webp"
+                        onChange={(event) => {
+                          const file = event.target.files?.[0];
+                          onChange(file); // Update RHF state
+                          
+                          // Update preview
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setImagePreview(reader.result as string);
+                            };
+                            reader.readAsDataURL(file);
+                          } else {
+                            setImagePreview(editingStaff?.photo || null);
+                          }
+                        }}
+                        disabled={isPending}
+                      />
+                    </FormControl>
+                    <div className="mt-4 relative w-32 h-32 rounded-full overflow-hidden bg-muted flex items-center justify-center">
+                        {imagePreview ? (
+                          <Image 
+                            src={imagePreview} 
+                            alt="Görsel Önizleme" 
+                            fill
+                            sizes="128px"
+                            className="object-cover"
+                          />
+                        ) : (
+                           <Users className="h-16 w-16 text-muted-foreground" />
+                        )}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-              <FormField control={form.control} name="aiHint" render={({ field }) => (<FormItem><FormLabel>AI İpucu (isteğe bağlı)</FormLabel><FormControl><Input {...field} placeholder="e.g. woman teacher" /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="aiHint" render={({ field }) => (<FormItem><FormLabel>AI İpucu (isteğe bağlı)</FormLabel><FormControl><Input {...field} value={field.value ?? ''} placeholder="e.g. woman teacher" /></FormControl><FormMessage /></FormItem>)} />
             </div>
             
             <DialogFooter className="p-6 border-t flex-shrink-0 bg-background">
