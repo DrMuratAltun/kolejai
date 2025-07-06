@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -20,6 +21,7 @@ import {
   Mail,
   School,
   LogOut,
+  Users,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -28,6 +30,7 @@ const menuItems = [
   { href: "/admin/dashboard", label: "Gösterge Paneli", icon: LayoutDashboard },
   { href: "/admin/chatbot", label: "Yönetici Chatbot", icon: Bot },
   { href: "/admin/news", label: "Haber Yönetimi", icon: Newspaper },
+  { href: "/admin/staff", label: "Kadro Yönetimi", icon: Users },
   { href: "#", label: "Galeri Yönetimi", icon: GalleryHorizontal },
   { href: "#", label: "Gelen Formlar", icon: Mail },
 ];
