@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -49,13 +50,16 @@ function ChartBranch({ node }: { node: StaffNode }) {
             <StaffNodeCard node={node} />
             {node.children && node.children.length > 0 && (
                 <>
+                    {/* Vertical line from parent down */}
                     <div className="w-px h-8 bg-gray-300" />
                     <div className="flex justify-center relative">
+                        {/* The actual horizontal line, only if more than one child */}
                         {node.children.length > 1 &&
                             <div className="absolute top-0 left-1/2 right-1/2 h-px -translate-x-1/2 w-full bg-gray-300"></div>
                         }
                         {node.children.map((child) => (
                             <div key={child.id} className="px-10 flex-shrink-0 relative">
+                                {/* Vertical line from horizontal line to child */}
                                 <div className="absolute top-0 left-1/2 w-px h-8 -translate-x-1/2 bg-gray-300"></div>
                                 <ChartBranch node={child} />
                             </div>
@@ -109,7 +113,7 @@ export default function InteractiveOrgChart({ rootNodes }: { rootNodes: StaffNod
 
     return (
         <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
-            <div className="flex flex-col items-center">
+             <div className="flex justify-center items-start gap-16">
                 {rootNodes.map(node => <ChartBranch key={node.id} node={node} />)}
             </div>
         </DndContext>
