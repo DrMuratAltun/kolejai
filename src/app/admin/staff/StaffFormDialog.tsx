@@ -27,8 +27,7 @@ interface StaffFormDialogProps {
 }
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 const formSchema = z.object({
   id: z.string().optional(),
@@ -44,15 +43,7 @@ const formSchema = z.object({
         return false;
       },
       `Maksimum dosya boyutu 2MB'dir.`
-    )
-    .refine(
-      (value) => {
-        if (!value || typeof value === 'string') return true;
-        if (value instanceof File) return ACCEPTED_IMAGE_TYPES.includes(value.type);
-        return false;
-      },
-      "Sadece .jpg, .jpeg, .png ve .webp formatları desteklenmektedir."
-    ).optional(),
+    ).optional(), // Removed the strict MIME type validation
   aiHint: z.string().optional().default(''),
   parentId: z.string().optional(),
 });
@@ -107,7 +98,6 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
   const onSubmit = (values: StaffFormValues) => {
       const formData = new FormData();
 
-      // Explicitly append each field to ensure correct handling
       formData.append('name', values.name);
       formData.append('title', values.title);
       formData.append('department', values.department);
@@ -117,7 +107,6 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
       if (values.aiHint) formData.append('aiHint', values.aiHint);
       if (values.parentId) formData.append('parentId', values.parentId);
 
-      // Handle the photo field, which can be a File or a string URL
       if (values.photo instanceof File) {
           formData.append('photo', values.photo, values.photo.name);
       } else if (typeof values.photo === 'string') {
@@ -159,7 +148,7 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
               <FormField control={form.control} name="parentId" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Yöneticisi</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value || 'none'}>
+                  <Select onValueChange={field.onChange} value={field.value ?? 'none'}>
                     <FormControl><SelectTrigger><SelectValue placeholder="Bir yönetici seçin" /></SelectTrigger></FormControl>
                     <SelectContent>
                       <SelectItem value="none">Yok</SelectItem>
@@ -179,19 +168,18 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
               <FormField
                 control={form.control}
                 name="photo"
-                render={({ field: { value, onChange, ...fieldProps } }) => (
+                render={({ field: { onChange, ...fieldProps } }) => (
                   <FormItem>
                     <FormLabel>Profil Fotoğrafı</FormLabel>
                     <FormControl>
                       <Input
                         {...fieldProps}
                         type="file"
-                        accept="image/png, image/jpeg, image/webp"
+                        accept={ACCEPTED_IMAGE_TYPES.join(",")}
                         onChange={(event) => {
                           const file = event.target.files?.[0];
-                          onChange(file); // Update RHF state
+                          onChange(file);
                           
-                          // Update preview
                           if (file) {
                             const reader = new FileReader();
                             reader.onloadend = () => {
