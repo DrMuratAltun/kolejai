@@ -39,11 +39,12 @@ const getStaffArray = async (): Promise<any[]> => {
 const fromDbObjectToStaffMember = (dbObj: any): StaffMember | null => {
     // Robust check to ensure dbObj is a processable object
     if (!dbObj || typeof dbObj !== 'object') {
-        console.error("Skipping invalid (non-object) staff member data found in Firestore:", dbObj);
+        console.error("[StaffService] Skipping invalid (non-object) staff member data found in Firestore:", dbObj);
         return null;
     }
-    if (dbObj.id === undefined || dbObj.id === null) {
-        console.error("Skipping staff member data with missing or null ID:", dbObj);
+    // Deep check for required fields.
+    if (dbObj.id === undefined || dbObj.id === null || typeof dbObj.name !== 'string' || typeof dbObj.title !== 'string') {
+        console.error("[StaffService] Skipping staff member data with missing or invalid required fields (id, name, title):", dbObj);
         return null;
     }
 
@@ -54,7 +55,7 @@ const fromDbObjectToStaffMember = (dbObj: any): StaffMember | null => {
     if (dbObj.parentId === undefined || dbObj.parentId === '' || dbObj.parentId === null) {
         finalParentId = null;
     } else if (isNaN(parsedParentId)) {
-        console.error(`ERROR: Invalid parentId for staff member ID ${dbObj.id}. The value was "${dbObj.parentId}", which is not a number. Defaulting to null to prevent crash.`);
+        console.error(`[StaffService] ERROR: Invalid parentId for staff member ID ${dbObj.id}. The value was "${dbObj.parentId}", which is not a number. Defaulting to null to prevent crash.`);
         finalParentId = null;
     } else {
         finalParentId = parsedParentId;
@@ -95,11 +96,10 @@ export const getStaffMembers = async (): Promise<StaffMember[]> => {
 
 export const addStaffMember = async (item: StaffMemberData) => {
     const staffArray = await getStaffArray();
-    const maxId = staffArray.reduce((max, member) => (member.id > max ? member.id : max), 0);
+    const maxId = staffArray.reduce((max, member) => ((member?.id || 0) > max ? member.id : max), 0);
     
-    // Defensively and explicitly construct the new member object.
-    // This ensures that no fields are 'undefined' and accidentally omitted when writing to Firestore,
-    // which was the likely cause of the "add new" operation creating a malformed record.
+    // Create a fully-formed object to prevent any 'undefined' fields or structural inconsistencies.
+    // This is the most robust way to ensure data consistency upon creation.
     const newMember: StaffMember = {
         id: maxId + 1,
         name: item.name,
@@ -107,8 +107,8 @@ export const addStaffMember = async (item: StaffMemberData) => {
         department: item.department,
         description: item.description,
         photo: item.photo,
-        aiHint: item.aiHint || '', // Ensure aiHint is saved as an empty string if not provided.
-        parentId: item.parentId === undefined ? null : item.parentId, // Ensure parentId is explicitly null if undefined.
+        aiHint: item.aiHint || '',
+        parentId: item.parentId ?? null,
     };
 
     const newStaffArray = [...staffArray, newMember];
@@ -123,7 +123,14 @@ export const updateStaffMember = async (id: number, item: Partial<StaffMemberDat
     throw new Error("Staff member not found for update.");
   }
   
-  const updatedMember = { ...staffArray[memberIndex], ...item, id };
+  // Ensure the updated object remains fully formed and consistent
+  const updatedMember = { 
+      ...staffArray[memberIndex], 
+      ...item,
+      id, // ensure id remains
+      parentId: item.parentId === undefined ? staffArray[memberIndex].parentId : item.parentId ?? null,
+  };
+
   const newStaffArray = [...staffArray];
   newStaffArray[memberIndex] = updatedMember;
 
