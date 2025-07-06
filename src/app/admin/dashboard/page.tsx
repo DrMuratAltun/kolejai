@@ -24,7 +24,7 @@ import { cn } from '@/lib/utils';
 
 const quickAccessItems = [
   { href: '/admin/news', label: 'Haber, Duyuru & Etkinlik', icon: Newspaper, borderColor: 'border-blue-500', textColor: 'text-blue-500' },
-  { href: '#', label: 'Sayfalar', icon: Files, borderColor: 'border-orange-500', textColor: 'text-orange-500', disabled: true },
+  { href: '/admin/pages', label: 'Sayfalar', icon: Files, borderColor: 'border-orange-500', textColor: 'text-orange-500', disabled: false },
   { href: '/admin/gallery', label: 'Galeri', icon: GalleryHorizontal, borderColor: 'border-pink-500', textColor: 'text-pink-500' },
   { href: '#', label: 'Müdür Mesajı', icon: User, borderColor: 'border-red-500', textColor: 'text-red-500', disabled: true },
   { href: '/admin/submissions', label: 'İletişim Bilgileri', icon: Mail, borderColor: 'border-orange-500', textColor: 'text-orange-500' },

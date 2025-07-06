@@ -29,7 +29,7 @@ const mainMenuItems = [
 
 const contentMenuItems = [
     { href: "/admin/news", label: "Haber, Duyuru, Etkinlik", icon: Newspaper },
-    { href: "#", label: "Sayfalar", icon: Files, disabled: true },
+    { href: "/admin/pages", label: "Sayfalar", icon: Files, disabled: false },
     { href: "/admin/gallery", label: "Okuldan Kareler", icon: GalleryHorizontal },
     { href: "#", label: "Müdür Mesajı", icon: User, disabled: true },
     { href: "#", label: "Kurumlarımız", icon: School, disabled: true },
