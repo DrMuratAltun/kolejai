@@ -51,7 +51,7 @@ export default function NewsClient({ initialNewsItems }: { initialNewsItems: New
     <>
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Haber ve Duyuru Yönetimi</h1>
+          <h1 className="text-3xl font-bold">Haber, Duyuru ve Etkinlik Yönetimi</h1>
           <p className="text-muted-foreground">Yeni haber, etkinlik veya duyuru ekleyin, düzenleyin veya silin.</p>
         </div>
         <Button onClick={handleAddNew}>Yeni Kayıt Ekle</Button>

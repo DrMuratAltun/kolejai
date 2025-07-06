@@ -16,8 +16,6 @@ import {
 import {
   LayoutDashboard,
   Newspaper,
-  Calendar,
-  Megaphone,
   Files,
   GalleryHorizontal,
   User,
@@ -30,9 +28,7 @@ const mainMenuItems = [
 ];
 
 const contentMenuItems = [
-    { href: "/admin/news", label: "Haberler", icon: Newspaper },
-    { href: "#", label: "Etkinlikler", icon: Calendar, disabled: true },
-    { href: "#", label: "Duyurular", icon: Megaphone, disabled: true },
+    { href: "/admin/news", label: "Haber, Duyuru, Etkinlik", icon: Newspaper },
     { href: "#", label: "Sayfalar", icon: Files, disabled: true },
     { href: "/admin/gallery", label: "Okuldan Kareler", icon: GalleryHorizontal },
     { href: "#", label: "Müdür Mesajı", icon: User, disabled: true },
