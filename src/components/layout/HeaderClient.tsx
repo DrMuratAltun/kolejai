@@ -20,9 +20,14 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
-import type { NavItem } from "./Header";
+import type { Page } from "@/services/pageService";
 
-interface NavLink {
+export type NavItem = {
+  page: Page;
+  children: NavItem[];
+};
+
+export interface NavLink {
     title: string;
     href: string;
 }
