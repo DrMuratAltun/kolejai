@@ -116,65 +116,67 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[625px]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[625px] h-[90vh] flex flex-col p-0">
+        <DialogHeader className="p-6 pb-4 border-b flex-shrink-0">
           <DialogTitle>{editingStaff ? 'Personel Düzenle' : 'Yeni Personel Ekle'}</DialogTitle>
           <DialogDescription>Personel bilgilerini buradan yönetin.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>İsim Soyisim</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-            <FormField control={form.control} name="role" render={({ field }) => (<FormItem><FormLabel>Rol</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-            <FormField control={form.control} name="department" render={({ field }) => (<FormItem><FormLabel>Departman</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-            
-            <FormField control={form.control} name="managerId" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Yöneticisi</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl><SelectTrigger><SelectValue placeholder="Bir yönetici seçin" /></SelectTrigger></FormControl>
-                  <SelectContent>
-                    <SelectItem value="none">Yok</SelectItem>
-                    {allStaffMembers
-                      .filter(member => member.id !== editingStaff?.id) // Can't be your own manager
-                      .map(member => (
-                        <SelectItem key={member.id} value={member.id}>{member.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )} />
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex-grow flex flex-col overflow-hidden">
+            <div className="flex-grow overflow-y-auto space-y-4 p-6">
+              <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>İsim Soyisim</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="role" render={({ field }) => (<FormItem><FormLabel>Rol</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="department" render={({ field }) => (<FormItem><FormLabel>Departman</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+              
+              <FormField control={form.control} name="managerId" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Yöneticisi</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value || 'none'}>
+                    <FormControl><SelectTrigger><SelectValue placeholder="Bir yönetici seçin" /></SelectTrigger></FormControl>
+                    <SelectContent>
+                      <SelectItem value="none">Yok</SelectItem>
+                      {allStaffMembers
+                        .filter(member => member.id !== editingStaff?.id) // Can't be your own manager
+                        .map(member => (
+                          <SelectItem key={member.id} value={member.id}>{member.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )} />
 
-            <FormField control={form.control} name="bio" render={({ field }) => (<FormItem><FormLabel>Biyografi</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
-            
-            <FormField
-                control={form.control}
-                name="image"
-                render={() => (
-                  <FormItem>
-                    <FormLabel>Profil Fotoğrafı</FormLabel>
-                    <FormControl>
-                      <Input type="file" accept="image/*" onChange={handleImageChange} disabled={isPending} />
-                    </FormControl>
-                    {imagePreview && (
-                      <div className="mt-4 relative w-32 h-32">
-                        <Image 
-                          src={imagePreview} 
-                          alt="Görsel Önizleme" 
-                          fill
-                          sizes="128px"
-                          className="rounded-full object-cover"
-                        />
-                      </div>
-                    )}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <FormField control={form.control} name="bio" render={({ field }) => (<FormItem><FormLabel>Biyografi</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
+              
+              <FormField
+                  control={form.control}
+                  name="image"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Profil Fotoğrafı</FormLabel>
+                      <FormControl>
+                        <Input type="file" accept="image/*" onChange={handleImageChange} disabled={isPending} />
+                      </FormControl>
+                      {imagePreview && (
+                        <div className="mt-4 relative w-32 h-32">
+                          <Image 
+                            src={imagePreview} 
+                            alt="Görsel Önizleme" 
+                            fill
+                            sizes="128px"
+                            className="rounded-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField control={form.control} name="aiHint" render={({ field }) => (<FormItem><FormLabel>AI İpucu (isteğe bağlı)</FormLabel><FormControl><Input {...field} placeholder="e.g. woman teacher" /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="aiHint" render={({ field }) => (<FormItem><FormLabel>AI İpucu (isteğe bağlı)</FormLabel><FormControl><Input {...field} placeholder="e.g. woman teacher" /></FormControl><FormMessage /></FormItem>)} />
+            </div>
             
-            <DialogFooter>
+            <DialogFooter className="p-6 border-t flex-shrink-0 bg-background">
               <Button type="button" variant="ghost" onClick={() => setIsOpen(false)}>İptal</Button>
               <Button type="submit" disabled={isPending}>
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
