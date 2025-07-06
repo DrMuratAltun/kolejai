@@ -67,21 +67,6 @@ export default function DashboardPage() {
           ))}
         </div>
       </div>
-       
-       <div className="fixed bottom-6 right-8 z-50 group">
-           <Button asChild size="icon" className="h-16 w-16 rounded-full shadow-lg bg-slate-900 hover:bg-slate-700">
-               <Link href="/admin/chatbot">
-                  <Bot className="h-8 w-8"/>
-                  <span className="sr-only">Admin Chatbot</span>
-               </Link>
-           </Button>
-           <div className="absolute -top-1 -right-2 pointer-events-none">
-                <span className="flex h-5 w-auto min-w-5 items-center justify-center rounded-full bg-red-600 px-1.5 text-xs text-white font-bold">
-                    ADMIN
-                </span>
-            </div>
-       </div>
-
     </div>
   );
 }
