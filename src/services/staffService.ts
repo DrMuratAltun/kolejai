@@ -22,15 +22,15 @@ export type StaffMemberData = Omit<StaffMember, 'id' | 'createdAt'>;
 const staffCollection = collection(db, "staff");
 
 const fromFirestore = (snapshot: any): StaffMember => {
-  const data = snapshot.data();
+  const data = snapshot.data() || {};
   const createdAtTimestamp = data.createdAt;
   return {
     id: snapshot.id,
-    name: data.name,
-    role: data.role,
-    department: data.department,
-    bio: data.bio,
-    image: data.image,
+    name: data.name || '',
+    role: data.role || '',
+    department: data.department || '',
+    bio: data.bio || '',
+    image: data.image || 'https://placehold.co/400x400.png',
     aiHint: data.aiHint || '',
     managerId: data.managerId || null,
     createdAt: createdAtTimestamp ? (createdAtTimestamp.toDate() as Date).toISOString() : null,
