@@ -61,7 +61,10 @@ export default function NewsCarousel({ newsAndEvents }: NewsCarouselProps) {
                       <h3 className="text-2xl md:text-4xl font-bold leading-tight shadow-lg">
                         {item.title}
                       </h3>
-                      <p className="mt-2 max-w-2xl text-primary-foreground/90 shadow-sm">{item.description}</p>
+                      <div
+                        className="prose prose-invert mt-2 max-w-2xl text-primary-foreground/90 shadow-sm line-clamp-2"
+                        dangerouslySetInnerHTML={{ __html: item.description }}
+                      />
                     </div>
                   </div>
                 </Link>
