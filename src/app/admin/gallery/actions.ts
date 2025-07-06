@@ -3,21 +3,42 @@
 import { z } from 'zod';
 import { addGalleryItem, updateGalleryItem, deleteGalleryItem } from '@/services/galleryService';
 import { revalidatePath } from 'next/cache';
+import { uploadFile } from '@/lib/firebase-storage';
 
-const formSchema = z.object({
-  id: z.string().optional(),
-  src: z.string().url("Geçerli bir URL olmalı"),
-  alt: z.string().min(1, "Alternatif metin gerekli"),
-  aiHint: z.string().optional(),
+// Schema for server-side validation (after file upload)
+const serverFormSchema = z.object({
+    id: z.string().optional(),
+    src: z.string().url("Geçerli bir resim URL'si olmalı."),
+    alt: z.string().min(1, "Alternatif metin gerekli"),
+    aiHint: z.string().optional(),
 });
+
 
 export async function handleGalleryFormSubmit(prevState: any, formData: FormData) {
   const rawData = Object.fromEntries(formData.entries());
   
   if (rawData.id === '') delete rawData.id;
   if (rawData.aiHint === '') delete rawData.aiHint;
+  
+  let imageUrl: string;
+  const imageValue = rawData.src as File | string;
 
-  const parsed = formSchema.safeParse(rawData);
+  // Check if a new file has been uploaded
+  if (imageValue instanceof File && imageValue.size > 0) {
+      try {
+          imageUrl = await uploadFile(imageValue, 'gallery');
+      } catch (e: any) {
+          return { success: false, error: 'Resim yüklenirken bir hata oluştu: ' + e.message };
+      }
+  } else if (typeof imageValue === 'string' && imageValue.startsWith('http')) {
+      // It's an existing URL from an un-edited item
+      imageUrl = imageValue;
+  } else {
+      return { success: false, error: 'Geçerli bir resim dosyası veya URLsi sağlanmadı.' };
+  }
+
+  const dataToParse = { ...rawData, src: imageUrl };
+  const parsed = serverFormSchema.safeParse(dataToParse);
 
   if (!parsed.success) {
     return {
