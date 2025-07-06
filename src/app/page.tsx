@@ -116,7 +116,7 @@ const testimonials = [
 
 export default function Home() {
   const plugin = React.useRef(
-    Autoplay({ delay: 5000, stopOnInteraction: true, stopOnMouseEnter: true })
+    Autoplay({ delay: 4000, stopOnInteraction: false })
   );
 
   const upcomingEvents = newsAndEvents.filter(item => item.type === 'Etkinlik');
@@ -157,8 +157,6 @@ export default function Home() {
             opts={{
               loop: true,
             }}
-            onMouseEnter={plugin.current.stop}
-            onMouseLeave={plugin.current.reset}
           >
             <CarouselContent>
               {newsAndEvents.map((item) => (
@@ -224,7 +222,7 @@ export default function Home() {
             <section id="kurumlarimiz">
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
                     {institutions.map((inst, index) => (
-                        <Link href={inst.href} key={index} className="relative block aspect-[3/4] rounded-xl overflow-hidden group shadow-lg transform transition-transform duration-300 hover:-translate-y-2 z-0">
+                        <Link href={inst.href} key={inst.title} className="relative block aspect-[3/4] rounded-xl overflow-hidden group shadow-lg transform transition-transform duration-300 hover:-translate-y-2 z-0">
                             <Image
                                 src={inst.image}
                                 alt={inst.title}
