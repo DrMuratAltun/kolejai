@@ -114,9 +114,18 @@ const testimonials = [
     }
 ]
 
+const collaborations = [
+    { name: "Bilişim Garajı Eğitimi", logo: "https://placehold.co/200x80.png", aiHint: "technology education" },
+    { name: "Drone Pilotluğu Eğitimi", logo: "https://placehold.co/200x80.png", aiHint: "drone technology" },
+    { name: "VEX ROBOTICS", logo: "https://placehold.co/200x80.png", aiHint: "robotics brand" },
+    { name: "UBTECH ROBOTICS", logo: "https://placehold.co/200x80.png", aiHint: "robotics logo" },
+    { name: "Tüzder Yayınları", logo: "https://placehold.co/200x80.png", aiHint: "education publisher" },
+    { name: "Global Schools Program", logo: "https://placehold.co/200x80.png", aiHint: "global education" },
+];
+
 export default function Home() {
   const plugin = React.useRef(
-    Autoplay({ delay: 4000, stopOnInteraction: false })
+    Autoplay({ delay: 4000, stopOnInteraction: false, stopOnMouseEnter: false })
   );
 
   const upcomingEvents = newsAndEvents.filter(item => item.type === 'Etkinlik');
@@ -221,7 +230,7 @@ export default function Home() {
             {/* Kurumlarımız */}
             <section id="kurumlarimiz">
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-                    {institutions.map((inst, index) => (
+                    {institutions.map((inst) => (
                         <Link href={inst.href} key={inst.title} className="relative block aspect-[3/4] rounded-xl overflow-hidden group shadow-lg transform transition-transform duration-300 hover:-translate-y-2 z-0">
                             <Image
                                 src={inst.image}
@@ -298,6 +307,29 @@ export default function Home() {
                         </div>
                     </div>
                 </div>
+            </section>
+
+            {/* Eğitim İş Birliklerimiz */}
+            <section>
+                <div className="text-center mb-12">
+                  <h2 className="text-2xl md:text-3xl font-bold text-muted-foreground tracking-wider">
+                    ✽ EĞİTİM İŞ BİRLİKLERİMİZ ✽
+                  </h2>
+                </div>
+                <Marquee pauseOnHover={true} speed={40}>
+                  {collaborations.map((collab, index) => (
+                    <div key={index} className="mx-12 flex items-center justify-center h-24">
+                      <Image
+                        src={collab.logo}
+                        alt={collab.name}
+                        width={180}
+                        height={60}
+                        className="object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
+                        data-ai-hint={collab.aiHint}
+                      />
+                    </div>
+                  ))}
+                </Marquee>
             </section>
 
             {/* Veli Görüşleri */}
