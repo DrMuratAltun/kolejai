@@ -18,18 +18,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Loader2, Sparkles, Wand2 } from 'lucide-react';
 import { generatePageContent } from '@/ai/flows/page-generator';
 import { useToast } from '@/hooks/use-toast';
-import { savePageAction } from '../actions';
+import { savePageAction } from '../../actions';
+import type { Page } from '@/services/pageService';
 
-// Helper to generate a URL-friendly slug
 const slugify = (text: string) => {
   return text
     .toString()
     .toLowerCase()
-    .replace(/\s+/g, '-') // Replace spaces with -
-    .replace(/[^\w-]+/g, '') // Remove all non-word chars
-    .replace(/--+/g, '-') // Replace multiple - with single -
-    .replace(/^-+/, '') // Trim - from start of text
-    .replace(/-+$/, ''); // Trim - from end of text
+    .replace(/\s+/g, '-') 
+    .replace(/[^\w-]+/g, '')
+    .replace(/--+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
 };
 
 
@@ -44,14 +44,16 @@ function SubmitButton({ isGenerating }: { isGenerating: boolean }) {
 }
 
 
-export default function NewPage() {
+export default function EditPageClient({ page }: { page: Page }) {
   const { toast } = useToast();
-  const [title, setTitle] = useState('');
-  const [slug, setSlug] = useState('');
-  const [topic, setTopic] = useState('');
-  const [htmlContent, setHtmlContent] = useState('');
+  // Initialize state with existing page data
+  const [title, setTitle] = useState(page.title);
+  const [slug, setSlug] = useState(page.slug);
+  const [topic, setTopic] = useState(''); // Topic can be empty for edits
+  const [htmlContent, setHtmlContent] = useState(page.htmlContent);
   const [isGenerating, setIsGenerating] = useState(false);
 
+  // useActionState for form handling
   const [state, formAction] = useActionState(savePageAction, { success: false, error: null });
 
   useEffect(() => {
@@ -108,20 +110,20 @@ export default function NewPage() {
             <ArrowLeft className="h-4 w-4" />
           </Link>
         </Button>
-        <h1 className="text-3xl font-bold">Yeni Sayfa Oluştur</h1>
+        <h1 className="text-3xl font-bold">Sayfayı Düzenle</h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Form Column */}
         <div className="lg:col-span-1">
           <form action={formAction}>
+            <input type="hidden" name="id" value={page.id} />
             <input type="hidden" name="htmlContent" value={htmlContent} />
             <Card>
               <CardHeader>
                 <CardTitle>Sayfa Detayları</CardTitle>
                 <CardDescription>
-                  Sayfanız için temel bilgileri ve yapay zeka için talimatları
-                  buraya girin.
+                  Sayfa bilgilerini güncelleyin veya AI ile içeriği yeniden oluşturun.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -149,7 +151,7 @@ export default function NewPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="topic">
-                    İçerik Konusu (Yapay Zeka İçin)
+                    İçerik Konusu (İçeriği Değiştirmek İçin)
                   </Label>
                   <Textarea
                     id="topic"
@@ -170,7 +172,7 @@ export default function NewPage() {
                   ) : (
                     <Sparkles className="mr-2 h-4 w-4" />
                   )}
-                  AI ile İçerik Üret
+                  AI ile İçeriği Değiştir
                 </Button>
               </CardContent>
               <CardFooter className="flex justify-end">

@@ -16,8 +16,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { getPages } from '@/services/pageService';
-import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Pencil } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 export default async function PagesListPage() {
   const pages = await getPages();
@@ -68,10 +69,21 @@ export default async function PagesListPage() {
                         {page.createdAt?.toDate().toLocaleDateString('tr-TR')}
                     </TableCell>
                     <TableCell className="text-right">
-                        {/* Actions Dropdown placeholder */}
-                        <Button variant="ghost" size="icon" disabled>
-                           <MoreHorizontal className="h-4 w-4" />
-                        </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem asChild>
+                            <Link href={`/admin/pages/edit/${page.id}`}>
+                              <Pencil className="mr-2 h-4 w-4" />
+                              Düzenle
+                            </Link>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                     </TableRow>
                 ))
