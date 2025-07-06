@@ -1,35 +1,44 @@
-import { useState } from "react";
 import Link from "next/link";
-import { School, Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { cn } from "@/lib/utils";
-import { getMenuPages } from "@/services/pageService";
+import { getMenuPages, Page } from "@/services/pageService";
 import HeaderClient from "./HeaderClient";
 
+export type NavItem = {
+  page: Page;
+  children: NavItem[];
+};
 
 export default async function Header() {
-  const dynamicPages = await getMenuPages();
+  const flatPages = await getMenuPages();
+
+  const buildMenuTree = (pages: Page[]): NavItem[] => {
+    const pageMap: { [key: string]: NavItem } = {};
+    const rootItems: NavItem[] = [];
+
+    pages.forEach(page => {
+      pageMap[page.id] = { page, children: [] };
+    });
+
+    pages.forEach(page => {
+      if (page.parentId && pageMap[page.parentId]) {
+        pageMap[page.parentId].children.push(pageMap[page.id]);
+      } else {
+        rootItems.push(pageMap[page.id]);
+      }
+    });
+
+    return rootItems;
+  };
+
+  const menuTree = buildMenuTree(flatPages);
   
   const staticLinks = [
-    { href: "/", label: "Anasayfa" },
-    { href: "/#hakkimizda", label: "Hakkımızda" },
-    { href: "/staff", label: "Kadromuz" },
-    { href: "/gallery", label: "Galeri" },
+    { title: "Anasayfa", href: "/" },
+    { title: "Hakkımızda", href: "/#hakkimizda" },
+    { title: "Kadromuz", href: "/staff" },
+    { title: "Galeri", href: "/gallery" },
   ];
 
-  const dynamicLinks = dynamicPages.map(page => ({
-    href: `/p/${page.slug}`,
-    label: page.title
-  }));
-  
-  const allLinks = [...staticLinks, ...dynamicLinks, { href: "/contact", label: "İletişim" }];
-
   return (
-    <HeaderClient navLinks={allLinks} />
+    <HeaderClient staticLinks={staticLinks} dynamicNavItems={menuTree} />
   );
 }

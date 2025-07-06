@@ -1,15 +1,18 @@
-import { getPageById } from "@/services/pageService"
+import { getPageById, getPages } from "@/services/pageService"
 import PageEditor from "../../PageEditor";
 import { notFound } from "next/navigation";
 
 export default async function EditPage({ params }: { params: { id: string } }) {
-  const page = await getPageById(params.id);
+  const [page, allPages] = await Promise.all([
+    getPageById(params.id),
+    getPages()
+  ]);
 
   if (!page) {
     notFound();
   }
 
   return (
-    <PageEditor page={page} />
+    <PageEditor page={page} allPages={allPages} />
   );
 }

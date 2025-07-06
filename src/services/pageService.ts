@@ -7,6 +7,8 @@ export interface Page {
   slug: string;
   htmlContent: string;
   showInMenu: boolean;
+  parentId: string | null;
+  menuOrder: number;
   createdAt: Timestamp;
 }
 
@@ -22,6 +24,8 @@ const fromFirestore = (snapshot: any): Page => {
     slug: data.slug,
     htmlContent: data.htmlContent,
     showInMenu: data.showInMenu || false,
+    parentId: data.parentId || null,
+    menuOrder: data.menuOrder || 0,
     createdAt: data.createdAt,
   };
 };
@@ -39,7 +43,7 @@ export const getPages = async (): Promise<Page[]> => {
 
 export const getMenuPages = async (): Promise<Page[]> => {
     try {
-        const q = query(pagesCollection, where("showInMenu", "==", true), orderBy("createdAt", "asc"));
+        const q = query(pagesCollection, where("showInMenu", "==", true), orderBy("menuOrder", "asc"));
         const snapshot = await getDocs(q);
         return snapshot.docs.map(fromFirestore);
     } catch (error) {
