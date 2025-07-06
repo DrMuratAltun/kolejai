@@ -13,6 +13,7 @@ export interface StaffMember {
   bio: string;
   image: string;
   aiHint: string;
+  managerId: string | null;
   createdAt?: string | null;
 }
 
@@ -31,6 +32,7 @@ const fromFirestore = (snapshot: any): StaffMember => {
     bio: data.bio,
     image: data.image,
     aiHint: data.aiHint || '',
+    managerId: data.managerId || null,
     createdAt: createdAtTimestamp ? (createdAtTimestamp.toDate() as Date).toISOString() : null,
   };
 };
@@ -38,7 +40,7 @@ const fromFirestore = (snapshot: any): StaffMember => {
 export const getStaffMembers = async (): Promise<StaffMember[]> => {
   noStore();
   try {
-    const q = query(staffCollection, orderBy("createdAt", "desc"));
+    const q = query(staffCollection, orderBy("name", "asc"));
     const snapshot = await getDocs(q);
     if (snapshot.empty) {
         console.log("No staff members found, returning empty array.");

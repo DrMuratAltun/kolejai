@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, Network } from "lucide-react";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { deleteStaffMemberAction } from "./actions";
 import { StaffFormDialog } from './StaffFormDialog';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import Link from 'next/link';
 
 export default function StaffClient({ initialStaffMembers }: { initialStaffMembers: StaffMember[] }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -55,7 +56,15 @@ export default function StaffClient({ initialStaffMembers }: { initialStaffMembe
           <h1 className="text-3xl font-bold">Personel Yönetimi</h1>
           <p className="text-muted-foreground">Yeni personel ekleyin, düzenleyin veya silin.</p>
         </div>
-        <Button onClick={handleAddNew}>Yeni Personel Ekle</Button>
+        <div className="flex gap-2">
+            <Button asChild variant="outline">
+                <Link href="/admin/staff/chart">
+                    <Network className="mr-2 h-4 w-4"/>
+                    Organizasyon Şeması
+                </Link>
+            </Button>
+            <Button onClick={handleAddNew}>Yeni Personel Ekle</Button>
+        </div>
       </div>
       <Card>
         <CardHeader>
@@ -69,6 +78,7 @@ export default function StaffClient({ initialStaffMembers }: { initialStaffMembe
                 <TableHead>İsim</TableHead>
                 <TableHead>Rol</TableHead>
                 <TableHead>Departman</TableHead>
+                <TableHead>Yöneticisi</TableHead>
                 <TableHead className="text-right">İşlemler</TableHead>
               </TableRow>
             </TableHeader>
@@ -86,6 +96,7 @@ export default function StaffClient({ initialStaffMembers }: { initialStaffMembe
                   </TableCell>
                   <TableCell>{item.role}</TableCell>
                   <TableCell>{item.department}</TableCell>
+                   <TableCell>{initialStaffMembers.find(m => m.id === item.managerId)?.name || '-'}</TableCell>
                   <TableCell className="text-right">
                     <AlertDialog>
                       <DropdownMenu>
@@ -132,6 +143,7 @@ export default function StaffClient({ initialStaffMembers }: { initialStaffMembe
         isOpen={isDialogOpen}
         setIsOpen={setIsDialogOpen}
         editingStaff={editingStaff}
+        allStaffMembers={initialStaffMembers}
       />
     </>
   );
