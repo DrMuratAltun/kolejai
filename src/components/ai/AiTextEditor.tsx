@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useCallback, useEffect } from 'react';
@@ -119,7 +120,9 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
       },
     },
     onUpdate({ editor }) {
-      onContentChange(editor.getHTML());
+      if (onContentChange) {
+        onContentChange(editor.getHTML());
+      }
     },
   });
 
