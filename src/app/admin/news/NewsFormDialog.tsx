@@ -230,7 +230,11 @@ export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialo
                   <FormItem>
                     <FormLabel>Açıklama</FormLabel>
                     <FormControl>
-                      <AiTextEditor form={form} fieldName="description" initialValue={field.value} />
+                       <AiTextEditor 
+                          content={field.value} 
+                          onContentChange={field.onChange} 
+                          placeholder="Haber, duyuru veya etkinlik içeriğini buraya yazın..."
+                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
