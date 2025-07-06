@@ -2,7 +2,7 @@
 'use server';
 
 import { db } from "@/lib/firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { unstable_noStore as noStore } from 'next/cache';
 
 // Interface for the application's staff member structure
@@ -10,12 +10,12 @@ import { unstable_noStore as noStore } from 'next/cache';
 export interface StaffMember {
   id: number;
   name: string;
-  title: string; // Was role
+  title: string; 
   department: string;
-  description: string; // Was bio
-  photo: string; // Was image
+  description: string; 
+  photo: string; 
   aiHint?: string;
-  parentId: number | null; // Was managerId
+  parentId: number | null; 
 }
 
 // Type for creating new staff members, omitting the generated `id`
@@ -26,23 +26,30 @@ const staffDocRef = doc(db, "staff", "staff");
 const getStaffArray = async (): Promise<any[]> => {
     const docSnap = await getDoc(staffDocRef);
     if (!docSnap.exists()) {
-        await updateDoc(staffDocRef, { staff: [] });
+        console.log("Staff document does not exist, creating one...");
+        // Use setDoc to create the document if it doesn't exist. updateDoc would fail.
+        await setDoc(staffDocRef, { staff: [] });
         return [];
     }
     const data = docSnap.data();
     return data.staff && Array.isArray(data.staff) ? data.staff : [];
 };
 
-const fromDbObjectToStaffMember = (dbObj: any): StaffMember => {
+const fromDbObjectToStaffMember = (dbObj: any): StaffMember | null => {
+    // Robust check to ensure dbObj is a processable object
+    if (!dbObj || typeof dbObj !== 'object' || dbObj.id === undefined || dbObj.id === null) {
+        console.error("Skipping invalid or malformed staff member data found in Firestore:", dbObj);
+        return null;
+    }
     return {
-        id: dbObj.id || 0,
-        name: dbObj.name || 'Hatalı Veri',
-        title: dbObj.title || '',
-        department: dbObj.department || 'Bilinmiyor',
+        id: dbObj.id,
+        name: dbObj.name || 'İsimsiz Personel',
+        title: dbObj.title || 'Unvan Belirtilmemiş',
+        department: dbObj.department || 'Departman Bilinmiyor',
         description: dbObj.description || '',
         photo: dbObj.photo || 'https://placehold.co/400x400.png',
         aiHint: dbObj.aiHint || '',
-        parentId: dbObj.parentId || null,
+        parentId: dbObj.parentId === undefined || dbObj.parentId === '' ? null : dbObj.parentId,
     };
 };
 
@@ -50,11 +57,19 @@ export const getStaffMembers = async (): Promise<StaffMember[]> => {
   noStore();
   try {
     const staffArray = await getStaffArray();
-    const members = staffArray.map(fromDbObjectToStaffMember);
-    members.sort((a, b) => a.name.localeCompare(b.name));
+    
+    // Map and then filter out any null values resulting from malformed data
+    const members = staffArray
+        .map(fromDbObjectToStaffMember)
+        .filter((member): member is StaffMember => member !== null);
+
+    // Safely sort the valid members
+    members.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    
     return members;
   } catch (error) {
-    console.error("Error fetching staff members:", error);
+    console.error("FATAL ERROR fetching staff members, returning empty array to prevent crash.", error);
+    // Return an empty array on error to ensure the page can still render
     return [];
   }
 };
@@ -88,5 +103,12 @@ export const updateStaffMember = async (id: number, item: Partial<StaffMemberDat
 export const deleteStaffMember = async (id: number) => {
     const staffArray = await getStaffArray();
     const newStaffArray = staffArray.filter(member => member.id !== id);
-    return await updateDoc(staffDocRef, { staff: newStaffArray });
+    // After deleting, check for any children that pointed to the deleted member and nullify their parentId
+    const updatedStaffArray = newStaffArray.map(member => {
+        if (member.parentId === id) {
+            return { ...member, parentId: null };
+        }
+        return member;
+    });
+    return await updateDoc(staffDocRef, { staff: updatedStaffArray });
 };
