@@ -1,5 +1,4 @@
 // src/lib/firebase-storage.ts
-'use server';
 
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { app } from './firebase';
@@ -13,6 +12,8 @@ const storage = getStorage(app);
  * @returns The public download URL of the uploaded file.
  */
 export async function uploadFile(file: File, path: string): Promise<string> {
+  'use server';
+  
   if (!file) {
     throw new Error('No file provided for upload.');
   }
