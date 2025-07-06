@@ -26,16 +26,37 @@ interface StaffFormDialogProps {
   allStaffMembers: StaffMember[];
 }
 
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+
+
 const formSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, "İsim gerekli"),
   title: z.string().min(1, "Rol/Unvan gerekli"),
   department: z.string().min(1, "Departman gerekli"),
-  description: z.string().min(1, "Biyografi gerekli"),
-  photo: z.any().optional(),
+  description: z.string().optional(),
+  photo: z.any()
+    .refine(
+      (value) => {
+        if (!value || typeof value === 'string') return true;
+        if (value instanceof File) return value.size <= MAX_FILE_SIZE;
+        return false;
+      },
+      `Maksimum dosya boyutu 2MB'dir.`
+    )
+    .refine(
+      (value) => {
+        if (!value || typeof value === 'string') return true;
+        if (value instanceof File) return ACCEPTED_IMAGE_TYPES.includes(value.type);
+        return false;
+      },
+      "Sadece .jpg, .jpeg, .png ve .webp formatları desteklenmektedir."
+    ).optional(),
   aiHint: z.string().optional().default(''),
   parentId: z.string().optional(),
 });
+
 
 type StaffFormValues = z.infer<typeof formSchema>;
 
@@ -56,7 +77,6 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
   useEffect(() => {
     if (isOpen) {
         if (editingStaff) {
-            // Defensive reset to prevent controlled/uncontrolled error
             form.reset({
                 id: editingStaff.id,
                 name: editingStaff.name || '',
@@ -69,7 +89,6 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
             });
             setImagePreview(editingStaff.photo);
         } else {
-            // Reset for new entry is already safe
             form.reset({
                 id: undefined,
                 name: '',
@@ -117,14 +136,34 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      form.setValue('photo', file, { shouldValidate: true });
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    if (file.size > MAX_FILE_SIZE) {
+      toast({
+        variant: "destructive",
+        title: "Dosya Çok Büyük",
+        description: `Lütfen 2MB'den küçük bir resim dosyası seçin.`,
+      });
+      event.target.value = '';
+      return;
     }
+
+    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+      toast({
+        variant: "destructive",
+        title: "Geçersiz Dosya Türü",
+        description: "Lütfen .jpg, .jpeg, .png veya .webp formatında bir resim seçin.",
+      });
+      event.target.value = '';
+      return;
+    }
+
+    form.setValue('photo', file, { shouldValidate: true });
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -164,11 +203,11 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
               <FormField
                   control={form.control}
                   name="photo"
-                  render={() => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Profil Fotoğrafı</FormLabel>
                       <FormControl>
-                        <Input type="file" accept="image/*" onChange={handleImageChange} disabled={isPending} />
+                        <Input type="file" accept="image/png, image/jpeg, image/webp" onChange={handleImageChange} disabled={isPending} />
                       </FormControl>
                       <div className="mt-4 relative w-32 h-32 rounded-full overflow-hidden bg-muted flex items-center justify-center">
                           {imagePreview ? (
