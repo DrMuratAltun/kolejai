@@ -89,7 +89,7 @@ export default function StaffClient({ initialStaffMembers }: { initialStaffMembe
                     <div className='flex items-center gap-3'>
                       <Avatar>
                         <AvatarImage src={item.image} alt={item.name} />
-                        <AvatarFallback>{item.name.charAt(0)}</AvatarFallback>
+                        <AvatarFallback>{item.name ? item.name.split(' ').map(n => n[0]).join('') : 'P'}</AvatarFallback>
                       </Avatar>
                       {item.name}
                     </div>
