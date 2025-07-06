@@ -43,7 +43,7 @@ const dataURLtoFile = (dataurl: string, filename: string): File => {
 
 // Helper to strip HTML tags for AI prompts
 const stripHtml = (html: string) => {
-  if (typeof window === 'undefined') return html;
+  if (typeof window === 'undefined' || !html) return "";
   const doc = new DOMParser().parseFromString(html, 'text/html');
   return doc.body.textContent || "";
 }
@@ -82,6 +82,11 @@ export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialo
       image: 'https://placehold.co/600x400.png', aiHint: '', href: '#'
     }
   });
+  
+  const watchedTitle = form.watch('title');
+  const watchedDescription = form.watch('description');
+  const isFormEmptyForImageGen = !watchedTitle.trim() && !stripHtml(watchedDescription).trim();
+
 
   useEffect(() => {
     if (isOpen) {
@@ -195,124 +200,126 @@ export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialo
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[800px]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[800px] h-[90vh] flex flex-col p-0">
+        <DialogHeader className="p-6 pb-4 border-b flex-shrink-0">
           <DialogTitle>{editingNews ? 'Kaydı Düzenle' : 'Yeni Kayıt Ekle'}</DialogTitle>
           <DialogDescription>Haber, etkinlik veya duyuru bilgilerini buradan yönetin.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField control={form.control} name="title" render={({ field }) => (<FormItem><FormLabel>Başlık</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-            
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Açıklama</FormLabel>
-                  <FormControl>
-                    <AiTextEditor form={form} fieldName="description" initialValue={field.value} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField control={form.control} name="type" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tür</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl><SelectTrigger><SelectValue placeholder="Tür seçin" /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      <SelectItem value="Haber">Haber</SelectItem>
-                      <SelectItem value="Etkinlik">Etkinlik</SelectItem>
-                      <SelectItem value="Duyuru">Duyuru</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )} />
-               <FormField
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex-grow flex flex-col overflow-hidden">
+            <div className="flex-grow overflow-y-auto space-y-4 p-6">
+              <FormField control={form.control} name="title" render={({ field }) => (<FormItem><FormLabel>Başlık</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+              
+              <FormField
                 control={form.control}
-                name="date"
+                name="description"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col pt-2">
-                    <FormLabel>Yayın Tarihi</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(new Date(field.value), "PPP", { locale: tr })
-                            ) : (
-                              <span>Bir tarih seçin</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value ? new Date(field.value) : undefined}
-                          onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                  <FormItem>
+                    <FormLabel>Açıklama</FormLabel>
+                    <FormControl>
+                      <AiTextEditor form={form} fieldName="description" initialValue={field.value} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField control={form.control} name="type" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tür</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl><SelectTrigger><SelectValue placeholder="Tür seçin" /></SelectTrigger></FormControl>
+                      <SelectContent>
+                        <SelectItem value="Haber">Haber</SelectItem>
+                        <SelectItem value="Etkinlik">Etkinlik</SelectItem>
+                        <SelectItem value="Duyuru">Duyuru</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField
+                  control={form.control}
+                  name="date"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col pt-2">
+                      <FormLabel>Yayın Tarihi</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(new Date(field.value), "PPP", { locale: tr })
+                              ) : (
+                                <span>Bir tarih seçin</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value ? new Date(field.value) : undefined}
+                            onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
+              <FormField
+                control={form.control}
+                name="image"
+                render={() => (
+                  <FormItem>
+                    <div className="flex items-center justify-between">
+                      <FormLabel>Görsel</FormLabel>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleGenerateImage}
+                        disabled={isPending || isGeneratingImage || isFormEmptyForImageGen}
+                      >
+                        {isGeneratingImage ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                        Yapay Zeka ile Üret
+                      </Button>
+                    </div>
+                    <FormControl>
+                      <Input type="file" accept="image/*" onChange={handleImageChange} disabled={isPending || isGeneratingImage} />
+                    </FormControl>
+                    {isGeneratingImage && (
+                      <div className="w-full flex justify-center items-center h-32 bg-muted rounded-md">
+                        <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                          <Loader2 className="h-8 w-8 animate-spin" />
+                          <span>Görsel üretiliyor...</span>
+                        </div>
+                      </div>
+                    )}
+                    {!isGeneratingImage && imagePreview && (
+                      <div className="mt-4">
+                        <Image src={imagePreview} alt="Görsel Önizleme" width={200} height={120} className="rounded-md object-cover"/>
+                      </div>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
             
-            <FormField
-              control={form.control}
-              name="image"
-              render={() => (
-                <FormItem>
-                  <div className="flex items-center justify-between">
-                    <FormLabel>Görsel</FormLabel>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={handleGenerateImage}
-                      disabled={isPending || isGeneratingImage || (!form.watch('title') && !form.watch('description'))}
-                    >
-                      {isGeneratingImage ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                      Yapay Zeka ile Üret
-                    </Button>
-                  </div>
-                  <FormControl>
-                    <Input type="file" accept="image/*" onChange={handleImageChange} disabled={isPending || isGeneratingImage} />
-                  </FormControl>
-                  {isGeneratingImage && (
-                    <div className="w-full flex justify-center items-center h-32 bg-muted rounded-md">
-                      <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                        <Loader2 className="h-8 w-8 animate-spin" />
-                        <span>Görsel üretiliyor...</span>
-                      </div>
-                    </div>
-                  )}
-                  {!isGeneratingImage && imagePreview && (
-                    <div className="mt-4">
-                      <Image src={imagePreview} alt="Görsel Önizleme" width={200} height={120} className="rounded-md object-cover"/>
-                    </div>
-                  )}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <DialogFooter>
+            <DialogFooter className="p-6 border-t flex-shrink-0">
               <Button type="button" variant="ghost" onClick={() => setIsOpen(false)}>İptal</Button>
               <Button type="submit" disabled={isPending || isGeneratingImage}>
                 {(isPending || isGeneratingImage) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
