@@ -222,7 +222,7 @@ export default function Home() {
 
             {/* Kurumlarımız */}
             <section id="kurumlarimiz">
-                <div className="grid grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
                     {institutions.map((inst, index) => (
                         <Link href={inst.href} key={index} className="relative block aspect-[3/4] rounded-xl overflow-hidden group shadow-lg transform transition-transform duration-300 hover:-translate-y-2">
                             <Image
@@ -234,7 +234,7 @@ export default function Home() {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>
                             <div className="absolute z-10 inset-0 flex flex-col items-center justify-center text-white p-1 text-center">
-                                <h3 className="font-bold uppercase tracking-tighter transition-all duration-300 group-hover:-translate-y-4 text-[10px] sm:text-xs">{inst.title}</h3>
+                                <h3 className="font-bold uppercase tracking-tighter transition-all duration-300 group-hover:-translate-y-4 text-[10px] sm:text-xs md:text-sm">{inst.title}</h3>
                                 <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 group-hover:translate-y-0 translate-y-4">
                                     <Button variant="outline" size="sm" className="bg-white/20 border-white text-white backdrop-blur-sm hover:bg-white hover:text-primary text-xs h-auto px-2 py-1">
                                         İnceleyin <ArrowRight className="ml-1 h-3 w-3" />
@@ -249,25 +249,32 @@ export default function Home() {
              {/* Öne Çıkan Özellikler */}
             <section>
               <div className="text-center mb-16">
-                  <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Kolejimizin Öne Çıkan Özellikleri</h2>
-                  <div className="w-20 h-1 bg-primary mx-auto"></div>
+                <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Kolejimizin Öne Çıkan Özellikleri</h2>
+                <div className="w-20 h-1 bg-primary mx-auto"></div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                  {features.map((feature, index) => (
-                      <Card key={index} className="flex flex-col text-center p-6 transform transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl h-full">
-                          <div 
-                            className="w-20 h-20 rounded-full flex items-center justify-center mb-6 mx-auto"
-                            style={{ backgroundColor: `hsla(var(--${feature.colorVar}), 0.1)` }}
-                          >
-                              <feature.icon 
-                                className="w-10 h-10"
-                                style={{ color: `hsl(var(--${feature.colorVar}))` }}
-                              />
-                          </div>
-                          <CardTitle className="text-xl mb-3">{feature.title}</CardTitle>
-                          <CardDescription>{feature.description}</CardDescription>
-                      </Card>
-                  ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {features.map((feature, index) => (
+                  <div key={index} className="group h-80 [perspective:1000px]">
+                    <div className="relative h-full w-full rounded-xl shadow-xl transition-all duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
+                      {/* Front Side */}
+                      <div 
+                        className="absolute inset-0 flex flex-col items-center justify-center rounded-xl [backface-visibility:hidden] text-white p-6 text-center"
+                        style={{ backgroundColor: `hsl(var(--${feature.colorVar}))` }}
+                      >
+                        <feature.icon className="w-20 h-20 mb-4" />
+                        <h3 className="text-2xl font-bold">{feature.title}</h3>
+                      </div>
+                      {/* Back Side */}
+                      <div 
+                        className="absolute inset-0 flex flex-col items-center justify-center rounded-xl [backface-visibility:hidden] [transform:rotateY(180deg)] text-white p-6 text-center"
+                        style={{ backgroundColor: `hsl(var(--${feature.colorVar}))` }}
+                      >
+                        <h3 className="text-xl font-bold mb-4">{feature.title}</h3>
+                        <p className="text-base">{feature.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </section>
       
@@ -303,7 +310,7 @@ export default function Home() {
                 </div>
                 <Marquee pauseOnHover={true} speed={40}>
                   {testimonials.map((testimonial, index) => (
-                      <Card key={index} className="p-6 mx-4 w-[380px] flex-shrink-0">
+                      <Card key={index} className="p-6 mx-4 w-[350px] flex-shrink-0">
                           <CardContent className="p-0">
                               <div className="flex items-center mb-4">
                                   <Image src={testimonial.image} alt={testimonial.name} width={56} height={56} className="rounded-full mr-4" data-ai-hint={testimonial.aiHint}/>
