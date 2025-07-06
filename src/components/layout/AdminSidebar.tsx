@@ -27,7 +27,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 const menuItems = [
   { href: "/admin/dashboard", label: "Gösterge Paneli", icon: LayoutDashboard },
   { href: "/admin/chatbot", label: "Yönetici Chatbot", icon: Bot },
-  { href: "#", label: "Haber Yönetimi", icon: Newspaper },
+  { href: "/admin/news", label: "Haber Yönetimi", icon: Newspaper },
   { href: "#", label: "Galeri Yönetimi", icon: GalleryHorizontal },
   { href: "#", label: "Gelen Formlar", icon: Mail },
 ];

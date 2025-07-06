@@ -1,10 +1,5 @@
-
-"use client";
-
-import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Autoplay from "embla-carousel-autoplay";
 import Marquee from "react-fast-marquee";
 import {
   Card,
@@ -15,14 +10,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { 
     ArrowRight, 
-    Newspaper, 
     Calendar,
-    CalendarDays,
-    Bus,
-    GraduationCap,
     CheckCircle,
     BrainCircuit,
     Languages,
@@ -32,43 +22,10 @@ import {
     Trophy,
     Quote,
     Star,
-    School,
-    Facebook,
-    Twitter,
-    Instagram
 } from "lucide-react";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel"
-import { newsAndEvents } from "@/lib/data";
-
-const quickAccessItems = [
-    {
-        icon: CalendarDays,
-        title: "Okul Kayıtları",
-        description: "2024-2025 eğitim öğretim yılı kayıtlarımız başladı.",
-        bgColor: "bg-blue-100 dark:bg-blue-900/50",
-        iconColor: "text-blue-600 dark:text-blue-400"
-    },
-    {
-        icon: Bus,
-        title: "Servis Hizmeti",
-        description: "Güvenli ve konforlu servis ağımız ile hizmetinizdeyiz.",
-        bgColor: "bg-yellow-100 dark:bg-yellow-900/50",
-        iconColor: "text-yellow-600 dark:text-yellow-400"
-    },
-    {
-        icon: GraduationCap,
-        title: "Burs İmkanları",
-        description: "Başarılı öğrencilerimize özel burs fırsatları.",
-        bgColor: "bg-green-100 dark:bg-green-900/50",
-        iconColor: "text-green-600 dark:text-green-400"
-    }
-]
+import { getNewsItems, NewsItem } from "@/services/newsService";
+import NewsCarousel from "@/components/home/NewsCarousel";
+import QuickAccess from "@/components/home/QuickAccess";
 
 const institutions = [
     { title: "Anaokulu", image: "https://placehold.co/600x800.png", aiHint: "kindergarten classroom", href: "#" },
@@ -85,7 +42,7 @@ const features = [
     { icon: Leaf, title: "Doğa Bilinci", description: "Ekolojik okul projeleri ve doğa kampanyaları ile çevre bilinci kazandırıyoruz.", colorVar: "feature-4" },
     { icon: HeartHandshake, title: "Psikolojik Danışmanlık", description: "Tam zamanlı psikolog ve rehber öğretmenlerle öğrencilerimizin duygusal gelişimini destekliyoruz.", colorVar: "feature-5" },
     { icon: Trophy, title: "Spor ve Sanat", description: "10'dan fazla spor branşı ve sanat atölyeleri ile öğrencilerimizin yeteneklerini keşfediyoruz.", colorVar: "feature-6" }
-]
+];
 
 const testimonials = [
     {
@@ -112,7 +69,7 @@ const testimonials = [
         comment: "Liseye başladığından beri kızımın disiplinli çalışma alışkanlıkları kazandığını gözlemliyoruz. Üniversite hazırlık sürecindeki ciddiyetleri ve öğrencileri motive eden yaklaşımları için teşekkür ederiz.",
         rating: 4
     }
-]
+];
 
 const collaborations = [
     { name: "Bilişim Garajı Eğitimi", logo: "https://placehold.co/200x80.png", aiHint: "technology education" },
@@ -123,11 +80,8 @@ const collaborations = [
     { name: "Global Schools Program", logo: "https://placehold.co/200x80.png", aiHint: "global education" },
 ];
 
-export default function Home() {
-  const plugin = React.useRef(
-    Autoplay({ delay: 4000, stopOnInteraction: false, stopOnMouseEnter: false })
-  );
-
+export default async function Home() {
+  const newsAndEvents: NewsItem[] = await getNewsItems();
   const upcomingEvents = newsAndEvents.filter(item => item.type === 'Etkinlik');
 
   return (
@@ -158,45 +112,7 @@ export default function Home() {
       </section>
 
       {/* Haberler & Duyurular Carousel */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <Carousel
-            plugins={[plugin.current]}
-            className="w-full"
-            opts={{
-              loop: true,
-            }}
-          >
-            <CarouselContent>
-              {newsAndEvents.map((item) => (
-                <CarouselItem key={item.id}>
-                  <Link href={item.href} className="block">
-                    <div className="relative h-[400px] md:h-[500px] rounded-xl overflow-hidden group">
-                      <Image
-                        src={item.image}
-                        alt={item.title}
-                        fill
-                        className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-                        data-ai-hint={item.aiHint}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                      <div className="absolute inset-0 flex flex-col justify-end p-8 text-white">
-                        <Badge className="w-fit mb-2 bg-primary/80 backdrop-blur-sm border-0">{item.type}</Badge>
-                        <h3 className="text-2xl md:text-4xl font-bold leading-tight shadow-lg">
-                          {item.title}
-                        </h3>
-                        <p className="mt-2 max-w-2xl text-primary-foreground/90 shadow-sm">{item.description}</p>
-                      </div>
-                    </div>
-                  </Link>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
-            <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
-          </Carousel>
-        </div>
-      </section>
+      <NewsCarousel newsAndEvents={newsAndEvents} />
 
       {/* Main Content and Sidebar Wrapper */}
       <div className="container mx-auto px-4 py-16">
@@ -368,24 +284,7 @@ export default function Home() {
           {/* Sidebar Area */}
           <aside className="lg:w-1/3 mt-16 lg:mt-0">
             <div className="sticky top-28 space-y-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Hızlı Erişim</CardTitle>
-                </CardHeader>
-                <CardContent className="flex flex-col gap-4">
-                  {quickAccessItems.map((item, index) => (
-                    <div key={index} className="flex items-start gap-4">
-                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${item.bgColor} flex-shrink-0`}>
-                          <item.icon className={`h-6 w-6 ${item.iconColor}`} />
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-md mb-1 text-foreground">{item.title}</h3>
-                        <p className="text-muted-foreground text-sm">{item.description}</p>
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
+              <QuickAccess />
 
               {upcomingEvents.length > 0 && (
                 <Card>
