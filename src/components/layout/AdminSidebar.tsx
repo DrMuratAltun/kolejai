@@ -31,7 +31,7 @@ const menuItems = [
   { href: "/admin/news", label: "Haber Yönetimi", icon: Newspaper },
   { href: "/admin/staff", label: "Kadro Yönetimi", icon: Users },
   { href: "/admin/gallery", label: "Galeri Yönetimi", icon: GalleryHorizontal },
-  { href: "#", label: "Gelen Formlar", icon: Mail },
+  { href: "/admin/submissions", label: "Gelen Formlar", icon: Mail },
 ];
 
 export default function AdminSidebar() {
