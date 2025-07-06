@@ -11,6 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { logoutAction } from "@/app/admin/actions";
+import { LogOut } from "lucide-react";
 
 export default function AdminHeader() {
   return (
@@ -38,10 +40,15 @@ export default function AdminHeader() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Profil</DropdownMenuItem>
-            <DropdownMenuItem>Ayarlar</DropdownMenuItem>
+            <DropdownMenuItem disabled>Profil</DropdownMenuItem>
+            <DropdownMenuItem disabled>Ayarlar</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Çıkış Yap</DropdownMenuItem>
+            <form action={logoutAction} className="w-full">
+                <button type="submit" className="relative flex w-full cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
+                    <LogOut className="h-4 w-4" />
+                    <span>Çıkış Yap</span>
+                </button>
+            </form>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
