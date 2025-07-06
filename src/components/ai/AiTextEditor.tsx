@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useCallback, useEffect } from 'react';
-import NextImage from 'next/image';
 import { useFormContext } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -9,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, Wand2, Sparkles, Bold, Italic, Strikethrough, Underline, List, ListOrdered, Link2, Image as ImageIcon } from 'lucide-react';
 import { generateText, rewriteText } from '@/ai/flows/content-tools';
-import { generateImage } from '@/ai/flows/image-generation';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -20,7 +18,6 @@ import Link from '@tiptap/extension-link';
 import UnderlineExtension from '@tiptap/extension-underline';
 import Image from '@tiptap/extension-image';
 import { cn } from '@/lib/utils';
-import { uploadFile } from '@/lib/firebase-storage';
 
 
 const Toolbar = ({ editor }: { editor: any }) => {
@@ -108,31 +105,7 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ form, fieldName, initialVal
   const [rewriteLength, setRewriteLength] = useState('');
   const [rewriteTone, setRewriteTone] = useState('');
 
-  // New state for image generation
-  const [isImagePopoverOpen, setImagePopoverOpen] = useState(false);
-  const [imageGenPrompt, setImageGenPrompt] = useState('');
-  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
-  const [generatedImageDataUri, setGeneratedImageDataUri] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-
-  const isLoading = isRewriting || isGeneratingText || isGeneratingImage || isUploading;
-
-  const dataURLtoFile = (dataurl: string, filename: string): File => {
-    const arr = dataurl.split(',');
-    const mimeMatch = arr[0].match(/:(.*?);/);
-    if (!mimeMatch) {
-      throw new Error('Invalid data URI');
-    }
-    const mime = mimeMatch[1];
-    const bstr = atob(arr[1]);
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-    return new File([u8arr], filename, { type: mime });
-  };
-
+  const isLoading = isRewriting || isGeneratingText;
 
   const editor = useEditor({
     extensions: [
@@ -151,7 +124,6 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ form, fieldName, initialVal
       }),
       Image,
     ],
-    content: initialValue,
     editorProps: {
       attributes: {
         class: cn('prose dark:prose-invert prose-sm sm:prose-base focus:outline-none max-w-full'),
@@ -221,58 +193,6 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ form, fieldName, initialVal
     }
   };
 
-  const handleGenerateImage = async () => {
-    if (!imageGenPrompt) return;
-    setIsGeneratingImage(true);
-    setGeneratedImageDataUri(null);
-    try {
-        const result = await generateImage({ prompt: imageGenPrompt });
-        if (result.imageUrl) {
-            setGeneratedImageDataUri(result.imageUrl);
-            toast({ title: "Başarılı!", description: "Yapay zeka ile resim üretildi." });
-        }
-    } catch (error) {
-        console.error("Image generation error:", error);
-        toast({
-            variant: "destructive",
-            title: "Hata!",
-            description: "Resim üretilirken bir hata oluştu.",
-        });
-    } finally {
-        setIsGeneratingImage(false);
-    }
-  };
-
-  const handleInsertImage = async () => {
-    if (!generatedImageDataUri) return;
-    setIsUploading(true);
-    try {
-      const filename = `${imageGenPrompt.replace(/[^a-z0-9]/gi, '_').toLowerCase().slice(0, 20)}.png`;
-      const file = dataURLtoFile(generatedImageDataUri, filename);
-      const publicUrl = await uploadFile(file, 'content-images');
-      
-      editor?.chain().focus().setImage({ src: publicUrl, alt: imageGenPrompt }).run();
-      
-      toast({ title: "Başarılı!", description: "Resim içeriğe eklendi." });
-      
-      // Reset and close
-      setImagePopoverOpen(false);
-      setGeneratedImageDataUri(null);
-      setImageGenPrompt('');
-
-    } catch (error) {
-        console.error("Image insertion error:", error);
-        toast({
-            variant: "destructive",
-            title: "Hata!",
-            description: "Resim yüklenirken veya eklenirken bir hata oluştu.",
-        });
-    } finally {
-        setIsUploading(false);
-    }
-  };
-
-
   return (
     <div className="space-y-2">
       <div className='rounded-md border border-input focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2'>
@@ -329,57 +249,6 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ form, fieldName, initialVal
             </div>
           </PopoverContent>
         </Popover>
-
-        <Popover open={isImagePopoverOpen} onOpenChange={setImagePopoverOpen}>
-          <PopoverTrigger asChild>
-            <Button type="button" variant="default" size="sm" disabled={isLoading}>
-              <ImageIcon className="mr-2 h-4 w-4" /> İçeriğe Resim Üret
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-96">
-            <div className="grid gap-4">
-              <div className="space-y-2">
-                <h4 className="font-medium leading-none">AI ile Resim Üret</h4>
-                <p className="text-sm text-muted-foreground">
-                  İçeriğinize eklemek için bir resim üretin.
-                </p>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="image-prompt">Resim Konusu</Label>
-                <Input id="image-prompt" value={imageGenPrompt} onChange={(e) => setImageGenPrompt(e.target.value)} disabled={isLoading}/>
-                <Button onClick={handleGenerateImage} disabled={isLoading || !imageGenPrompt}>
-                  {isGeneratingImage ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4"/>}
-                  Resim Üret
-                </Button>
-              </div>
-              {isGeneratingImage && (
-                <div className="w-full flex justify-center items-center h-48 bg-muted rounded-md mt-2">
-                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                        <Loader2 className="h-8 w-8 animate-spin" />
-                        <span>Resim üretiliyor...</span>
-                    </div>
-                </div>
-              )}
-              {generatedImageDataUri && (
-                <div className="mt-4 space-y-4">
-                    <p className="text-sm font-medium">Üretilen Resim (Önizleme)</p>
-                    <NextImage
-                        src={generatedImageDataUri}
-                        alt="Yapay zeka tarafından üretilen görsel"
-                        width={350}
-                        height={350}
-                        className="rounded-md object-contain border"
-                    />
-                    <Button onClick={handleInsertImage} disabled={isLoading} className="w-full">
-                        {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                        Editöre Ekle
-                    </Button>
-                </div>
-              )}
-            </div>
-          </PopoverContent>
-        </Popover>
-
       </div>
     </div>
   );

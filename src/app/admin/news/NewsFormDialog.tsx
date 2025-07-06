@@ -41,6 +41,13 @@ const dataURLtoFile = (dataurl: string, filename: string): File => {
   return new File([u8arr], filename, { type: mime });
 }
 
+// Helper to strip HTML tags for AI prompts
+const stripHtml = (html: string) => {
+  if (typeof window === 'undefined') return html;
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  return doc.body.textContent || "";
+}
+
 interface NewsFormDialogProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
@@ -94,6 +101,11 @@ export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialo
   }, [editingNews, isOpen, form]);
 
   const onSubmit = (values: NewsFormValues) => {
+    // Automatically set aiHint from title if it's not set
+    if (!values.aiHint && values.title) {
+        values.aiHint = values.title.split(' ').slice(0, 2).join(' ');
+    }
+
     const formData = new FormData();
     Object.entries(values).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
@@ -137,16 +149,22 @@ export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialo
 
   const handleGenerateImage = async () => {
     const title = form.getValues('title');
-    const aiHint = form.getValues('aiHint');
-    const prompt = aiHint ? `${title} - ${aiHint}` : title;
+    const descriptionHtml = form.getValues('description');
+    const descriptionText = stripHtml(descriptionHtml).trim();
+    const prompt = descriptionText ? `${title}: ${descriptionText.substring(0, 300)}` : title;
 
     if (!prompt) {
         toast({
             variant: "destructive",
             title: "Hata",
-            description: "Görsel üretmek için lütfen bir başlık veya AI ipucu girin.",
+            description: "Görsel üretmek için lütfen bir başlık veya açıklama girin.",
         });
         return;
+    }
+
+    // Set AI Hint from title for the data-ai-hint attribute
+    if (title) {
+      form.setValue('aiHint', title.split(' ').slice(0, 2).join(' '));
     }
 
     setIsGeneratingImage(true);
@@ -267,7 +285,7 @@ export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialo
                       variant="outline"
                       size="sm"
                       onClick={handleGenerateImage}
-                      disabled={isPending || isGeneratingImage || !form.watch('title')}
+                      disabled={isPending || isGeneratingImage || (!form.watch('title') && !form.watch('description'))}
                     >
                       {isGeneratingImage ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                       Yapay Zeka ile Üret
@@ -293,8 +311,6 @@ export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialo
                 </FormItem>
               )}
             />
-
-            <FormField control={form.control} name="aiHint" render={({ field }) => (<FormItem><FormLabel>AI Görsel İpucu (isteğe bağlı)</FormLabel><FormControl><Input {...field} placeholder="e.g. students in science class" /></FormControl><FormMessage /></FormItem>)} />
             
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={() => setIsOpen(false)}>İptal</Button>
