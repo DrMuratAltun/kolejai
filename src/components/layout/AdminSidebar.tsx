@@ -9,31 +9,37 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarFooter,
   SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
-  Bot,
   Newspaper,
+  Calendar,
+  Megaphone,
+  Files,
   GalleryHorizontal,
-  Mail,
+  User,
   School,
-  LogOut,
-  Users,
+  Mail,
 } from "lucide-react";
-import { Button } from "../ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { logoutAction } from "@/app/admin/actions";
 
-const menuItems = [
-  { href: "/admin/dashboard", label: "Gösterge Paneli", icon: LayoutDashboard },
-  { href: "/admin/chatbot", label: "Yönetici Chatbot", icon: Bot },
-  { href: "/admin/news", label: "Haber Yönetimi", icon: Newspaper },
-  { href: "/admin/staff", label: "Kadro Yönetimi", icon: Users },
-  { href: "/admin/gallery", label: "Galeri Yönetimi", icon: GalleryHorizontal },
-  { href: "/admin/submissions", label: "Gelen Formlar", icon: Mail },
+const mainMenuItems = [
+  { href: "/admin/dashboard", label: "Ana Panel", icon: LayoutDashboard },
 ];
+
+const contentMenuItems = [
+    { href: "/admin/news", label: "Haberler", icon: Newspaper },
+    { href: "#", label: "Etkinlikler", icon: Calendar, disabled: true },
+    { href: "#", label: "Duyurular", icon: Megaphone, disabled: true },
+    { href: "#", label: "Sayfalar", icon: Files, disabled: true },
+    { href: "/admin/gallery", label: "Okuldan Kareler", icon: GalleryHorizontal },
+    { href: "#", label: "Müdür Mesajı", icon: User, disabled: true },
+    { href: "#", label: "Kurumlarımız", icon: School, disabled: true },
+    { href: "/admin/submissions", label: "İletişim Bilgileri", icon: Mail },
+];
+
 
 export default function AdminSidebar() {
   const pathname = usePathname();
@@ -41,20 +47,18 @@ export default function AdminSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <Link href="/" className="flex items-center gap-2 text-xl font-bold text-primary">
-          <School className="h-7 w-7" />
-          <span className="group-data-[collapsible=icon]:hidden">Bilge Yıldız</span>
-        </Link>
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-primary/20 rounded-lg group-data-[collapsible=icon]:p-1.5">
+            <School className="h-6 w-6 text-primary" />
+          </div>
+          <span className="text-xl font-semibold text-white group-data-[collapsible=icon]:hidden">Yönetici Paneli</span>
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
-          {menuItems.map((item) => (
-            <SidebarMenuItem key={item.label}>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname.startsWith(item.href)}
-                tooltip={{ children: item.label }}
-              >
+          {mainMenuItems.map((item) => (
+             <SidebarMenuItem key={item.label}>
+              <SidebarMenuButton asChild isActive={pathname === item.href} tooltip={{ children: item.label }}>
                 <Link href={item.href}>
                   <item.icon />
                   <span>{item.label}</span>
@@ -63,24 +67,26 @@ export default function AdminSidebar() {
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
-      </SidebarContent>
-      <SidebarFooter>
+        
         <SidebarGroup>
-           <div className="flex items-center gap-3">
-              <Avatar className="h-9 w-9 group-data-[collapsible=icon]:h-10 group-data-[collapsible=icon]:w-10">
-                  <AvatarImage src="https://placehold.co/100x100.png" alt="Admin" data-ai-hint="person avatar" />
-                  <AvatarFallback>AD</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-                  <span className="font-semibold text-sm">Admin User</span>
-                  <span className="text-xs text-muted-foreground">admin@bilgeyildiz.com</span>
-              </div>
-              <Button onClick={() => logoutAction()} variant="ghost" size="icon" aria-label="Çıkış Yap" className="ml-auto group-data-[collapsible=icon]:hidden">
-                <LogOut className="h-4 w-4" />
-              </Button>
-           </div>
+            <SidebarGroupLabel>İÇERİK YÖNETİMİ</SidebarGroupLabel>
+            <SidebarGroupContent>
+                 <SidebarMenu>
+                     {contentMenuItems.map((item) => (
+                        <SidebarMenuItem key={item.label}>
+                        <SidebarMenuButton asChild isActive={!item.disabled && pathname.startsWith(item.href)} disabled={item.disabled} tooltip={{ children: item.label }}>
+                            <Link href={item.href}>
+                            <item.icon />
+                            <span>{item.label}</span>
+                            </Link>
+                        </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    ))}
+                 </SidebarMenu>
+            </SidebarGroupContent>
         </SidebarGroup>
-      </SidebarFooter>
+
+      </SidebarContent>
     </Sidebar>
   );
 }
