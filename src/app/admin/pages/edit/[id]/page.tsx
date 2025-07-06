@@ -1,5 +1,5 @@
 import { getPageById } from "@/services/pageService"
-import EditPageClient from "./EditPageClient";
+import PageEditor from "../../PageEditor";
 import { notFound } from "next/navigation";
 
 export default async function EditPage({ params }: { params: { id: string } }) {
@@ -10,6 +10,6 @@ export default async function EditPage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <EditPageClient page={page} />
+    <PageEditor page={page} />
   );
 }

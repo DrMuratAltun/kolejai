@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { useFormContext } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
@@ -89,14 +88,13 @@ const Toolbar = ({ editor }: { editor: any }) => {
   );
 };
 
-
 interface AiTextEditorProps {
-  form: ReturnType<typeof useFormContext>;
-  fieldName: string;
-  initialValue: string;
+  content: string;
+  onContentChange: (content: string) => void;
+  placeholder?: string;
 }
 
-const AiTextEditor: React.FC<AiTextEditorProps> = ({ form, fieldName, initialValue }) => {
+const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, placeholder }) => {
   const { toast } = useToast();
   const [isRewriting, setIsRewriting] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -109,19 +107,10 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ form, fieldName, initialVal
 
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({
-        heading: {
-          levels: [1, 2, 3],
-        },
-      }),
+      StarterKit.configure({ heading: { levels: [1, 2, 3] } }),
       UnderlineExtension,
-      Link.configure({
-        openOnClick: false,
-        autolink: true,
-      }),
-      Placeholder.configure({
-        placeholder: 'Haber, duyuru veya etkinlik detaylarını buraya yazın...',
-      }),
+      Link.configure({ openOnClick: false, autolink: true }),
+      Placeholder.configure({ placeholder: placeholder || 'İçeriği buraya yazın...' }),
       Image,
     ],
     editorProps: {
@@ -130,16 +119,15 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ form, fieldName, initialVal
       },
     },
     onUpdate({ editor }) {
-      form.setValue(fieldName, editor.getHTML(), { shouldValidate: true });
+      onContentChange(editor.getHTML());
     },
   });
 
   useEffect(() => {
-    if (editor && initialValue !== editor.getHTML()) {
-      editor.commands.setContent(initialValue, false);
+    if (editor && content !== editor.getHTML()) {
+      editor.commands.setContent(content, false);
     }
-  }, [initialValue, editor]);
-
+  }, [content, editor]);
   
   const handleRewrite = async () => {
     const instructions: string[] = [];
@@ -157,7 +145,7 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ form, fieldName, initialVal
     
     setIsRewriting(true);
     const currentValue = editor?.getHTML();
-    if (!currentValue) {
+    if (!currentValue || currentValue === '<p></p>') {
       toast({ variant: 'destructive', title: 'Hata', description: 'Yeniden yazılacak metin yok.' });
       setIsRewriting(false);
       return;
