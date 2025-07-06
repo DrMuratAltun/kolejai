@@ -2,8 +2,9 @@
 'use server';
 
 import { db } from "@/lib/firebase";
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, Timestamp, query, orderBy, serverTimestamp, setDoc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { unstable_noStore as noStore } from 'next/cache';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface StaffMember {
   id: string;
@@ -14,127 +15,100 @@ export interface StaffMember {
   photo: string;
   aiHint: string;
   parentId: string | null;
-  createdAt?: string;
 }
 
-export type StaffMemberData = Omit<StaffMember, 'id' | 'createdAt'>;
+export type StaffMemberData = Omit<StaffMember, 'id'>;
 
-const staffCollection = collection(db, "staff");
+const staffDocRef = doc(db, "staff", "staff");
 
-const fromFirestore = (snapshot: any): StaffMember => {
-  const data = snapshot.data();
-  
-  if (!data) {
-    console.error(`Staff document ${snapshot.id} has no data. Skipping.`);
-    // Return a 'safe' object that can be handled or filtered out, though this case is rare.
-    // For now, we create a fallback object to avoid crashing the entire page.
-    return {
-      id: snapshot.id,
-      name: 'Hatalı Kayıt',
-      title: 'Hatalı Kayıt',
-      department: 'Bilinmiyor',
-      description: 'Bu kayıt veritabanında bozuk.',
-      photo: '',
-      aiHint: '',
-      parentId: null,
-      createdAt: new Date().toISOString(),
-    };
-  }
-
-  const createdAtTimestamp = data.createdAt;
-
-  // Defensive checks for all potentially missing fields
-  if (!data.name || !data.title || !data.department) {
-      console.warn(`Staff document ${snapshot.id} is missing required fields (name, title, or department). Using default values to prevent crash.`);
-  }
-
-  return {
-    id: snapshot.id,
-    name: data.name || 'İsim Belirtilmemiş',
-    title: data.title || 'Unvan Belirtilmemiş',
-    department: data.department || 'Departman Belirtilmemiş',
-    description: data.description || '',
-    photo: data.photo || '',
+const fromArray = (data: any, id: string): StaffMember => ({
+    id: id,
+    name: data.name,
+    title: data.title,
+    department: data.department,
+    description: data.description,
+    photo: data.photo,
     aiHint: data.aiHint || '',
     parentId: data.parentId || null,
-    createdAt: createdAtTimestamp ? (createdAtTimestamp.toDate() as Date).toISOString() : new Date().toISOString(),
-  };
-};
+});
 
 export const getStaffMembers = async (): Promise<StaffMember[]> => {
     noStore();
     try {
-        const q = query(staffCollection, orderBy("name", "asc"));
-        const snapshot = await getDocs(q);
-        // Safely map documents, any error in fromFirestore should be handled inside it.
-        return snapshot.docs.map(fromFirestore);
+        const docSnap = await getDoc(staffDocRef);
+        if (!docSnap.exists() || !docSnap.data()?.staff) {
+            await setDoc(staffDocRef, { staff: [] }, { merge: true });
+            return [];
+        }
+        const staffArray = docSnap.data().staff;
+        return staffArray.map((s: any) => fromArray(s, s.id)).sort((a: StaffMember, b: StaffMember) => a.name.localeCompare(b.name));
     } catch (error) {
         console.error("Error fetching staff members:", error);
-        // Return empty array on error to prevent crashing the page.
         return [];
     }
 };
 
 export const addStaffMember = async (item: StaffMemberData) => {
-    const dataToAdd = {
-        ...item,
-        description: item.description || '',
-        photo: item.photo || '',
-        aiHint: item.aiHint || '',
-        parentId: item.parentId || null,
-        createdAt: serverTimestamp()
+    const docSnap = await getDoc(staffDocRef);
+    const staffArray = docSnap.exists() && docSnap.data()?.staff ? docSnap.data().staff : [];
+    
+    const newMember: StaffMember = {
+        id: uuidv4(),
+        name: item.name,
+        title: item.title,
+        department: item.department,
+        description: item.description,
+        photo: item.photo,
+        aiHint: item.aiHint,
+        parentId: item.parentId,
     };
-    return await addDoc(staffCollection, dataToAdd);
+    
+    const newStaffArray = [...staffArray, newMember];
+    
+    return await setDoc(staffDocRef, { staff: newStaffArray });
 };
 
 export const updateStaffMember = async (id: string, item: Partial<StaffMemberData>) => {
-    const docRef = doc(db, "staff", id);
-    const dataToUpdate: {[key: string]: any} = {};
-
-    // Ensure we don't write `undefined` to firestore
-    for (const [key, value] of Object.entries(item)) {
-        if (value !== undefined) {
-            dataToUpdate[key] = value;
-        }
-    }
+    const docSnap = await getDoc(staffDocRef);
+    if (!docSnap.exists() || !docSnap.data()?.staff) throw new Error("Staff document not found.");
     
-    return await updateDoc(docRef, dataToUpdate);
+    const staffArray: StaffMember[] = docSnap.data().staff;
+    const newStaffArray = staffArray.map((member) => member.id === id ? { ...member, ...item } : member);
+
+    return await setDoc(staffDocRef, { staff: newStaffArray });
 };
 
 export const deleteStaffMember = async (id: string) => {
-    const allStaff = await getStaffMembers();
+    const docSnap = await getDoc(staffDocRef);
+    if (!docSnap.exists() || !docSnap.data()?.staff) throw new Error("Staff document not found.");
     
-    const childrenUpdates = allStaff
-        .filter(member => member.parentId === id)
-        .map(child => updateDoc(doc(db, "staff", child.id), { parentId: null }));
-    
-    await Promise.all(childrenUpdates);
-    
-    const docRef = doc(db, "staff", id);
-    return await deleteDoc(docRef);
+    const staffArray: StaffMember[] = docSnap.data().staff;
+    const updatedArray = staffArray.map(member => member.parentId === id ? { ...member, parentId: null } : member);
+    const finalArray = updatedArray.filter(member => member.id !== id);
+
+    return await setDoc(staffDocRef, { staff: finalArray });
 };
 
+export async function updateStaffParent(staffId: string, newParentId: string | null) {
+    if (staffId === newParentId) throw new Error("A staff member cannot be their own parent.");
 
-export const updateStaffParent = async (staffId: string, newParentId: string | null) => {
-    if (!staffId) {
-        throw new Error("Personel ID gerekli.");
-    }
+    const docSnap = await getDoc(staffDocRef);
+    if (!docSnap.exists() || !docSnap.data()?.staff) throw new Error("Staff document not found.");
 
-    if (staffId === newParentId) {
-        throw new Error("Bir personel kendisine yönetici olarak atanamaz.");
-    }
-    
-    const docRef = doc(db, "staff", staffId);
-    
+    const staffArray: StaffMember[] = docSnap.data().staff;
+
+    // Check for circular dependencies
     let currentParentIdInLoop = newParentId;
     while(currentParentIdInLoop !== null) {
         if (currentParentIdInLoop === staffId) {
-            throw new Error("Döngüsel bir hiyerarşi oluşturulamaz. (Örn: Bir yönetici kendi altına atanamaz)");
+            throw new Error("Circular hierarchy detected.");
         }
-        const parentDoc = await getDoc(doc(db, "staff", currentParentIdInLoop));
-        if (!parentDoc.exists()) break;
-        currentParentIdInLoop = parentDoc.data().parentId || null;
+        const parent = staffArray.find((s:any) => s.id === currentParentIdInLoop);
+        if (!parent) break;
+        currentParentIdInLoop = parent.parentId || null;
     }
 
-    return await updateDoc(docRef, { parentId: newParentId });
-};
+    const newStaffArray = staffArray.map((member) => member.id === staffId ? { ...member, parentId: newParentId } : member);
+
+    return await setDoc(staffDocRef, { staff: newStaffArray });
+}

@@ -50,20 +50,14 @@ const groupRootStaffByDepartment = (staff: StaffMember[]) => {
 function StaffCard({ member }: { member: StaffMember }) {
   return (
     <div className="relative rounded-xl overflow-hidden shadow-lg group transform transition-transform duration-300 hover:-translate-y-2 h-full">
-      {member.photo ? (
-        <Image
-          src={member.photo}
-          alt={member.name}
-          width={400}
-          height={400}
-          className="w-full h-full object-cover"
-          data-ai-hint={member.aiHint}
-        />
-      ) : (
-        <div className="w-full h-full bg-secondary flex items-center justify-center">
-            <Users className="h-24 w-24 text-muted-foreground" />
-        </div>
-      )}
+      <Image
+        src={member.photo}
+        alt={member.name}
+        width={400}
+        height={400}
+        className="w-full h-full object-cover"
+        data-ai-hint={member.aiHint}
+      />
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
       <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
         <h3 className="text-xl font-bold">{member.name}</h3>

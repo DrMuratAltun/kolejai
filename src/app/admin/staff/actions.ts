@@ -11,7 +11,7 @@ const serverFormSchema = z.object({
   name: z.string().min(1, "İsim gerekli"),
   title: z.string().min(1, "Rol/Unvan gerekli"),
   department: z.string().min(1, "Departman gerekli"),
-  description: z.string().min(1, "Biyografi gerekli"),
+  description: z.string().optional(),
   photo: z.string().optional(),
   aiHint: z.string().optional(),
   parentId: z.string().transform(val => val === 'none' || !val ? null : val).nullable(),
@@ -46,11 +46,21 @@ export async function handleStaffFormSubmit(prevState: any, formData: FormData) 
 
   try {
     const { id, ...data } = parsed.data;
+    // Ensure all fields have a default value to maintain data structure consistency
+    const dataToSave: StaffMemberData = {
+        name: data.name,
+        title: data.title,
+        department: data.department,
+        description: data.description || '',
+        photo: data.photo || 'https://placehold.co/400x400.png', // Default placeholder
+        aiHint: data.aiHint || '',
+        parentId: data.parentId
+    };
 
     if (id) {
-      await updateStaffMember(id, data as Partial<StaffMemberData>);
+      await updateStaffMember(id, dataToSave);
     } else {
-      await addStaffMember(data as StaffMemberData);
+      await addStaffMember(dataToSave);
     }
     
     revalidatePath('/staff');
