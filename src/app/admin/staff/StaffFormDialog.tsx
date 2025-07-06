@@ -82,9 +82,9 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
                 name: editingStaff.name || '',
                 title: editingStaff.title || '',
                 department: editingStaff.department || '',
-                description: String(editingStaff.description || ''),
+                description: editingStaff.description ?? '',
                 photo: editingStaff.photo || '',
-                aiHint: String(editingStaff.aiHint || ''),
+                aiHint: editingStaff.aiHint ?? '',
                 parentId: editingStaff.parentId || 'none',
             });
             setImagePreview(editingStaff.photo);
@@ -110,8 +110,8 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
       if (value !== undefined && value !== null) {
         if (key === 'photo' && value instanceof File) {
           formData.append(key, value, value.name);
-        } else {
-          formData.append(key, String(value));
+        } else if (typeof value === 'string') {
+          formData.append(key, value);
         }
       }
     });
