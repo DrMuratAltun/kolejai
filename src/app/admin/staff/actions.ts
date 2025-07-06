@@ -2,7 +2,7 @@
 'use server';
 
 import { z } from 'zod';
-import { addStaffMember, updateStaffMember, deleteStaffMember } from '@/services/staffService';
+import { addStaffMember, updateStaffMember, deleteStaffMember, type StaffMemberData } from '@/services/staffService';
 import { revalidatePath } from 'next/cache';
 import { uploadFile } from '@/lib/firebase-storage';
 
@@ -21,7 +21,6 @@ export async function handleStaffFormSubmit(prevState: any, formData: FormData) 
   const rawData = Object.fromEntries(formData.entries());
   
   if (rawData.id === '') delete rawData.id;
-  if (rawData.aiHint === '') delete rawData.aiHint;
 
   let imageUrl: string;
   const imageValue = rawData.image as File | string;
@@ -36,9 +35,11 @@ export async function handleStaffFormSubmit(prevState: any, formData: FormData) 
       imageUrl = imageValue as string;
   }
   
-  const managerId = rawData.managerId === 'none' ? null : rawData.managerId as string | null;
+  // Handle managerId: if it's 'none' or missing, it should be null.
+  const managerValue = rawData.managerId as string | undefined;
+  const processedManagerId = managerValue === 'none' || !managerValue ? null : managerValue;
 
-  const dataToParse = { ...rawData, image: imageUrl, managerId };
+  const dataToParse = { ...rawData, image: imageUrl, managerId: processedManagerId };
 
   const parsed = serverFormSchema.safeParse(dataToParse);
 
@@ -51,10 +52,23 @@ export async function handleStaffFormSubmit(prevState: any, formData: FormData) 
 
   try {
     const { id, ...data } = parsed.data;
+    
+    // Construct a final, type-safe payload for the database service.
+    // This prevents `undefined` values from being sent to Firestore.
+    const finalPayload: StaffMemberData = {
+        name: data.name,
+        role: data.role,
+        department: data.department,
+        bio: data.bio,
+        image: data.image,
+        aiHint: data.aiHint || '',
+        managerId: data.managerId ?? null,
+    };
+
     if (id) {
-      await updateStaffMember(id, data);
+      await updateStaffMember(id, finalPayload);
     } else {
-      await addStaffMember(data as any);
+      await addStaffMember(finalPayload);
     }
     
     revalidatePath('/staff');
