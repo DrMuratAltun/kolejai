@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import type { NewsItem } from '@/services/newsService';
 import { useToast } from "@/hooks/use-toast";
 import { handleFormSubmit } from './actions';
+import { generateImage } from '@/ai/flows/image-generation';
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useForm } from 'react-hook-form';
@@ -15,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { CalendarIcon, Loader2 } from 'lucide-react';
+import { CalendarIcon, Loader2, Sparkles } from 'lucide-react';
 import AiTextEditor from '@/components/ai/AiTextEditor';
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
@@ -23,6 +24,22 @@ import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 
+// Helper to convert Data URL to File object
+const dataURLtoFile = (dataurl: string, filename: string): File => {
+  const arr = dataurl.split(',');
+  const mimeMatch = arr[0].match(/:(.*?);/);
+  if (!mimeMatch) {
+      throw new Error('Invalid data URI');
+  }
+  const mime = mimeMatch[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new File([u8arr], filename, { type: mime });
+}
 
 interface NewsFormDialogProps {
   isOpen: boolean;
@@ -49,6 +66,7 @@ export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialo
   const { toast } = useToast();
   const [isPending, startTransition] = React.useTransition();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   
   const form = useForm<NewsFormValues>({
     resolver: zodResolver(formSchema),
@@ -77,7 +95,6 @@ export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialo
 
   const onSubmit = (values: NewsFormValues) => {
     const formData = new FormData();
-    // Append all values to FormData, including the file object
     Object.entries(values).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         if (key === 'image' && value instanceof File) {
@@ -115,6 +132,46 @@ export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialo
         setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleGenerateImage = async () => {
+    const title = form.getValues('title');
+    const aiHint = form.getValues('aiHint');
+    const prompt = aiHint ? `${title} - ${aiHint}` : title;
+
+    if (!prompt) {
+        toast({
+            variant: "destructive",
+            title: "Hata",
+            description: "Görsel üretmek için lütfen bir başlık veya AI ipucu girin.",
+        });
+        return;
+    }
+
+    setIsGeneratingImage(true);
+    setImagePreview(null);
+    try {
+        const result = await generateImage({ prompt });
+        if (result.imageUrl) {
+            const filename = `${prompt.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
+            const file = dataURLtoFile(result.imageUrl, filename);
+            form.setValue('image', file, { shouldValidate: true });
+            setImagePreview(URL.createObjectURL(file));
+            toast({
+                title: "Başarılı!",
+                description: "Yapay zeka ile görsel başarıyla üretildi.",
+            });
+        }
+    } catch (error) {
+        console.error("Image generation error:", error);
+        toast({
+            variant: "destructive",
+            title: "Hata!",
+            description: "Görsel üretilirken bir hata oluştu. Lütfen tekrar deneyin.",
+        });
+    } finally {
+        setIsGeneratingImage(false);
     }
   };
 
@@ -198,24 +255,51 @@ export function NewsFormDialog({ isOpen, setIsOpen, editingNews }: NewsFormDialo
               />
             </div>
             
-            <FormItem>
-              <FormLabel>Görsel</FormLabel>
-              <FormControl>
-                <Input type="file" accept="image/*" onChange={handleImageChange} />
-              </FormControl>
-              {imagePreview && (
-                <div className="mt-4">
-                  <Image src={imagePreview} alt="Görsel Önizleme" width={200} height={120} className="rounded-md object-cover"/>
-                </div>
+            <FormField
+              control={form.control}
+              name="image"
+              render={() => (
+                <FormItem>
+                  <div className="flex items-center justify-between">
+                    <FormLabel>Görsel</FormLabel>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleGenerateImage}
+                      disabled={isPending || isGeneratingImage || !form.watch('title')}
+                    >
+                      {isGeneratingImage ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                      Yapay Zeka ile Üret
+                    </Button>
+                  </div>
+                  <FormControl>
+                    <Input type="file" accept="image/*" onChange={handleImageChange} disabled={isPending || isGeneratingImage} />
+                  </FormControl>
+                  {isGeneratingImage && (
+                    <div className="w-full flex justify-center items-center h-32 bg-muted rounded-md">
+                      <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                        <Loader2 className="h-8 w-8 animate-spin" />
+                        <span>Görsel üretiliyor...</span>
+                      </div>
+                    </div>
+                  )}
+                  {!isGeneratingImage && imagePreview && (
+                    <div className="mt-4">
+                      <Image src={imagePreview} alt="Görsel Önizleme" width={200} height={120} className="rounded-md object-cover"/>
+                    </div>
+                  )}
+                  <FormMessage />
+                </FormItem>
               )}
-              <FormMessage />
-            </FormItem>
+            />
 
-            <FormField control={form.control} name="aiHint" render={({ field }) => (<FormItem><FormLabel>AI İpucu (isteğe bağlı)</FormLabel><FormControl><Input {...field} placeholder="e.g. robotics competition" /></FormControl><FormMessage /></FormItem>)} />
+            <FormField control={form.control} name="aiHint" render={({ field }) => (<FormItem><FormLabel>AI Görsel İpucu (isteğe bağlı)</FormLabel><FormControl><Input {...field} placeholder="e.g. students in science class" /></FormControl><FormMessage /></FormItem>)} />
+            
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={() => setIsOpen(false)}>İptal</Button>
-              <Button type="submit" disabled={isPending}>
-                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              <Button type="submit" disabled={isPending || isGeneratingImage}>
+                {(isPending || isGeneratingImage) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Kaydet
               </Button>
             </DialogFooter>
