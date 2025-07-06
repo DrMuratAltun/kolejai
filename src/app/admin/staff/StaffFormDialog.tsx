@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Loader2, User } from 'lucide-react';
+import { Loader2, User, Users } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface StaffFormDialogProps {
@@ -82,9 +82,9 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
                 name: editingStaff.name || '',
                 title: editingStaff.title || '',
                 department: editingStaff.department || '',
-                description: editingStaff.description || '',
+                description: String(editingStaff.description || ''),
                 photo: editingStaff.photo || '',
-                aiHint: editingStaff.aiHint || '',
+                aiHint: String(editingStaff.aiHint || ''),
                 parentId: editingStaff.parentId || 'none',
             });
             setImagePreview(editingStaff.photo);
@@ -139,22 +139,12 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
     if (!file) return;
 
     if (file.size > MAX_FILE_SIZE) {
-      toast({
-        variant: "destructive",
-        title: "Dosya Çok Büyük",
-        description: `Lütfen 2MB'den küçük bir resim dosyası seçin.`,
-      });
-      event.target.value = '';
+      form.setError("photo", { message: `Lütfen 2MB'den küçük bir resim dosyası seçin.`});
       return;
     }
 
     if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-      toast({
-        variant: "destructive",
-        title: "Geçersiz Dosya Türü",
-        description: "Lütfen .jpg, .jpeg, .png veya .webp formatında bir resim seçin.",
-      });
-      event.target.value = '';
+      form.setError("photo", { message: "Lütfen .jpg, .jpeg, .png veya .webp formatında bir resim seçin." });
       return;
     }
 
@@ -219,7 +209,7 @@ export function StaffFormDialog({ isOpen, setIsOpen, editingStaff, allStaffMembe
                               className="object-cover"
                             />
                           ) : (
-                             <User className="h-16 w-16 text-muted-foreground" />
+                             <Users className="h-16 w-16 text-muted-foreground" />
                           )}
                       </div>
                       <FormMessage />
