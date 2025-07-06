@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { StaffMember } from "@/services/staffService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,6 +22,11 @@ export default function StaffClient({ initialStaffMembers }: { initialStaffMembe
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState<StaffMember | null>(null);
   const { toast } = useToast();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleEdit = (item: StaffMember) => {
     setEditingStaff(item);
@@ -139,12 +144,14 @@ export default function StaffClient({ initialStaffMembers }: { initialStaffMembe
           </Table>
         </CardContent>
       </Card>
-      <StaffFormDialog
-        isOpen={isDialogOpen}
-        setIsOpen={setIsDialogOpen}
-        editingStaff={editingStaff}
-        allStaffMembers={initialStaffMembers}
-      />
+      {isMounted && (
+        <StaffFormDialog
+          isOpen={isDialogOpen}
+          setIsOpen={setIsDialogOpen}
+          editingStaff={editingStaff}
+          allStaffMembers={initialStaffMembers}
+        />
+      )}
     </>
   );
 }
