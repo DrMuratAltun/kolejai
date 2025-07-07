@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import Link from "next/link";
 import Marquee from "react-fast-marquee";
@@ -24,6 +25,7 @@ import {
     Star,
 } from "lucide-react";
 import { getNewsItems, NewsItem } from "@/services/newsService";
+import { getSiteSettings } from "@/services/settingsService";
 import NewsCarousel from "@/components/home/NewsCarousel";
 import QuickAccess from "@/components/home/QuickAccess";
 
@@ -81,7 +83,11 @@ const collaborations = [
 ];
 
 export default async function Home() {
-  const newsAndEvents: NewsItem[] = await getNewsItems();
+  const [newsAndEvents, settings] = await Promise.all([
+    getNewsItems(),
+    getSiteSettings()
+  ]);
+  
   const upcomingEvents = newsAndEvents.filter(item => item.type === 'Etkinlik');
 
   return (
@@ -89,8 +95,8 @@ export default async function Home() {
       {/* Hero Section with Banner */}
       <section className="relative w-full h-[250px] md:h-[350px] lg:h-[400px]">
         <Image 
-          src="https://placehold.co/1200x400.png" 
-          alt="Bilge Yıldız Koleji kampüsü"
+          src={settings.heroBannerUrl} 
+          alt={`${settings.schoolName} kampüsü`}
           fill
           className="object-cover"
           data-ai-hint="school campus"
@@ -100,8 +106,8 @@ export default async function Home() {
         <div className="absolute inset-0 flex items-center justify-center">
             <div className="bg-white/20 backdrop-blur-sm p-2 rounded-full shadow-lg">
                 <Image
-                    src="https://placehold.co/150x150.png"
-                    alt="Bilge Yıldız Koleji Logosu"
+                    src={settings.logoUrl}
+                    alt={`${settings.schoolName} Logosu`}
                     width={150}
                     height={150}
                     className="h-28 w-28 md:h-36 md:w-36 rounded-full object-cover"
@@ -129,7 +135,7 @@ export default async function Home() {
                   </div>
                   <div className="lg:w-1/2">
                       <div className="text-center lg:text-left mb-8">
-                          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Neden Bilge Yıldız Koleji?</h2>
+                          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Neden {settings.schoolName}?</h2>
                           <div className="w-20 h-1 bg-primary mx-auto lg:mx-0"></div>
                       </div>
                       <p className="text-muted-foreground leading-relaxed mb-6">Öğrencilerimizi akademik, sosyal ve kültürel açıdan en iyi şekilde yetiştirerek, 21. yüzyıl becerileriyle donatılmış, özgüvenli ve erdemli bireyler olarak topluma kazandırmak temel vizyonumuzdur.</p>

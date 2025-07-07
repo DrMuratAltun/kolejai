@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -22,7 +23,8 @@ import {
   School,
   Mail,
   Users,
-  Wand2
+  Wand2,
+  Settings
 } from "lucide-react";
 
 const mainMenuItems = [
@@ -39,6 +41,10 @@ const contentMenuItems = [
     { href: "#", label: "Kurumlarımız", icon: School, disabled: true },
     { href: "/admin/submissions", label: "İletişim Formları", icon: Mail },
 ];
+
+const settingsMenuItems = [
+    { href: "/admin/settings", label: "Site Ayarları", icon: Settings }
+]
 
 
 export default function AdminSidebar() {
@@ -83,6 +89,24 @@ export default function AdminSidebar() {
                         </SidebarMenuItem>
                     ))}
                  </SidebarMenu>
+            </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+            <SidebarGroupLabel>SİTE YÖNETİMİ</SidebarGroupLabel>
+            <SidebarGroupContent>
+                <SidebarMenu>
+                    {settingsMenuItems.map((item) => (
+                        <SidebarMenuItem key={item.label}>
+                            <SidebarMenuButton asChild isActive={pathname.startsWith(item.href)} tooltip={{ children: item.label }}>
+                                <Link href={item.href}>
+                                    <item.icon />
+                                    <span>{item.label}</span>
+                                </Link>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    ))}
+                </SidebarMenu>
             </SidebarGroupContent>
         </SidebarGroup>
 

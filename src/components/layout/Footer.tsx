@@ -1,9 +1,17 @@
+
 import Link from "next/link";
 import { School, Facebook, Twitter, Instagram, Linkedin, Phone, Mail, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import type { SiteSettings } from "@/services/settingsService";
 
-export default function Footer() {
+interface FooterProps {
+  settings: SiteSettings;
+}
+
+export default function Footer({ settings }: FooterProps) {
+  const { schoolName, socialLinks, address, email, phone } = settings;
+
   return (
     <footer className="bg-foreground text-background/80">
       <div className="container mx-auto px-4 py-12">
@@ -12,16 +20,16 @@ export default function Footer() {
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2 text-2xl font-bold text-primary">
               <School className="h-8 w-8" />
-              <span className="text-white">Bilge Yıldız</span>
+              <span className="text-white">{schoolName}</span>
             </Link>
             <p className="text-muted-foreground">
               Eğitimde mükemmelliği hedefleyen, yenilikçi ve öğrenci odaklı bir kurum.
             </p>
             <div className="flex space-x-4">
-              <Link href="#" className="text-muted-foreground hover:text-primary"><Facebook /></Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary"><Twitter /></Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary"><Instagram /></Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary"><Linkedin /></Link>
+              {socialLinks.facebook && <Link href={socialLinks.facebook} className="text-muted-foreground hover:text-primary"><Facebook /></Link>}
+              {socialLinks.twitter && <Link href={socialLinks.twitter} className="text-muted-foreground hover:text-primary"><Twitter /></Link>}
+              {socialLinks.instagram && <Link href={socialLinks.instagram} className="text-muted-foreground hover:text-primary"><Instagram /></Link>}
+              {socialLinks.linkedin && <Link href={socialLinks.linkedin} className="text-muted-foreground hover:text-primary"><Linkedin /></Link>}
             </div>
           </div>
 
@@ -40,18 +48,18 @@ export default function Footer() {
           <div>
              <h3 className="text-lg font-semibold mb-4 text-white">İletişim</h3>
             <ul className="space-y-3 text-muted-foreground">
-              <li className="flex items-start gap-3">
+              {address && <li className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 mt-1 text-primary flex-shrink-0" />
-                <span>Örnek Mah. Okul Sk. No:123, 34762 Üsküdar/İstanbul</span>
-              </li>
-              <li className="flex items-center gap-3">
+                <span>{address}</span>
+              </li>}
+              {email && <li className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-primary" />
-                <a href="mailto:info@bilgeyildiz.com" className="hover:text-primary">info@bilgeyildiz.com</a>
-              </li>
-              <li className="flex items-center gap-3">
+                <a href={`mailto:${email}`} className="hover:text-primary">{email}</a>
+              </li>}
+              {phone && <li className="flex items-center gap-3">
                 <Phone className="h-5 w-5 text-primary" />
-                <a href="tel:+902161234567" className="hover:text-primary">+90 (216) 123 45 67</a>
-              </li>
+                <a href={`tel:${phone.replace(/\s/g, '')}`} className="hover:text-primary">{phone}</a>
+              </li>}
             </ul>
           </div>
 
@@ -68,7 +76,7 @@ export default function Footer() {
       </div>
       <div className="bg-background/10">
         <div className="container mx-auto px-4 py-4 text-center text-muted-foreground text-sm">
-          &copy; {new Date().getFullYear()} Bilge Yıldız Koleji. Tüm hakları saklıdır.
+          &copy; {new Date().getFullYear()} {schoolName}. Tüm hakları saklıdır.
         </div>
       </div>
     </footer>
