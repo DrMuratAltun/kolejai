@@ -6,10 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, Wand2, Sparkles, Bold, Italic, Strikethrough, Underline, List, ListOrdered, Link2, Image as ImageIcon } from 'lucide-react';
+import { Loader2, Wand2, Sparkles, Bold, Italic, Strikethrough, Underline, List, ListOrdered, Link2, Image as ImageIcon, Code } from 'lucide-react';
 import { generateText, rewriteText } from '@/ai/flows/content-tools';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -99,6 +100,7 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
   const [rewriteTone, setRewriteTone] = useState('');
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const [viewMode, setViewMode] = useState<'visual' | 'code'>('visual');
 
   const isLoading = isRewriting || isGeneratingText || isUploadingImage;
 
@@ -110,7 +112,7 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
       Placeholder.configure({ placeholder: placeholder || 'İçeriği buraya yazın...' }),
       Image.configure({
           inline: false,
-          allowBase64: true, // Optional
+          allowBase64: true, 
       }),
     ],
     editorProps: {
@@ -204,7 +206,6 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
         toast({ variant: 'destructive', title: 'Hata!', description: `Resim yüklenemedi: ${e.message}` });
     } finally {
         setIsUploadingImage(false);
-        // Clear file input value
         if (event.target) {
             event.target.value = '';
         }
@@ -215,6 +216,13 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
     imageInputRef.current?.click();
   }, []);
 
+  const handleCodeChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newHtml = e.target.value;
+    if (editor && onContentChange) {
+        editor.commands.setContent(newHtml, false); // Don't emit update yet
+        onContentChange(newHtml); // Manually call onContentChange
+    }
+  }
 
   return (
     <div className="space-y-2">
@@ -225,10 +233,24 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
         className="hidden"
         accept="image/jpeg,image/png,image/webp,image/gif"
       />
-      <div className='rounded-md border border-input focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2'>
-        <Toolbar editor={editor} onImageUploadClick={triggerImageUpload} isUploadingImage={isUploadingImage} />
-        <EditorContent editor={editor} />
-      </div>
+      {viewMode === 'visual' ? (
+        <div className='rounded-md border border-input focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2'>
+            <Toolbar editor={editor} onImageUploadClick={triggerImageUpload} isUploadingImage={isUploadingImage} />
+            <EditorContent editor={editor} />
+        </div>
+      ) : (
+        <div>
+            <Label htmlFor="html-editor" className="mb-2 block">HTML Kod Editörü</Label>
+            <Textarea
+                id="html-editor"
+                className="min-h-[400px] font-mono text-sm bg-muted/30"
+                value={content}
+                onChange={handleCodeChange}
+                placeholder="HTML kodunu buraya girin..."
+                disabled={isLoading}
+            />
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-4 items-center pt-2">
         <div className="flex flex-wrap gap-2 items-center p-2 border rounded-lg">
@@ -279,6 +301,16 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
             </div>
           </PopoverContent>
         </Popover>
+         <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setViewMode(prev => prev === 'visual' ? 'code' : 'visual')}
+            disabled={isLoading}
+        >
+            <Code className="mr-2 h-4 w-4" />
+            {viewMode === 'visual' ? 'Kodu Görüntüle' : 'Görsel Düzenleyici'}
+        </Button>
       </div>
     </div>
   );
