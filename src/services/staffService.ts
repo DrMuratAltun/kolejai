@@ -2,9 +2,21 @@
 'use server';
 
 import { db } from "@/lib/firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  getDoc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+  writeBatch,
+  serverTimestamp,
+  orderBy
+} from "firebase/firestore";
 import { unstable_noStore as noStore } from 'next/cache';
-import { v4 as uuidv4 } from 'uuid';
 
 export interface StaffMember {
   id: string;
@@ -15,100 +27,110 @@ export interface StaffMember {
   photo: string;
   aiHint: string;
   parentId: string | null;
+  createdAt?: string | null;
 }
 
-export type StaffMemberData = Omit<StaffMember, 'id'>;
+// Data for creating/updating, ID is not included as it's the doc ID
+export type StaffMemberData = Omit<StaffMember, 'id' | 'createdAt'>;
 
-const staffDocRef = doc(db, "staff", "staff");
+const staffCollection = collection(db, "staff");
 
-const fromArray = (data: any, id: string): StaffMember => ({
-    id: id,
-    name: data.name,
-    title: data.title,
-    department: data.department,
-    description: data.description,
-    photo: data.photo,
+const fromFirestore = (snapshot: any): StaffMember => {
+  const data = snapshot.data();
+  const createdAtTimestamp = data.createdAt;
+  return {
+    id: snapshot.id,
+    name: data.name || '',
+    title: data.title || '',
+    department: data.department || '',
+    description: data.description || '',
+    photo: data.photo || '',
     aiHint: data.aiHint || '',
     parentId: data.parentId || null,
-});
-
-export const getStaffMembers = async (): Promise<StaffMember[]> => {
-    noStore();
-    try {
-        const docSnap = await getDoc(staffDocRef);
-        if (!docSnap.exists() || !docSnap.data()?.staff) {
-            await setDoc(staffDocRef, { staff: [] }, { merge: true });
-            return [];
-        }
-        const staffArray = docSnap.data().staff;
-        return staffArray.map((s: any) => fromArray(s, s.id)).sort((a: StaffMember, b: StaffMember) => a.name.localeCompare(b.name));
-    } catch (error) {
-        console.error("Error fetching staff members:", error);
-        return [];
-    }
+    createdAt: createdAtTimestamp ? (createdAtTimestamp.toDate() as Date).toISOString() : null,
+  };
 };
 
+export const getStaffMembers = async (): Promise<StaffMember[]> => {
+  noStore();
+  try {
+    const q = query(staffCollection, orderBy("name", "asc"));
+    const snapshot = await getDocs(q);
+    if (snapshot.empty) {
+      return [];
+    }
+    return snapshot.docs.map(fromFirestore);
+  } catch (error) {
+    console.error("Error fetching staff members:", error);
+    return [];
+  }
+};
+
+export const getStaffMemberById = async (id: string): Promise<StaffMember | null> => {
+    noStore();
+    if (!id) return null;
+    try {
+        const docRef = doc(db, "staff", id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            return fromFirestore(docSnap);
+        }
+        return null;
+    } catch (error) {
+        console.error(`Error fetching staff member by ID ${id}:`, error);
+        return null;
+    }
+}
+
+
 export const addStaffMember = async (item: StaffMemberData) => {
-    const docSnap = await getDoc(staffDocRef);
-    const staffArray = docSnap.exists() && docSnap.data()?.staff ? docSnap.data().staff : [];
-    
-    const newMember: StaffMember = {
-        id: uuidv4(),
-        name: item.name,
-        title: item.title,
-        department: item.department,
-        description: item.description,
-        photo: item.photo,
-        aiHint: item.aiHint,
-        parentId: item.parentId,
-    };
-    
-    const newStaffArray = [...staffArray, newMember];
-    
-    return await setDoc(staffDocRef, { staff: newStaffArray });
+  return await addDoc(staffCollection, {
+    ...item,
+    createdAt: serverTimestamp()
+  });
 };
 
 export const updateStaffMember = async (id: string, item: Partial<StaffMemberData>) => {
-    const docSnap = await getDoc(staffDocRef);
-    if (!docSnap.exists() || !docSnap.data()?.staff) throw new Error("Staff document not found.");
-    
-    const staffArray: StaffMember[] = docSnap.data().staff;
-    const newStaffArray = staffArray.map((member) => member.id === id ? { ...member, ...item } : member);
-
-    return await setDoc(staffDocRef, { staff: newStaffArray });
+  const docRef = doc(db, "staff", id);
+  return await updateDoc(docRef, item);
 };
 
 export const deleteStaffMember = async (id: string) => {
-    const docSnap = await getDoc(staffDocRef);
-    if (!docSnap.exists() || !docSnap.data()?.staff) throw new Error("Staff document not found.");
-    
-    const staffArray: StaffMember[] = docSnap.data().staff;
-    const updatedArray = staffArray.map(member => member.parentId === id ? { ...member, parentId: null } : member);
-    const finalArray = updatedArray.filter(member => member.id !== id);
+    const batch = writeBatch(db);
 
-    return await setDoc(staffDocRef, { staff: finalArray });
+    // 1. Find all direct children of the member being deleted
+    const childrenQuery = query(staffCollection, where("parentId", "==", id));
+    const childrenSnapshot = await getDocs(childrenQuery);
+    
+    // 2. Set their parentId to null
+    childrenSnapshot.forEach(childDoc => {
+        const childRef = doc(db, "staff", childDoc.id);
+        batch.update(childRef, { parentId: null });
+    });
+
+    // 3. Delete the actual member
+    const docRef = doc(db, "staff", id);
+    batch.delete(docRef);
+
+    // 4. Commit the batch
+    return await batch.commit();
 };
 
+
 export async function updateStaffParent(staffId: string, newParentId: string | null) {
-    if (staffId === newParentId) throw new Error("A staff member cannot be their own parent.");
-
-    const docSnap = await getDoc(staffDocRef);
-    if (!docSnap.exists() || !docSnap.data()?.staff) throw new Error("Staff document not found.");
-
-    const staffArray: StaffMember[] = docSnap.data().staff;
+    if (staffId === newParentId) throw new Error("Bir personel kendi yöneticisi olamaz.");
 
     // Check for circular dependencies
     let currentParentIdInLoop = newParentId;
-    while(currentParentIdInLoop !== null) {
+    while (currentParentIdInLoop !== null) {
         if (currentParentIdInLoop === staffId) {
-            throw new Error("Circular hierarchy detected.");
+            throw new Error("Döngüsel bir hiyerarşi oluşturulamaz.");
         }
-        const parent = staffArray.find((s:any) => s.id === currentParentIdInLoop);
+        const parent = await getStaffMemberById(currentParentIdInLoop);
         if (!parent) break;
-        currentParentIdInLoop = parent.parentId || null;
+        currentParentIdInLoop = parent.parentId;
     }
 
-    const newStaffArray = staffArray.map((member) => member.id === staffId ? { ...member, parentId: newParentId } : member);
-
-    return await setDoc(staffDocRef, { staff: newStaffArray });
+    const docRef = doc(db, "staff", staffId);
+    return await updateDoc(docRef, { parentId: newParentId });
 }

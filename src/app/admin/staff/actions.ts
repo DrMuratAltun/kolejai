@@ -5,7 +5,6 @@ import { z } from 'zod';
 import { addStaffMember, updateStaffMember, deleteStaffMember, updateStaffParent, type StaffMemberData } from '@/services/staffService';
 import { revalidatePath } from 'next/cache';
 import { uploadFile } from '@/lib/firebase-storage';
-import { v4 as uuidv4 } from 'uuid';
 
 const serverFormSchema = z.object({
   id: z.string().optional(),
@@ -27,16 +26,19 @@ export async function handleStaffFormSubmit(prevState: any, formData: FormData) 
   if (rawData.id === '') delete rawData.id;
 
   const imageValue = rawData.photo as File | string;
+  let imageUrl = typeof imageValue === 'string' ? imageValue : '';
 
   if (imageValue instanceof File && imageValue.size > 0) {
       try {
-          rawData.photo = await uploadFile(imageValue, 'staff');
+          imageUrl = await uploadFile(imageValue, 'staff');
       } catch (e: any) {
           return { success: false, error: 'Resim yüklenirken bir hata oluştu: ' + e.message };
       }
   }
+  
+  const dataToParse = { ...rawData, photo: imageUrl };
 
-  const parsed = serverFormSchema.safeParse(rawData);
+  const parsed = serverFormSchema.safeParse(dataToParse);
 
   if (!parsed.success) {
     return {
@@ -61,7 +63,7 @@ export async function handleStaffFormSubmit(prevState: any, formData: FormData) 
     if (id) {
       await updateStaffMember(id, dataToSave);
     } else {
-      await addStaffMember({ ...dataToSave, id: uuidv4() });
+      await addStaffMember(dataToSave);
     }
     
     revalidatePath('/staff');
