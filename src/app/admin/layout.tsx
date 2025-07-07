@@ -27,7 +27,7 @@ export default function AdminLayout({
         <AdminSidebar />
         <SidebarInset>
             <AdminHeader />
-            <main className="relative flex-1 p-4 lg:p-8 pt-6">
+            <main className="relative flex-1 p-4 lg:p-8 pt-6 h-[calc(100vh-64px)]">
               {children}
             </main>
             <div className="fixed bottom-6 right-8 z-50 group">

@@ -21,7 +21,8 @@ import {
   User,
   School,
   Mail,
-  Users
+  Users,
+  Wand2
 } from "lucide-react";
 
 const mainMenuItems = [
@@ -30,7 +31,8 @@ const mainMenuItems = [
 
 const contentMenuItems = [
     { href: "/admin/news", label: "Haber, Duyuru, Etkinlik", icon: Newspaper },
-    { href: "/admin/pages", label: "Sayfalar", icon: Files },
+    { href: "/admin/pages", label: "Sayfalar & Menü", icon: Files },
+    { href: "/admin/page-generator", label: "AI Sayfa Oluşturucu", icon: Wand2 },
     { href: "/admin/gallery", label: "Galeri", icon: GalleryHorizontal },
     { href: "/admin/staff", label: "Personel", icon: Users },
     { href: "#", label: "Müdür Mesajı", icon: User, disabled: true },
