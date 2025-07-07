@@ -91,31 +91,33 @@ export default async function Home() {
   const upcomingEvents = newsAndEvents.filter(item => item.type === 'Etkinlik');
 
   return (
-    <div className="flex flex-col animate-in fade-in duration-500">
+    <div className={`flex flex-col animate-in fade-in duration-500 ${!settings.showHeroBanner ? 'pt-20' : ''}`}>
       {/* Hero Section with Banner */}
-      <section className="relative w-full h-[250px] md:h-[350px] lg:h-[400px]">
-        <Image 
-          src={settings.heroBannerUrl} 
-          alt={`${settings.schoolName} kampüsü`}
-          fill
-          className="object-cover"
-          data-ai-hint="school campus"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent"></div>
-        <div className="absolute inset-0 flex items-center justify-center">
-            <div className="bg-white/20 backdrop-blur-sm p-2 rounded-full shadow-lg">
-                <Image
-                    src={settings.logoUrl}
-                    alt={`${settings.schoolName} Logosu`}
-                    width={150}
-                    height={150}
-                    className="h-28 w-28 md:h-36 md:w-36 rounded-full object-cover"
-                    data-ai-hint="school logo"
-                />
-            </div>
-        </div>
-      </section>
+      {settings.showHeroBanner && (
+        <section className="relative w-full h-[250px] md:h-[350px] lg:h-[400px]">
+          <Image 
+            src={settings.heroBannerUrl} 
+            alt={`${settings.schoolName} kampüsü`}
+            fill
+            className="object-cover"
+            data-ai-hint="school campus"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+              <div className="bg-white/20 backdrop-blur-sm p-2 rounded-full shadow-lg">
+                  <Image
+                      src={settings.logoUrl}
+                      alt={`${settings.schoolName} Logosu`}
+                      width={150}
+                      height={150}
+                      className="h-28 w-28 md:h-36 md:w-36 rounded-full object-cover"
+                      data-ai-hint="school logo"
+                  />
+              </div>
+          </div>
+        </section>
+      )}
 
       {/* Haberler & Duyurular Carousel */}
       <NewsCarousel newsAndEvents={newsAndEvents} />

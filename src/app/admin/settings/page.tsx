@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Checkbox } from '@/components/ui/checkbox';
 
 
 function SubmitButton() {
@@ -180,13 +181,17 @@ export default function SiteSettingsPage() {
                 <Card>
                     <CardHeader>
                         <CardTitle>Anasayfa Ayarları</CardTitle>
-                        <CardDescription>Anasayfada gösterilen genel görseller.</CardDescription>
+                        <CardDescription>Anasayfada gösterilen genel görselleri ve özellikleri yönetin.</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-6">
+                        <div className="flex items-center space-x-2 p-4 border rounded-md">
+                            <Checkbox id="showHeroBanner" name="showHeroBanner" defaultChecked={settings.showHeroBanner} />
+                            <Label htmlFor="showHeroBanner" className="cursor-pointer text-base">Anasayfa Banner'ını Göster</Label>
+                        </div>
                          <div className="space-y-2">
                             <Label htmlFor="heroBanner">Anasayfa Banner Görseli</Label>
                             <Input id="heroBanner" name="heroBanner" type="file" accept="image/png, image/jpeg, image/webp" onChange={(e) => handleFileChange(e, setBannerPreview)} />
-                             <p className="text-sm text-muted-foreground">Önerilen boyut: 1200x400 piksel.</p>
+                             <p className="text-sm text-muted-foreground">Önerilen boyut: 1200x400 piksel. Banner gösterilmeyecekse bu alanın bir önemi yoktur.</p>
                             {bannerPreview && <Image src={bannerPreview} alt="Banner Preview" width={600} height={200} className="mt-2 rounded-md aspect-[3/1] object-cover" />}
                         </div>
                     </CardContent>

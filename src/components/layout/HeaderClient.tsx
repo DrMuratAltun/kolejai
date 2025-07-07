@@ -72,19 +72,22 @@ export default function HeaderClient({ dynamicNavItems, settings }: HeaderClient
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const isHomePage = pathname === '/';
+  
+  // Header is transparent only if on homepage AND banner is shown.
+  const isHeaderTransparent = isHomePage && settings.showHeroBanner;
 
   return (
     <Collapsible asChild open={isOpen} onOpenChange={setIsOpen}>
       <header className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-colors duration-300",
-        isHomePage ? "bg-transparent" : "bg-background/90 backdrop-blur-sm shadow-md"
+        isHeaderTransparent ? "bg-transparent" : "bg-background/90 backdrop-blur-sm shadow-md"
       )}>
         <div className="container mx-auto flex h-20 items-center justify-between px-4">
           <Link
             href="/"
             className={cn(
               "flex items-center gap-2 text-xl font-bold",
-              isHomePage ? "text-white" : "text-primary"
+              isHeaderTransparent ? "text-white" : "text-primary"
             )}
           >
             {settings.logoUrl ? (
@@ -101,7 +104,7 @@ export default function HeaderClient({ dynamicNavItems, settings }: HeaderClient
                   <NavigationMenuItem key={item.page.id}>
                     {item.children.length > 0 ? (
                       <>
-                        <NavigationMenuTrigger className={cn(isHomePage && "bg-transparent text-white hover:bg-white/10")}>
+                        <NavigationMenuTrigger className={cn(isHeaderTransparent && "bg-transparent text-white hover:bg-white/10")}>
                             {item.page.title}
                         </NavigationMenuTrigger>
                         <NavigationMenuContent>
@@ -116,7 +119,7 @@ export default function HeaderClient({ dynamicNavItems, settings }: HeaderClient
                       </>
                     ) : (
                       <NavigationMenuLink asChild>
-                        <Link href={getHref(item.page)} className={cn(navigationMenuTriggerStyle(), isHomePage && "bg-transparent text-white hover:bg-white/10")}>
+                        <Link href={getHref(item.page)} className={cn(navigationMenuTriggerStyle(), isHeaderTransparent && "bg-transparent text-white hover:bg-white/10")}>
                           {item.page.title}
                         </Link>
                       </NavigationMenuLink>
@@ -128,13 +131,13 @@ export default function HeaderClient({ dynamicNavItems, settings }: HeaderClient
             </NavigationMenu>
           </div>
           <div className="hidden md:flex items-center gap-4">
-            <Button asChild className={cn(isHomePage && "bg-white text-primary hover:bg-white/90")}>
+            <Button asChild className={cn(isHeaderTransparent && "bg-white text-primary hover:bg-white/90")}>
               <Link href="/contact">Kayıt Ol</Link>
             </Button>
           </div>
           <div className="md:hidden">
             <CollapsibleTrigger asChild>
-              <Button variant="outline" size="icon" className={cn(isHomePage && "text-white border-white hover:bg-white/10 hover:text-white")}>
+              <Button variant="outline" size="icon" className={cn(isHeaderTransparent && "text-white border-white hover:bg-white/10 hover:text-white")}>
                 {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                 <span className="sr-only">Menüyü aç/kapat</span>
               </Button>

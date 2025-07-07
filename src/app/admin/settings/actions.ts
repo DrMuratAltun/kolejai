@@ -11,6 +11,7 @@ const settingsSchema = z.object({
   schoolName: z.string().min(1, 'Okul adı gerekli.'),
   logoUrl: z.string().url().or(z.literal('')),
   heroBannerUrl: z.string().url().or(z.literal('')),
+  showHeroBanner: z.boolean(),
   address: z.string().min(1, 'Adres gerekli.'),
   phone: z.string().min(1, 'Telefon gerekli.'),
   email: z.string().email('Geçerli bir e-posta adresi girin.'),
@@ -26,7 +27,6 @@ const settingsSchema = z.object({
 export async function handleSettingsFormSubmit(prevState: any, formData: FormData) {
   try {
     const currentSettings = await getSiteSettings();
-    const rawData = Object.fromEntries(formData.entries());
 
     // Handle file uploads first to get URLs
     const logoFile = formData.get('logo') as File | null;
@@ -44,17 +44,18 @@ export async function handleSettingsFormSubmit(prevState: any, formData: FormDat
     // Build the potential new settings object by merging form data over current settings
     // This handles fields in inactive (unmounted) tabs
     const dataToValidate = {
-        schoolName: rawData.schoolName ?? currentSettings.schoolName,
+        schoolName: formData.get('schoolName') ?? currentSettings.schoolName,
         logoUrl: logoUrl,
         heroBannerUrl: heroBannerUrl,
-        address: rawData.address ?? currentSettings.address,
-        phone: rawData.phone ?? currentSettings.phone,
-        email: rawData.email ?? currentSettings.email,
+        showHeroBanner: formData.has('heroBanner') ? (formData.get('showHeroBanner') === 'on') : currentSettings.showHeroBanner,
+        address: formData.get('address') ?? currentSettings.address,
+        phone: formData.get('phone') ?? currentSettings.phone,
+        email: formData.get('email') ?? currentSettings.email,
         socialLinks: {
-            facebook: rawData['socialLinks.facebook'] ?? currentSettings.socialLinks?.facebook,
-            twitter: rawData['socialLinks.twitter'] ?? currentSettings.socialLinks?.twitter,
-            instagram: rawData['socialLinks.instagram'] ?? currentSettings.socialLinks?.instagram,
-            linkedin: rawData['socialLinks.linkedin'] ?? currentSettings.socialLinks?.linkedin,
+            facebook: formData.get('socialLinks.facebook') ?? currentSettings.socialLinks?.facebook,
+            twitter: formData.get('socialLinks.twitter') ?? currentSettings.socialLinks?.twitter,
+            instagram: formData.get('socialLinks.instagram') ?? currentSettings.socialLinks?.instagram,
+            linkedin: formData.get('socialLinks.linkedin') ?? currentSettings.socialLinks?.linkedin,
         }
     };
     

@@ -17,6 +17,7 @@ export interface SiteSettings {
   schoolName: string;
   logoUrl: string;
   heroBannerUrl: string;
+  showHeroBanner: boolean;
   address: string;
   phone: string;
   email: string;
@@ -36,6 +37,7 @@ const fromFirestore = (snapshot: any): SiteSettings => {
     schoolName: data.schoolName || 'Bilge Yıldız Koleji',
     logoUrl: data.logoUrl || 'https://placehold.co/150x150.png',
     heroBannerUrl: data.heroBannerUrl || 'https://placehold.co/1200x400.png',
+    showHeroBanner: data.showHeroBanner === undefined ? true : data.showHeroBanner,
     address: data.address || '',
     phone: data.phone || '',
     email: data.email || '',
@@ -53,6 +55,7 @@ export const getSiteSettings = async (): Promise<SiteSettings> => {
                 schoolName: 'Bilge Yıldız Koleji',
                 logoUrl: 'https://placehold.co/150x150.png',
                 heroBannerUrl: 'https://placehold.co/1200x400.png',
+                showHeroBanner: true,
                 address: 'Örnek Mah. Okul Sk. No:123, 34762 Üsküdar/İstanbul',
                 phone: '+90 (216) 123 45 67',
                 email: 'info@bilgeyildiz.com',
