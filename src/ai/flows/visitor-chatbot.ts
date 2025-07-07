@@ -9,6 +9,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import { getSiteSettings } from '@/services/settingsService';
 import {z} from 'genkit';
 
 const VisitorChatbotInputSchema = z.object({
@@ -27,9 +28,9 @@ export async function visitorChatbot(input: VisitorChatbotInput): Promise<Visito
 
 const prompt = ai.definePrompt({
   name: 'visitorChatbotPrompt',
-  input: {schema: VisitorChatbotInputSchema},
+  input: {schema: VisitorChatbotInputSchema.extend({ schoolName: z.string() })},
   output: {schema: VisitorChatbotOutputSchema},
-  prompt: `You are a chatbot for Akilli Okul Web, an educational institution. Answer user questions based on your knowledge of the school.
+  prompt: `You are a chatbot for {{{schoolName}}}, an educational institution. Answer user questions based on your knowledge of the school.
 
 Query: {{{query}}}
 `,
@@ -42,7 +43,11 @@ const visitorChatbotFlow = ai.defineFlow(
     outputSchema: VisitorChatbotOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const settings = await getSiteSettings();
+    const {output} = await prompt({
+        ...input,
+        schoolName: settings.schoolName,
+    });
     return output!;
   }
 );

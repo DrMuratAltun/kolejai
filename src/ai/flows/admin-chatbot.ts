@@ -9,6 +9,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import { getSiteSettings } from '@/services/settingsService';
 import {z} from 'genkit';
 
 const AdminChatbotInputSchema = z.object({
@@ -27,9 +28,9 @@ export async function adminChatbot(input: AdminChatbotInput): Promise<AdminChatb
 
 const adminChatbotPrompt = ai.definePrompt({
   name: 'adminChatbotPrompt',
-  input: {schema: AdminChatbotInputSchema},
+  input: {schema: AdminChatbotInputSchema.extend({ schoolName: z.string() })},
   output: {schema: AdminChatbotOutputSchema},
-  prompt: `You are an AI assistant helping the admin user to manage the website.
+  prompt: `You are an AI assistant helping the admin user to manage the website for {{{schoolName}}}.
 
   Answer the following question:
   {{query}}
@@ -43,7 +44,11 @@ const adminChatbotFlow = ai.defineFlow(
     outputSchema: AdminChatbotOutputSchema,
   },
   async input => {
-    const {output} = await adminChatbotPrompt(input);
+    const settings = await getSiteSettings();
+    const {output} = await adminChatbotPrompt({
+      ...input,
+      schoolName: settings.schoolName,
+    });
     return output!;
   }
 );

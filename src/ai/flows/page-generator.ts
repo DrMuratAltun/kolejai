@@ -11,6 +11,7 @@ import { generateImage } from './image-generation';
 import { uploadFile } from '@/lib/firebase-storage';
 import { dataURLtoFile } from '@/lib/utils';
 import { v4 as uuidv4 } from 'uuid';
+import { getSiteSettings } from '@/services/settingsService';
 
 const GeneratePageContentInputSchema = z.object({
   title: z.string().describe('The main title of the web page.'),
@@ -29,13 +30,14 @@ export async function generatePageContent(input: GeneratePageContentInput): Prom
 
 const prompt = ai.definePrompt({
   name: 'generatePageContentPrompt',
-  input: {schema: GeneratePageContentInputSchema},
+  input: {schema: GeneratePageContentInputSchema.extend({ schoolName: z.string() })},
   // The output from the prompt is just the initial HTML with placeholders
   output: {schema: z.object({ htmlContent: z.string() })},
-  prompt: `You are an expert web designer and content creator for a school website called "Bilge Yıldız Koleji".
+  prompt: `You are an expert web designer and content creator for a school website called "{{{schoolName}}}".
 Your task is to generate a complete, single-page HTML structure for the page body based on the title and topic provided. The design MUST be modern, visually engaging, and highly aesthetic.
 
 Instructions:
+- School Name: {{{schoolName}}}
 - Title: {{{title}}}
 - Topic/Content Instructions: {{{topic}}}
 
@@ -67,8 +69,13 @@ const generatePageContentFlow = ai.defineFlow(
     outputSchema: GeneratePageContentOutputSchema,
   },
   async input => {
+    const settings = await getSiteSettings();
+
     // 1. Generate HTML with image placeholders
-    const llmResponse = await prompt(input);
+    const llmResponse = await prompt({
+        ...input,
+        schoolName: settings.schoolName,
+    });
     let htmlContent = llmResponse.output?.htmlContent || '';
 
     // 2. Find all image hints
