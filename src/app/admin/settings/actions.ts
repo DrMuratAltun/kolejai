@@ -78,7 +78,13 @@ export async function handleSettingsFormSubmit(prevState: any, formData: FormDat
     // Save the valid data
     await updateSiteSettings(parsed.data);
     
-    revalidatePath('/', 'layout');
+    // Aggressive revalidation to ensure cache is cleared everywhere.
+    // This forces Next.js to re-fetch the settings on the next visit to any of these pages.
+    revalidatePath('/', 'layout'); // Revalidates the root layout, affecting all pages.
+    revalidatePath('/'); // Specifically revalidate the homepage.
+    revalidatePath('/gallery');
+    revalidatePath('/staff');
+    revalidatePath('/contact');
 
     return { success: true, message: 'Ayarlar başarıyla güncellendi.' };
   } catch (e: any) {
