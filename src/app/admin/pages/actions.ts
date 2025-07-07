@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import { addPage, updatePage, PageData, deletePage, updatePageOrderAndParent } from '@/services/pageService';
+import { addPage, updatePage, PageData, deletePage } from '@/services/pageService';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { uploadFile } from '@/lib/firebase-storage';
@@ -76,14 +76,12 @@ export async function savePageAction(prevState: any, formData: FormData) {
   redirect('/admin/pages');
 }
 
-export async function updatePageOrderAndParentAction(pageId: string, parentId: string | null) {
+export async function updatePageOrderAndParentAction(pageId: string, parentId: string | null, menuOrder: number) {
   try {
-    // This is a simplified version. A real implementation would need to handle re-ordering of siblings.
-    await updatePage(pageId, { parentId: parentId });
-
+    await updatePage(pageId, { parentId, menuOrder });
     revalidatePath('/admin/pages');
     revalidatePath('/');
-    return { success: true };
+    return { success: true, error: null };
   } catch (e: any) {
     console.error("Error updating page parent:", e);
     return { success: false, error: e.message };

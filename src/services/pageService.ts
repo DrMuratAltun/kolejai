@@ -113,19 +113,3 @@ export const deletePage = async (id: string) => {
   const docRef = doc(db, "pages", id);
   return await deleteDoc(docRef);
 };
-
-
-export async function updatePageOrderAndParent(pageId: string, parentId: string | null, newOrder: number) {
-    noStore();
-    try {
-        const pageRef = doc(db, "pages", pageId);
-        await updateDoc(pageRef, {
-            parentId: parentId,
-            menuOrder: newOrder
-        });
-        return { success: true };
-    } catch (e: any) {
-        console.error("Error updating page order and parent:", e);
-        return { success: false, error: e.message };
-    }
-}

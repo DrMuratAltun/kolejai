@@ -13,12 +13,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { getPages, type Page, updatePageOrderAndParent } from '@/services/pageService';
+import { getPages, type Page } from '@/services/pageService';
 import { MoreHorizontal, Pencil, CheckCircle, GripVertical, Link as LinkIcon, FileText, BoxSelect } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
+import { updatePageOrderAndParentAction } from './actions';
 
 
 interface PageNode extends Page {
@@ -166,14 +167,14 @@ export default function PagesListPage() {
         
         toast({ title: 'Menü güncelleniyor...' });
         
-        const result = await updatePageOrderAndParent(active.id as string, newParentId, activePage.menuOrder);
+        const result = await updatePageOrderAndParentAction(active.id as string, newParentId, activePage.menuOrder);
 
         if (result.success) {
             toast({ title: "Başarılı!", description: "Menü hiyerarşisi güncellendi." });
             // Refresh pages from server
             getPages().then(setPages);
         } else {
-            toast({ variant: "destructive", title: "Hata!", description: result.error });
+            toast({ variant: "destructive", title: "Hata!", description: result.error as string });
         }
     }
   };
