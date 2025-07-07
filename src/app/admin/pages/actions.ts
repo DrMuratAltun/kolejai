@@ -1,9 +1,10 @@
 'use server';
 
 import { z } from 'zod';
-import { addPage, updatePage, PageData, getPages } from '@/services/pageService';
+import { addPage, updatePage, PageData, deletePage, updatePageOrderAndParent } from '@/services/pageService';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { uploadFile } from '@/lib/firebase-storage';
 
 const baseSchema = z.object({
   id: z.string().optional(),
@@ -17,7 +18,7 @@ const formSchema = z.discriminatedUnion("type", [
   baseSchema.extend({
     type: z.literal('page'),
     slug: z.string().min(1, 'URL adresi (slug) gerekli'),
-    htmlContent: z.string().min(1, 'Sayfa içeriği boş olamaz'),
+    htmlContent: z.string().optional(), // Can be empty initially
     href: z.string().optional(),
   }),
   baseSchema.extend({
@@ -75,13 +76,10 @@ export async function savePageAction(prevState: any, formData: FormData) {
   redirect('/admin/pages');
 }
 
-
 export async function updatePageOrderAndParentAction(pageId: string, parentId: string | null) {
-  noStore();
   try {
     // This is a simplified version. A real implementation would need to handle re-ordering of siblings.
-    const pageRef = doc(db, "pages", pageId);
-    await updateDoc(pageRef, { parentId: parentId });
+    await updatePage(pageId, { parentId: parentId });
 
     revalidatePath('/admin/pages');
     revalidatePath('/');
@@ -89,5 +87,32 @@ export async function updatePageOrderAndParentAction(pageId: string, parentId: s
   } catch (e: any) {
     console.error("Error updating page parent:", e);
     return { success: false, error: e.message };
+  }
+}
+
+export async function deletePageAction(id: string) {
+    try {
+        await deletePage(id);
+        revalidatePath('/admin/pages');
+        revalidatePath('/');
+        return { success: true };
+    } catch (e: any) {
+        console.error("Error deleting page:", e);
+        return { success: false, error: e.message };
+    }
+}
+
+export async function uploadEditorImageAction(formData: FormData): Promise<{ success: boolean; url?: string; error?: string }> {
+  const file = formData.get('image') as File | null;
+
+  if (!file) {
+    return { success: false, error: 'Resim dosyası bulunamadı.' };
+  }
+
+  try {
+    const url = await uploadFile(file, 'editor-content');
+    return { success: true, url };
+  } catch (error: any) {
+    return { success: false, error: error.message || 'Resim yüklenemedi.' };
   }
 }

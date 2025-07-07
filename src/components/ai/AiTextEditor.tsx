@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
@@ -18,9 +18,10 @@ import Link from '@tiptap/extension-link';
 import UnderlineExtension from '@tiptap/extension-underline';
 import Image from '@tiptap/extension-image';
 import { cn } from '@/lib/utils';
+import { uploadEditorImageAction } from '@/app/admin/pages/actions';
 
 
-const Toolbar = ({ editor }: { editor: any }) => {
+const Toolbar = ({ editor, onImageUploadClick, isUploadingImage }: { editor: any, onImageUploadClick: () => void, isUploadingImage: boolean }) => {
   if (!editor) {
     return null;
   }
@@ -41,15 +42,6 @@ const Toolbar = ({ editor }: { editor: any }) => {
     editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
   }, [editor]);
   
-  const addImage = useCallback(() => {
-    const url = window.prompt('URL');
-
-    if (url) {
-      editor.chain().focus().setImage({ src: url }).run();
-    }
-  }, [editor]);
-
-
   return (
     <div className="border border-input rounded-t-md p-2 flex flex-wrap items-center gap-2">
       <Button type="button" onClick={() => editor.chain().focus().toggleBold().run()} variant={editor.isActive('bold') ? 'default' : 'ghost'} size="icon" aria-label="Bold"><Bold className="h-4 w-4" /></Button>
@@ -84,7 +76,9 @@ const Toolbar = ({ editor }: { editor: any }) => {
       <Button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} variant={editor.isActive('bulletList') ? 'default' : 'ghost'} size="icon" aria-label="Bullet List"><List className="h-4 w-4" /></Button>
       <Button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} variant={editor.isActive('orderedList') ? 'default' : 'ghost'} size="icon" aria-label="Ordered List"><ListOrdered className="h-4 w-4" /></Button>
       <Button type="button" onClick={setLink} variant={editor.isActive('link') ? 'default' : 'ghost'} size="icon" aria-label="Add Link"><Link2 className="h-4 w-4" /></Button>
-      <Button type="button" onClick={addImage} variant={editor.isActive('image') ? 'default' : 'ghost'} size="icon" aria-label="Insert Image"><ImageIcon className="h-4 w-4" /></Button>
+      <Button type="button" onClick={onImageUploadClick} variant="ghost" size="icon" aria-label="Insert Image" disabled={isUploadingImage}>
+        {isUploadingImage ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
+      </Button>
     </div>
   );
 };
@@ -103,8 +97,10 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
   const [isGeneratingText, setIsGeneratingText] = useState(false);
   const [rewriteLength, setRewriteLength] = useState('');
   const [rewriteTone, setRewriteTone] = useState('');
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
-  const isLoading = isRewriting || isGeneratingText;
+  const isLoading = isRewriting || isGeneratingText || isUploadingImage;
 
   const editor = useEditor({
     extensions: [
@@ -112,7 +108,10 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
       UnderlineExtension,
       Link.configure({ openOnClick: false, autolink: true }),
       Placeholder.configure({ placeholder: placeholder || 'İçeriği buraya yazın...' }),
-      Image,
+      Image.configure({
+          inline: false,
+          allowBase64: true, // Optional
+      }),
     ],
     editorProps: {
       attributes: {
@@ -184,10 +183,50 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
     }
   };
 
+  const handleImageUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !editor) return;
+
+    setIsUploadingImage(true);
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    try {
+        const result = await uploadEditorImageAction(formData);
+
+        if (result.success && result.url) {
+            editor.chain().focus().setImage({ src: result.url, alt: file.name }).run();
+            toast({ title: 'Başarılı!', description: 'Resim başarıyla yüklendi ve eklendi.' });
+        } else {
+            throw new Error(result.error || 'Bilinmeyen bir hata oluştu.');
+        }
+    } catch(e: any) {
+        toast({ variant: 'destructive', title: 'Hata!', description: `Resim yüklenemedi: ${e.message}` });
+    } finally {
+        setIsUploadingImage(false);
+        // Clear file input value
+        if (event.target) {
+            event.target.value = '';
+        }
+    }
+  }, [editor, toast]);
+
+  const triggerImageUpload = useCallback(() => {
+    imageInputRef.current?.click();
+  }, []);
+
+
   return (
     <div className="space-y-2">
+       <input
+        type="file"
+        ref={imageInputRef}
+        onChange={handleImageUpload}
+        className="hidden"
+        accept="image/jpeg,image/png,image/webp,image/gif"
+      />
       <div className='rounded-md border border-input focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2'>
-        <Toolbar editor={editor} />
+        <Toolbar editor={editor} onImageUploadClick={triggerImageUpload} isUploadingImage={isUploadingImage} />
         <EditorContent editor={editor} />
       </div>
 
