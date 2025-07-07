@@ -40,30 +40,23 @@ Instructions:
 - Topic/Content Instructions: {{{topic}}}
 
 **Design & Styling Mandates:**
-1.  **HTML Structure**: Generate only the content for the \`<body>\`. The entire output must be wrapped in a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>\`, or \`<body>\` tags. The root element should have nice padding, like \`<div class="container mx-auto px-4 py-16 md:py-24 space-y-20 animate-in fade-in duration-700">\`.
+1.  **HTML Structure**: Generate only the content for the \`<body>\`. The entire output must be wrapped in a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>\`, or \`<body>\` tags.
 2.  **Layout & Effects**:
-    *   **Dynamic Layouts:** Create distinct sections. Use a mix of centered content, two-column grids, and three-column card grids.
-    *   **Backgrounds:** Alternate section backgrounds using \`bg-background\` and \`bg-muted\`. For a hero section or CTA, consider a subtle gradient background like \`bg-gradient-to-br from-primary/10 to-background\`.
-    *   **Animations & Transitions:** Use Tailwind classes for smooth user interaction. Elements should have \`transition-all duration-300\`. Cards should have hover effects like \`hover:shadow-xl hover:-translate-y-2\`. Animate sections on load with \`animate-in fade-in slide-in-from-bottom-8 duration-500\`.
-3.  **Component Design (Cards):**
-    *   Design beautiful cards. Cards should be in \`bg-card\`, have \`rounded-xl\`, and \`shadow-lg\`.
-    *   An example of a more advanced feature card:
-        \`\`\`html
-        <div class="bg-card p-8 rounded-2xl shadow-lg hover:shadow-primary/20 transition-all duration-300 transform hover:-translate-y-2">
-          <div class="bg-primary/10 text-primary rounded-full w-12 h-12 flex items-center justify-center mb-4">
-            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v11.494m-5.747-5.747H17.747" /></svg>
-          </div>
-          <h3 class="text-2xl font-bold mb-3 text-card-foreground">Modern Curriculum</h3>
-          <p class="text-muted-foreground">We utilize the latest pedagogical methods to prepare students for the future.</p>
-        </div>
-        \`\`\`
+    *   **Hero Section:** Start with a strong hero section. Centered text, large title (\`text-4xl md:text-5xl font-extrabold\`), and a descriptive subtitle (\`text-lg text-muted-foreground\`).
+    *   **Alternating Sections:** Alternate section backgrounds using \`bg-background\` and \`bg-muted\` to create visual separation. Use padding like \`py-20 px-4\`.
+    *   **Dynamic Grids:** Use CSS Grid (\`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8\`) for feature lists or card sections.
+    *   **Animations & Transitions:** Animate sections on load with \`animate-in fade-in slide-in-from-bottom-8 duration-500\`. Elements should have \`transition-all duration-300\`. Cards should have hover effects like \`hover:shadow-xl hover:-translate-y-2\`.
+3.  **Component Design (Cards & CTAs):**
+    *   **Feature Cards:** Design beautiful cards. Cards should be in \`bg-card\`, have \`rounded-2xl\`, and \`shadow-lg hover:shadow-primary/20\`. Include an icon.
+    *   **Icon Usage:** Use inline SVGs for icons. Example for a plus icon: \`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>\`. The icon should be wrapped in a colored circle, e.g., \`<div class="bg-primary/10 text-primary rounded-full w-12 h-12 flex items-center justify-center mb-6">...</div>\`.
+    *   **Call to Action (CTA):** Include a visually distinct CTA section with a gradient background, like \`bg-gradient-to-br from-primary to-blue-700\`, with white text (\`text-primary-foreground\`) and a prominent button.
 4.  **Content**: Ensure generated text is professional, well-written, and directly addresses the provided topic and title.
 5.  **Image Integration**:
     *   You MUST use this exact placeholder format for all images: \`<img src="[AI_IMAGE_PLACEHOLDER]" alt="A highly descriptive alt text" class="w-full h-auto rounded-lg shadow-md aspect-video object-cover" data-ai-hint="a concise prompt for an image model max 5 words" />\`.
     *   \`data-ai-hint\` MUST be a very descriptive and visual prompt for an image generation model.
-    *   Distribute images thoughtfully throughout the layout to break up text and create visual interest.
+    *   Distribute images thoughtfully throughout the layout to break up text and create visual interest, often next to a block of text in a two-column layout.
 
-Generate the full HTML content based on these advanced requirements.`,
+Generate the full HTML content based on these advanced requirements. Make it look stunning.`,
 });
 
 
