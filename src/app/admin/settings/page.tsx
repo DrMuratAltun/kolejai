@@ -1,12 +1,9 @@
 
 'use client';
 
-import React, { useEffect, useState, useActionState } from 'react';
+import React, { useEffect, useState, useActionState, useCallback } from 'react';
 import { useFormStatus } from 'react-dom';
 import Image from 'next/image';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 
 import { getSiteSettings, type SiteSettings } from '@/services/settingsService';
 import { handleSettingsFormSubmit } from './actions';
@@ -19,23 +16,6 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-
-const formSchema = z.object({
-  schoolName: z.string().min(1, 'Okul adı gerekli.'),
-  logo: z.any().optional(),
-  heroBanner: z.any().optional(),
-  address: z.string().min(1, 'Adres gerekli.'),
-  phone: z.string().min(1, 'Telefon gerekli.'),
-  email: z.string().email('Geçerli bir e-posta adresi girin.'),
-  socialLinks: z.object({
-    facebook: z.string().url().or(z.literal('')).optional(),
-    twitter: z.string().url().or(z.literal('')).optional(),
-    instagram: z.string().url().or(z.literal('')).optional(),
-    linkedin: z.string().url().or(z.literal('')).optional(),
-  }).optional(),
-});
-
-type SettingsFormValues = z.infer<typeof formSchema>;
 
 
 function SubmitButton() {
@@ -58,7 +38,7 @@ export default function SiteSettingsPage() {
 
     const [state, formAction] = useActionState(handleSettingsFormSubmit, { success: false, message: "" });
     
-    useEffect(() => {
+    const fetchSettingsData = useCallback(() => {
         setIsLoading(true);
         getSiteSettings().then(data => {
             setSettings(data);
@@ -72,14 +52,19 @@ export default function SiteSettingsPage() {
     }, [toast]);
 
     useEffect(() => {
+        fetchSettingsData();
+    }, [fetchSettingsData]);
+
+    useEffect(() => {
         if (state.message) {
             if (state.success) {
                 toast({ title: 'Başarılı!', description: state.message });
+                fetchSettingsData(); // Re-fetch data on success
             } else {
                 toast({ variant: 'destructive', title: 'Hata!', description: state.message });
             }
         }
-    }, [state, toast]);
+    }, [state, toast, fetchSettingsData]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, setPreview: (url: string | null) => void) => {
         const file = e.target.files?.[0];
