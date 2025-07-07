@@ -32,7 +32,7 @@ const prompt = ai.definePrompt({
   input: {schema: GeneratePageContentInputSchema},
   // The output from the prompt is just the initial HTML with placeholders
   output: {schema: z.object({ htmlContent: z.string() })},
-  prompt: `You are an expert web designer and content creator for a school website called "Bilge Yıldız Koleji". 
+  prompt: `You are an expert web designer and content creator for a school website called "Bilge Yıldız Koleji".
 Your task is to generate a complete, single-page HTML structure for the page body based on the title and topic provided. The design MUST be modern, visually engaging, and highly aesthetic.
 
 Instructions:
