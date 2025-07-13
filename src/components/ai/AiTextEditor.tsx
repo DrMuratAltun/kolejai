@@ -11,6 +11,7 @@ import { generateText, rewriteText, rewriteSelection } from '@/ai/flows/content-
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useEditor, EditorContent, Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -378,3 +379,5 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
 };
 
 export default AiTextEditor;
+
+    
