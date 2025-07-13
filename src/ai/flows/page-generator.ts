@@ -54,7 +54,7 @@ Instructions:
     *   **Card Text:** For text inside smaller components like cards, use standard font sizes like \`text-base\` or \`text-sm\` to avoid a cramped look.
 4.  **Component Design (Cards & CTAs):**
     *   **Feature Cards:** Design beautiful cards. Cards should be in \`bg-card\`, have \`rounded-2xl\`, and \`shadow-lg hover:shadow-primary/20\`.
-    *   **Icon Usage:** For each feature card, you MUST select a relevant inline SVG icon that visually represents the card's topic. For instance, for a card about 'growth', use a plant icon; for 'collaboration', use a people icon. The icon must be wrapped in a colored circle for aesthetic emphasis, e.g., \`<div class="bg-primary/10 text-primary rounded-full w-12 h-12 flex items-center justify-center mb-6"><svg...></svg></div>\`.
+    *   **Icon Usage:** For each feature card, you MUST select a relevant inline SVG icon that visually represents the card's topic. For instance, for a card about 'growth', use a plant icon; for 'collaboration', use a people icon. The icon MUST be wrapped in a colored circle for aesthetic emphasis, like so: \`<div class="bg-primary/10 text-primary rounded-full w-12 h-12 flex items-center justify-center mb-6"><svg...></svg></div>\`.
     *   **Call to Action (CTA):** Include a visually distinct CTA section with a gradient background, like \`bg-gradient-to-br from-primary to-blue-700\`, with white text (\`text-primary-foreground\`) and a prominent button.
 5.  **Image Integration**:
     *   You MUST use this exact placeholder format for all images: \`<img src="[AI_IMAGE_PLACEHOLDER]" alt="A highly descriptive alt text" class="w-full h-auto rounded-lg shadow-md aspect-video object-cover" data-ai-hint="a concise prompt for an image model max 5 words" />\`.
