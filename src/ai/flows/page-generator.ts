@@ -64,12 +64,14 @@ Your output MUST be a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>
         *   Subtitles, descriptions: \`text-muted-foreground\`
         *   Main titles, highlighted elements: \`text-primary\`
 
-4.  **Typography & Readability (Strictly Enforced):**
+4.  **Rich Typography & Readability (Strictly Enforced):**
     *   **Page Title (h1):** Use \`text-4xl md:text-5xl font-extrabold text-primary\`.
     *   **Section Titles (h2):** Use \`text-3xl font-bold text-primary\`.
-    *   **Card Titles (h3):** Use \`text-xl font-semibold text-white\` for colored feature cards, and \`text-xl font-semibold text-foreground\` for profile cards.
     *   **Main Paragraphs:** Use \`text-lg leading-relaxed text-muted-foreground\` for optimal readability.
-    *   **Card/Component Paragraphs:** Inside colored feature cards, use \`text-sm text-white/90\`. Inside profile cards, use \`text-base text-muted-foreground\`.
+    *   **Text Enrichment:** Do not just use plain paragraphs. Enhance the content's visual appeal and readability by using:
+        *   **Lists (\`<ul>\`):** For bullet points, use classes like \`list-disc pl-6 space-y-2 text-lg text-muted-foreground\`.
+        *   **Quotes (\`<blockquote>\`):** To highlight key statements, use classes like \`border-l-4 border-primary pl-4 italic text-muted-foreground\`.
+        *   **Emphasis (\`<strong>\`):** Use bold text to emphasize important keywords within paragraphs.
 
 5.  **Spacing:**
     *   Use ample whitespace. Sections should have significant vertical padding, like \`py-20 px-4\` or \`py-24\`.
@@ -81,7 +83,7 @@ Your output MUST be a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>
 
 **MANDATORY COMPONENT DESIGN:**
 
-You MUST choose the most appropriate card type based on the context. If listing features, use "Feature Cards". If listing people, alumni, or items with a primary photo, use "Profile Cards".
+You MUST choose the most appropriate card type based on the context. If listing features, services, or abstract concepts, use "Feature Cards". If listing people, alumni, or items with a primary photo, use "Profile Cards".
 
 1.  **Feature Cards (For listing features, services, or abstract concepts):**
     *   Design vibrant, colorful, modern cards exactly like this example. This is a strict requirement.
