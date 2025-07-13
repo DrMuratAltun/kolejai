@@ -44,46 +44,50 @@ Your output MUST be a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>
 
 ---
 
-**MANDATORY DESIGN SYSTEM & TYPOGRAPHY RULES:**
+**MANDATORY DESIGN SYSTEM & STRUCTURE:**
 
-1.  **Color Palette (Strictly Enforced):**
-    *   **NEVER** use hardcoded colors like \`text-gray-900\`, \`bg-blue-500\`, or any other Tailwind color classes directly for standard text or backgrounds.
-    *   **ONLY USE SEMANTIC THEME CLASSES FOR GENERAL LAYOUT:**
+1.  **Content Sectioning (Crucial):**
+    *   You MUST analyze the provided topic and divide it into logical, self-contained \`<section>\` blocks.
+    *   Each section MUST have a clear title (e.g., \`<h2 class="text-3xl font-bold text-primary mb-8">\`).
+    *   **Vary the layout!** Alternate between different section styles. For example:
+        *   A section with text on the left and an image on the right (\`<div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">\`).
+        *   A section with a centered title and a grid of feature cards below it.
+        *   A full-width section with just a title and a paragraph.
+
+2.  **Visual Rhythm (Backgrounds):**
+    *   You MUST alternate the background color of each \`<section>\` block between \`bg-background\` and \`bg-muted\` to create a visually appealing rhythm. For example: \`<section class="py-20 px-4 bg-background">\`, then \`<section class="py-20 px-4 bg-muted">\`, and so on.
+
+3.  **Color Palette (Strictly Enforced):**
+    *   **NEVER** use hardcoded colors like \`text-gray-900\`, \`bg-blue-500\`, etc.
+    *   **ONLY USE SEMANTIC THEME CLASSES:**
         *   Main text: \`text-foreground\`
-        *   Subtitles, descriptions, less important text: \`text-muted-foreground\`
+        *   Subtitles, descriptions: \`text-muted-foreground\`
         *   Main titles, highlighted elements: \`text-primary\`
-        *   Main section backgrounds: \`bg-background\`
-        *   Alternating/secondary section backgrounds: \`bg-muted\`
-        *   Standard card backgrounds: \`bg-card\`
 
-2.  **Typography & Readability (Strictly Enforced):**
-    *   **Hero Title (h1):** Use \`text-4xl md:text-5xl font-bold text-primary\`.
+4.  **Typography & Readability (Strictly Enforced):**
+    *   **Page Title (h1):** Use \`text-4xl md:text-5xl font-bold text-primary\`.
     *   **Section Titles (h2):** Use \`text-3xl font-bold text-primary\`.
     *   **Card Titles (h3):** Use \`text-xl font-semibold text-white\`.
     *   **Main Paragraphs:** Use \`text-lg leading-relaxed text-muted-foreground\` for optimal readability.
-    *   **Card/Component Paragraphs:** Inside cards, use \`text-sm text-white/90\` to keep the design clean and uncluttered.
+    *   **Card/Component Paragraphs:** Inside cards, use \`text-sm text-white/90\`.
 
-3.  **Layout & Spacing:**
+5.  **Spacing:**
     *   Use ample whitespace. Sections should have significant vertical padding, like \`py-20 px-4\` or \`py-24\`.
-    *   Use CSS Grid for card layouts (\`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6\`).
-    *   Alternate section backgrounds using \`bg-background\` and \`bg-muted\` for visual separation.
 
 ---
 
 **MANDATORY COMPONENT DESIGN:**
 
 1.  **Feature Cards (The Most Important Rule):**
-    *   Design vibrant, colorful, modern cards exactly like this example. This is not a suggestion, it is a strict requirement.
+    *   Design vibrant, colorful, modern cards exactly like this example. This is a strict requirement.
     *   **Structure:** A card must contain a large icon, a title (h3), and a description (p).
     *   **Card Styling:** The container \`<div>\` must have \`p-8 rounded-2xl text-white flex flex-col items-center text-center shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl\`.
     *   **Card Colors (Crucial):**
-        *   You MUST use one of the predefined feature colors for the background of each card.
-        *   Use classes like \`bg-[hsl(var(--feature-1))]\`, \`bg-[hsl(var(--feature-2))]\`, etc.
+        *   You MUST use one of the predefined feature colors for the background of each card. Use classes like \`bg-[hsl(var(--feature-1))]\`, \`bg-[hsl(var(--feature-2))]\`, etc.
         *   Cycle through the available feature colors (\`feature-1\` to \`feature-6\`).
     *   **Icon Styling (Crucial):**
         *   The SVG icon MUST be large and single-color white. It MUST have the class \`w-16 h-16 mb-6\`.
         *   The icon must be relevant to the card's topic.
-    *   **Text Styling:** Follow the typography rules above (h3 for title, p for description).
     *   **Example of a PERFECT Card:**
         \`\`\`html
         <div class="relative p-8 rounded-2xl text-white flex flex-col items-center text-center shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl" style="background-color: hsl(var(--feature-1))">
@@ -100,10 +104,9 @@ Your output MUST be a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>
     *   \`data-ai-hint\` MUST be a descriptive, visual prompt for an image generation model.
 
 3.  **Call to Action (CTA) Section:**
-    *   The final section should be a CTA.
-    *   It should have a clean background, like \`bg-muted\`.
+    *   The final section should be a CTA. It should have a clean background, like \`bg-muted\`.
     *   Include a strong headline (\`h2\`) and a descriptive paragraph (\`p\`).
-    *   The button must be prominent. Use a button tag: \`<a href="/contact" class="inline-block bg-primary text-primary-foreground font-bold py-3 px-8 rounded-lg hover:bg-primary/90 transition-colors">Kayıt Ol</a>\`.
+    *   The button must be prominent: \`<a href="/contact" class="inline-block bg-primary text-primary-foreground font-bold py-3 px-8 rounded-lg hover:bg-primary/90 transition-colors">Kayıt Ol</a>\`.
 
 Now, generate the full, beautiful, and brand-consistent HTML body based on these strict instructions.
 `,
