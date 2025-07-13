@@ -67,9 +67,9 @@ Your output MUST be a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>
 4.  **Typography & Readability (Strictly Enforced):**
     *   **Page Title (h1):** Use \`text-4xl md:text-5xl font-bold text-primary\`.
     *   **Section Titles (h2):** Use \`text-3xl font-bold text-primary\`.
-    *   **Card Titles (h3):** Use \`text-xl font-semibold text-white\`.
+    *   **Card Titles (h3):** Use \`text-xl font-semibold text-white\` for colored feature cards, and \`text-xl font-semibold text-foreground\` for profile cards.
     *   **Main Paragraphs:** Use \`text-lg leading-relaxed text-muted-foreground\` for optimal readability.
-    *   **Card/Component Paragraphs:** Inside cards, use \`text-sm text-white/90\`.
+    *   **Card/Component Paragraphs:** Inside colored feature cards, use \`text-sm text-white/90\`. Inside profile cards, use `text-base text-muted-foreground`.
 
 5.  **Spacing:**
     *   Use ample whitespace. Sections should have significant vertical padding, like \`py-20 px-4\` or \`py-24\`.
@@ -78,7 +78,9 @@ Your output MUST be a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>
 
 **MANDATORY COMPONENT DESIGN:**
 
-1.  **Feature Cards (The Most Important Rule):**
+You MUST choose the most appropriate card type based on the context. If listing features, use "Feature Cards". If listing people, alumni, or items with a primary photo, use "Profile Cards".
+
+1.  **Feature Cards (For listing features, services, or abstract concepts):**
     *   Design vibrant, colorful, modern cards exactly like this example. This is a strict requirement.
     *   **Structure:** A card must contain a large icon, a title (h3), and a description (p).
     *   **Card Styling:** The container \`<div>\` must have \`p-8 rounded-2xl text-white flex flex-col items-center text-center shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl\`.
@@ -88,7 +90,7 @@ Your output MUST be a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>
     *   **Icon Styling (Crucial):**
         *   The SVG icon MUST be large and single-color white. It MUST have the class \`w-16 h-16 mb-6\`.
         *   The icon must be relevant to the card's topic.
-    *   **Example of a PERFECT Card:**
+    *   **Example of a PERFECT Feature Card:**
         \`\`\`html
         <div class="relative p-8 rounded-2xl text-white flex flex-col items-center text-center shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl" style="background-color: hsl(var(--feature-1))">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mb-6">
@@ -99,11 +101,25 @@ Your output MUST be a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>
         </div>
         \`\`\`
 
-2.  **Image Integration:**
+2.  **Profile Cards (For listing people, alumni, or specific items with photos):**
+    *   Design clean, elegant, modern cards exactly like this example. This is a strict requirement for this context.
+    *   **Structure:** The card MUST contain an image at the top and a title (h3) below it. No description text.
+    *   **Card Styling:** The container \`<div>\` must have \`bg-card rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300 p-4 text-center\`.
+    *   **Image Styling:** The \`<img>\` tag MUST have \`w-full h-48 object-cover rounded-md mb-4\`.
+    *   **Title Styling:** The \`<h3>\` tag MUST have \`text-xl font-semibold text-foreground\`.
+    *   **Example of a PERFECT Profile Card:**
+        \`\`\`html
+        <div class="bg-card rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300 p-4 text-center">
+            <img src="[AI_IMAGE_PLACEHOLDER]" alt="A descriptive alt text for the person" class="w-full h-48 object-cover rounded-md mb-4" data-ai-hint="portrait of a person" />
+            <h3 class="text-xl font-semibold text-foreground">Person's Name</h3>
+        </div>
+        \`\`\`
+
+3.  **Image Integration:**
     *   Use this exact placeholder format: \`<img src="[AI_IMAGE_PLACEHOLDER]" alt="A descriptive alt text" class="w-full h-auto rounded-lg shadow-md aspect-video object-cover" data-ai-hint="a concise prompt for an image model max 5 words" />\`.
     *   \`data-ai-hint\` MUST be a descriptive, visual prompt for an image generation model.
 
-3.  **Call to Action (CTA) Section:**
+4.  **Call to Action (CTA) Section:**
     *   The final section should be a CTA. It should have a clean background, like \`bg-muted\`.
     *   Include a strong headline (\`h2\`) and a descriptive paragraph (\`p\`).
     *   The button must be prominent: \`<a href="/contact" class="inline-block bg-primary text-primary-foreground font-bold py-3 px-8 rounded-lg hover:bg-primary/90 transition-colors">Kayıt Ol</a>\`.
