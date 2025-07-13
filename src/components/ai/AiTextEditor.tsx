@@ -6,23 +6,26 @@ import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, Wand2, Sparkles, Bold, Italic, Strikethrough, Underline, List, ListOrdered, Link2, Image as ImageIcon, Code, Split } from 'lucide-react';
-import { generateText, rewriteText } from '@/ai/flows/content-tools';
+import { Loader2, Wand2, Sparkles, Bold, Italic, Strikethrough, Underline, List, ListOrdered, Link2, Image as ImageIcon, Code, Split, ChevronDown, AlignLeft, AlignCenter, AlignRight, AlignJustify } from 'lucide-react';
+import { generateText, rewriteText, rewriteSelection } from '@/ai/flows/content-tools';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 
-import { useEditor, EditorContent } from '@tiptap/react';
+import { useEditor, EditorContent, Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import Link from '@tiptap/extension-link';
 import UnderlineExtension from '@tiptap/extension-underline';
 import Image from '@tiptap/extension-image';
+import TextAlign from '@tiptap/extension-text-align';
+import TextStyle from '@tiptap/extension-text-style';
+import { Color } from '@tiptap/extension-color';
 import { cn } from '@/lib/utils';
 import { uploadEditorImageAction } from '@/app/admin/pages/actions';
 
 
-const Toolbar = ({ editor, onImageUploadClick, isUploadingImage }: { editor: any, onImageUploadClick: () => void, isUploadingImage: boolean }) => {
+const Toolbar = ({ editor, onImageUploadClick, isUploadingImage }: { editor: Editor | null, onImageUploadClick: () => void, isUploadingImage: boolean }) => {
   if (!editor) {
     return null;
   }
@@ -44,11 +47,11 @@ const Toolbar = ({ editor, onImageUploadClick, isUploadingImage }: { editor: any
   }, [editor]);
   
   return (
-    <div className="border border-input rounded-t-md p-2 flex flex-wrap items-center gap-2">
-      <Button type="button" onClick={() => editor.chain().focus().toggleBold().run()} variant={editor.isActive('bold') ? 'default' : 'ghost'} size="icon" aria-label="Bold"><Bold className="h-4 w-4" /></Button>
-      <Button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} variant={editor.isActive('italic') ? 'default' : 'ghost'} size="icon" aria-label="Italic"><Italic className="h-4 w-4" /></Button>
-      <Button type="button" onClick={() => editor.chain().focus().toggleUnderline().run()} variant={editor.isActive('underline') ? 'default' : 'ghost'} size="icon" aria-label="Underline"><Underline className="h-4 w-4" /></Button>
-      <Button type="button" onClick={() => editor.chain().focus().toggleStrike().run()} variant={editor.isActive('strike') ? 'default' : 'ghost'} size="icon" aria-label="Strikethrough"><Strikethrough className="h-4 w-4" /></Button>
+    <div className="border border-input rounded-t-md p-1 flex flex-wrap items-center gap-1">
+      <Button type="button" onClick={() => editor.chain().focus().toggleBold().run()} variant={editor.isActive('bold') ? 'secondary' : 'ghost'} size="icon" aria-label="Bold"><Bold className="h-4 w-4" /></Button>
+      <Button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} variant={editor.isActive('italic') ? 'secondary' : 'ghost'} size="icon" aria-label="Italic"><Italic className="h-4 w-4" /></Button>
+      <Button type="button" onClick={() => editor.chain().focus().toggleUnderline().run()} variant={editor.isActive('underline') ? 'secondary' : 'ghost'} size="icon" aria-label="Underline"><Underline className="h-4 w-4" /></Button>
+      <Button type="button" onClick={() => editor.chain().focus().toggleStrike().run()} variant={editor.isActive('strike') ? 'secondary' : 'ghost'} size="icon" aria-label="Strikethrough"><Strikethrough className="h-4 w-4" /></Button>
       
       <Select onValueChange={(value) => {
         if (value === 'p') {
@@ -63,7 +66,7 @@ const Toolbar = ({ editor, onImageUploadClick, isUploadingImage }: { editor: any
         editor.isActive('heading', { level: 3 }) ? 'h3' : 'p'
       }
       >
-        <SelectTrigger className="w-[120px]">
+        <SelectTrigger className="w-[120px] h-8 px-2">
           <SelectValue placeholder="Stil" />
         </SelectTrigger>
         <SelectContent>
@@ -73,13 +76,33 @@ const Toolbar = ({ editor, onImageUploadClick, isUploadingImage }: { editor: any
           <SelectItem value="h3">Başlık 3</SelectItem>
         </SelectContent>
       </Select>
+      
+      <div className="flex items-center gap-1 border-l pl-1">
+        <Button type="button" onClick={() => editor.chain().focus().setTextAlign('left').run()} variant={editor.isActive({ textAlign: 'left' }) ? 'secondary' : 'ghost'} size="icon" aria-label="Align Left"><AlignLeft className="h-4 w-4" /></Button>
+        <Button type="button" onClick={() => editor.chain().focus().setTextAlign('center').run()} variant={editor.isActive({ textAlign: 'center' }) ? 'secondary' : 'ghost'} size="icon" aria-label="Align Center"><AlignCenter className="h-4 w-4" /></Button>
+        <Button type="button" onClick={() => editor.chain().focus().setTextAlign('right').run()} variant={editor.isActive({ textAlign: 'right' }) ? 'secondary' : 'ghost'} size="icon" aria-label="Align Right"><AlignRight className="h-4 w-4" /></Button>
+      </div>
 
-      <Button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} variant={editor.isActive('bulletList') ? 'default' : 'ghost'} size="icon" aria-label="Bullet List"><List className="h-4 w-4" /></Button>
-      <Button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} variant={editor.isActive('orderedList') ? 'default' : 'ghost'} size="icon" aria-label="Ordered List"><ListOrdered className="h-4 w-4" /></Button>
-      <Button type="button" onClick={setLink} variant={editor.isActive('link') ? 'default' : 'ghost'} size="icon" aria-label="Add Link"><Link2 className="h-4 w-4" /></Button>
-      <Button type="button" onClick={onImageUploadClick} variant="ghost" size="icon" aria-label="Insert Image" disabled={isUploadingImage}>
-        {isUploadingImage ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
-      </Button>
+      <div className="flex items-center gap-1 border-l pl-1">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" size="icon"><div className="w-4 h-4 rounded-sm" style={{ backgroundColor: editor.getAttributes('textStyle').color || 'hsl(var(--foreground))' }} /></Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-1">
+            <input type="color" className="w-24 h-10 border-0 bg-transparent" value={editor.getAttributes('textStyle').color || '#000000'} onChange={e => editor.chain().focus().setColor(e.target.value).run()} />
+            <Button variant="ghost" size="sm" onClick={() => editor.chain().focus().unsetColor().run()}>Rengi Sıfırla</Button>
+          </PopoverContent>
+        </Popover>
+      </div>
+
+      <div className="flex items-center gap-1 border-l pl-1">
+        <Button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} variant={editor.isActive('bulletList') ? 'secondary' : 'ghost'} size="icon" aria-label="Bullet List"><List className="h-4 w-4" /></Button>
+        <Button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} variant={editor.isActive('orderedList') ? 'secondary' : 'ghost'} size="icon" aria-label="Ordered List"><ListOrdered className="h-4 w-4" /></Button>
+        <Button type="button" onClick={setLink} variant={editor.isActive('link') ? 'secondary' : 'ghost'} size="icon" aria-label="Add Link"><Link2 className="h-4 w-4" /></Button>
+        <Button type="button" onClick={onImageUploadClick} variant="ghost" size="icon" aria-label="Insert Image" disabled={isUploadingImage}>
+          {isUploadingImage ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
+        </Button>
+      </div>
     </div>
   );
 };
@@ -96,8 +119,7 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [generationTopic, setGenerationTopic] = useState('');
   const [isGeneratingText, setIsGeneratingText] = useState(false);
-  const [rewriteLength, setRewriteLength] = useState('');
-  const [rewriteTone, setRewriteTone] = useState('');
+  const [rewriteInstruction, setRewriteInstruction] = useState('');
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [viewMode, setViewMode] = useState<'visual' | 'code' | 'split'>('visual');
@@ -110,10 +132,10 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
       UnderlineExtension,
       Link.configure({ openOnClick: false, autolink: true }),
       Placeholder.configure({ placeholder: placeholder || 'İçeriği buraya yazın...' }),
-      Image.configure({
-          inline: false,
-          allowBase64: true, 
-      }),
+      Image.configure({ inline: false, allowBase64: true }),
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      TextStyle,
+      Color,
     ],
     editorProps: {
       attributes: {
@@ -133,38 +155,28 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
     }
   }, [content, editor]);
   
-  const handleRewrite = async () => {
-    const instructions: string[] = [];
-    if (rewriteLength) instructions.push(rewriteLength);
-    if (rewriteTone) instructions.push(rewriteTone);
+  const handleRewriteSelection = async () => {
+    if (!editor || !rewriteInstruction) return;
+    const { from, to, content: selectionContent } = editor.state.selection;
+    if (selectionContent.size === 0) {
+      toast({ variant: 'destructive', title: 'Hata', description: 'Lütfen geliştirmek için bir metin seçin.' });
+      return;
+    }
 
-    if (instructions.length === 0) {
-      toast({
-        variant: "destructive",
-        title: "Eksik Seçim",
-        description: "Lütfen en az bir yeniden yazma seçeneği (uzunluk veya ton) belirtin.",
-      });
-      return;
-    }
-    
+    const selectedHtml = editor.getHTML().substring(from, to);
+
     setIsRewriting(true);
-    const currentValue = editor?.getHTML();
-    if (!currentValue || currentValue === '<p></p>') {
-      toast({ variant: 'destructive', title: 'Hata', description: 'Yeniden yazılacak metin yok.' });
-      setIsRewriting(false);
-      return;
-    }
     try {
-      const result = await rewriteText({ text: currentValue, instruction: instructions.join(' and ') });
-      editor?.commands.setContent(result.rewrittenText, true);
-      toast({ title: 'Başarılı!', description: 'Metin yeniden yazıldı.' });
+      const result = await rewriteSelection({ selection: selectedHtml, instruction: rewriteInstruction });
+      editor.chain().focus().deleteRange({ from, to }).insertContent(result.rewrittenSelection).run();
+      toast({ title: 'Başarılı!', description: 'Seçim yeniden yazıldı.' });
     } catch (error) {
       console.error(error);
-      toast({ variant: 'destructive', title: 'Hata!', description: 'Metin yeniden yazılamadı.' });
+      toast({ variant: 'destructive', title: 'Hata!', description: 'Seçim yeniden yazılamadı.' });
     } finally {
       setIsRewriting(false);
-      setRewriteLength('');
-      setRewriteTone('');
+      setRewriteInstruction('');
+      setPopoverOpen(false);
     }
   };
 
@@ -236,7 +248,7 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
     const visualEditor = (
       <div className='rounded-md border border-input focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 w-full'>
         <Toolbar editor={editor} onImageUploadClick={triggerImageUpload} isUploadingImage={isUploadingImage} />
-        <EditorContent editor={editor} />
+        <EditorContent editor={editor} className="p-2" />
       </div>
     );
 
@@ -283,58 +295,56 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
       {renderContent()}
 
       <div className="flex flex-wrap gap-4 items-center pt-2">
-        <div className="flex flex-wrap gap-2 items-center p-2 border rounded-lg">
-           <Sparkles className="h-5 w-5 text-purple-500 mr-2 flex-shrink-0"/>
-           <Select onValueChange={setRewriteLength} value={rewriteLength} disabled={isLoading}>
-              <SelectTrigger className="w-[140px] h-9"><SelectValue placeholder="Uzunluk" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="make it shorter">Kısalt</SelectItem>
-                <SelectItem value="make it longer">Uzat</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select onValueChange={setRewriteTone} value={rewriteTone} disabled={isLoading}>
-              <SelectTrigger className="w-[140px] h-9"><SelectValue placeholder="Ton" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="make it more formal">Daha Resmi</SelectItem>
-                <SelectItem value="make it more friendly">Daha Samimi</SelectItem>
-                <SelectItem value="simplify the text">Basitleştir</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button type="button" variant="outline" size="sm" onClick={handleRewrite} disabled={isLoading || (!rewriteLength && !rewriteTone)}>
-              {isRewriting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              Yeniden Yaz
-            </Button>
-        </div>
-
         <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-          <PopoverTrigger asChild>
-            <Button type="button" variant="default" size="sm" disabled={isLoading}>
-              <Wand2 className="mr-2 h-4 w-4" /> Konudan Metin Üret
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-80">
-            <div className="grid gap-4">
-              <div className="space-y-2">
-                <h4 className="font-medium leading-none">Metin Üret</h4>
-                <p className="text-sm text-muted-foreground">
-                  Hangi konuda metin üretmek istersiniz?
-                </p>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="topic">Konu</Label>
-                <Input id="topic" value={generationTopic} onChange={(e) => setGenerationTopic(e.target.value)} disabled={isGeneratingText}/>
-                <Button onClick={handleGenerateText} disabled={isGeneratingText || !generationTopic}>
-                  {isGeneratingText && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Üret
+            <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" disabled={isLoading}>
+                    <Sparkles className="mr-2 h-4 w-4 text-purple-500"/>
+                    Yapay Zeka Araçları
+                    <ChevronDown className="ml-2 h-4 w-4"/>
                 </Button>
-              </div>
-            </div>
-          </PopoverContent>
+            </PopoverTrigger>
+            <PopoverContent className="w-96">
+                <Tabs defaultValue="generate">
+                    <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="generate">Yeni Metin Üret</TabsTrigger>
+                        <TabsTrigger value="rewrite">Seçimi Geliştir</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="generate" className="pt-4">
+                        <div className="space-y-2">
+                            <h4 className="font-medium leading-none">Konudan Metin Üret</h4>
+                            <p className="text-sm text-muted-foreground">İstediğiniz konuda sıfırdan metin oluşturun.</p>
+                        </div>
+                        <div className="grid gap-2 pt-4">
+                            <Label htmlFor="topic">Konu</Label>
+                            <Input id="topic" value={generationTopic} onChange={(e) => setGenerationTopic(e.target.value)} disabled={isGeneratingText}/>
+                            <Button onClick={handleGenerateText} disabled={isGeneratingText || !generationTopic}>
+                                {isGeneratingText && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Tüm İçeriği Değiştir
+                            </Button>
+                        </div>
+                    </TabsContent>
+                    <TabsContent value="rewrite" className="pt-4">
+                        <div className="space-y-2">
+                            <h4 className="font-medium leading-none">Seçili Alanı Geliştir</h4>
+                            <p className="text-sm text-muted-foreground">Editörde seçtiğiniz metni, aşağıdaki komutla yeniden yazdırın.</p>
+                        </div>
+                        <div className="grid gap-2 pt-4">
+                            <Label htmlFor="instruction">Komut</Label>
+                            <Input id="instruction" value={rewriteInstruction} onChange={(e) => setRewriteInstruction(e.target.value)} placeholder="Örn: Daha profesyonel yap" disabled={isRewriting}/>
+                            <Button onClick={handleRewriteSelection} disabled={isRewriting || !rewriteInstruction}>
+                                {isRewriting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Seçimi Geliştir
+                            </Button>
+                        </div>
+                    </TabsContent>
+                </Tabs>
+            </PopoverContent>
         </Popover>
+
          <div className="flex gap-2">
             <Button
                 type="button"
-                variant={viewMode === 'visual' ? 'default' : 'outline'}
+                variant={viewMode === 'visual' ? 'secondary' : 'outline'}
                 size="sm"
                 onClick={() => toggleViewMode('visual')}
                 disabled={isLoading}
@@ -343,7 +353,7 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
             </Button>
              <Button
                 type="button"
-                variant={viewMode === 'code' ? 'default' : 'outline'}
+                variant={viewMode === 'code' ? 'secondary' : 'outline'}
                 size="sm"
                 onClick={() => toggleViewMode('code')}
                 disabled={isLoading}
@@ -353,7 +363,7 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
             </Button>
              <Button
                 type="button"
-                variant={viewMode === 'split' ? 'default' : 'outline'}
+                variant={viewMode === 'split' ? 'secondary' : 'outline'}
                 size="sm"
                 onClick={() => toggleViewMode('split')}
                 disabled={isLoading}
