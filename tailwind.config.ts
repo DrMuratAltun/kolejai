@@ -9,9 +9,30 @@ export default {
   ],
   safelist: [
     {
-      pattern: /(bg|text|border|ring)-(red|green|blue|orange|amber|yellow|lime|emerald|teal|cyan|sky|indigo|violet|purple|fuchsia|pink|rose)-(500)/,
+      pattern: /(bg|text|border|ring)-(red|green|blue|orange|amber|yellow|lime|emerald|teal|cyan|sky|indigo|violet|purple|fuchsia|pink|rose|gray)-(500|600|700|800|900)/,
       variants: ['hover', 'focus'],
     },
+    {
+      pattern: /shadow-(lg|xl|2xl)/,
+      variants: ['hover'],
+    },
+    {
+      pattern: /animate-in|fade-in|slide-in-from-(bottom|top|left|right)-(\d+)/,
+    },
+    {
+      pattern: /duration-(300|500|700)/,
+    },
+    {
+      pattern: /transition-all/,
+    },
+    {
+      pattern: /hover:translate-y-(1|1.5|2)/,
+      variants: ['hover'],
+    },
+     {
+      pattern: /-translate-y-(1|1.5|2)/,
+      variants: ['hover'],
+    }
   ],
   theme: {
     extend: {
@@ -19,6 +40,12 @@ export default {
         body: ['Poppins', 'sans-serif'],
         headline: ['Poppins', 'sans-serif'],
         code: ['monospace'],
+      },
+      transitionTimingFunction: {
+        'in-out-hard': 'cubic-bezier(.77,0,.175,1)',
+      },
+      transitionDuration: {
+        '400': '400ms',
       },
       colors: {
         background: 'hsl(var(--background))',
