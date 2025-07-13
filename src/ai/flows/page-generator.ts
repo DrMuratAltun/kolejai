@@ -33,7 +33,7 @@ const prompt = ai.definePrompt({
   input: {schema: GeneratePageContentInputSchema.extend({ schoolName: z.string() })},
   // The output from the prompt is just the initial HTML with placeholders
   output: {schema: z.object({ htmlContent: z.string() })},
-  prompt: `You are an expert web designer with a keen eye for clean, modern, and minimalist aesthetics. You will create a complete, single-page HTML body for a school website called "{{{schoolName}}}". The design must be professional, spacious, and strictly follow the provided design system.
+  prompt: `You are an expert web designer with a keen eye for modern, vibrant, and engaging aesthetics. You will create a complete, single-page HTML body for a school website called "{{{schoolName}}}". The design must be professional, spacious, and strictly follow the provided design system.
 
 Your output MUST be a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>\`, or \`<body>\` tags.
 
@@ -47,25 +47,25 @@ Your output MUST be a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>
 **MANDATORY DESIGN SYSTEM & TYPOGRAPHY RULES:**
 
 1.  **Color Palette (Strictly Enforced):**
-    *   **NEVER** use hardcoded colors like \`text-gray-900\`, \`bg-blue-500\`, or any other Tailwind color classes directly.
-    *   **ONLY USE SEMANTIC THEME CLASSES:**
+    *   **NEVER** use hardcoded colors like \`text-gray-900\`, \`bg-blue-500\`, or any other Tailwind color classes directly for standard text or backgrounds.
+    *   **ONLY USE SEMANTIC THEME CLASSES FOR GENERAL LAYOUT:**
         *   Main text: \`text-foreground\`
         *   Subtitles, descriptions, less important text: \`text-muted-foreground\`
         *   Main titles, highlighted elements: \`text-primary\`
         *   Main section backgrounds: \`bg-background\`
         *   Alternating/secondary section backgrounds: \`bg-muted\`
-        *   Card backgrounds: \`bg-card\`
+        *   Standard card backgrounds: \`bg-card\`
 
 2.  **Typography & Readability (Strictly Enforced):**
     *   **Hero Title (h1):** Use \`text-4xl md:text-5xl font-bold text-primary\`.
     *   **Section Titles (h2):** Use \`text-3xl font-bold text-primary\`.
-    *   **Card Titles (h3):** Use \`text-xl font-semibold text-primary\`.
-    *   **Main Paragraphs:** In larger sections or next to images, use \`text-lg leading-relaxed text-muted-foreground\` for optimal readability.
-    *   **Card/Component Paragraphs:** Inside cards or smaller components, use \`text-base text-muted-foreground\` to keep the design clean and uncluttered.
+    *   **Card Titles (h3):** Use \`text-xl font-semibold text-white\`.
+    *   **Main Paragraphs:** Use \`text-lg leading-relaxed text-muted-foreground\` for optimal readability.
+    *   **Card/Component Paragraphs:** Inside cards, use \`text-sm text-white/90\` to keep the design clean and uncluttered.
 
 3.  **Layout & Spacing:**
     *   Use ample whitespace. Sections should have significant vertical padding, like \`py-20 px-4\` or \`py-24\`.
-    *   Use CSS Grid for card layouts (\`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8\`).
+    *   Use CSS Grid for card layouts (\`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6\`).
     *   Alternate section backgrounds using \`bg-background\` and \`bg-muted\` for visual separation.
 
 ---
@@ -73,22 +73,25 @@ Your output MUST be a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>
 **MANDATORY COMPONENT DESIGN:**
 
 1.  **Feature Cards (The Most Important Rule):**
-    *   Design clean, minimalist cards exactly like this example. This is not a suggestion, it is a strict requirement.
-    *   **Structure:** A card must contain an icon, a title (h3), and a description (p).
-    *   **Card Styling:** The container \`<div>\` must have \`bg-card p-8 rounded-xl shadow-md\`.
+    *   Design vibrant, colorful, modern cards exactly like this example. This is not a suggestion, it is a strict requirement.
+    *   **Structure:** A card must contain a large icon, a title (h3), and a description (p).
+    *   **Card Styling:** The container \`<div>\` must have \`p-8 rounded-2xl text-white flex flex-col items-center text-center shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl\`.
+    *   **Card Colors (Crucial):**
+        *   You MUST use one of the predefined feature colors for the background of each card.
+        *   Use classes like \`bg-[hsl(var(--feature-1))]\`, \`bg-[hsl(var(--feature-2))]\`, etc.
+        *   Cycle through the available feature colors (\`feature-1\` to \`feature-6\`).
     *   **Icon Styling (Crucial):**
-        *   The SVG icon MUST be simple and single-color. It MUST have the class \`text-primary\`.
-        *   The icon MUST have a bottom margin, like \`mb-4\`.
-        *   **DO NOT** wrap the icon in a colored circle or any other container. It must be just the SVG element.
+        *   The SVG icon MUST be large and single-color white. It MUST have the class \`w-16 h-16 mb-6\`.
+        *   The icon must be relevant to the card's topic.
     *   **Text Styling:** Follow the typography rules above (h3 for title, p for description).
     *   **Example of a PERFECT Card:**
         \`\`\`html
-        <div class="bg-card p-8 rounded-xl shadow-md">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 mb-4 text-primary">
-            <path d="..."/>
-          </svg>
-          <h3 class="text-xl font-semibold text-primary mb-2">Card Title</h3>
-          <p class="text-base text-muted-foreground">This is the description text for the card.</p>
+        <div class="relative p-8 rounded-2xl text-white flex flex-col items-center text-center shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl" style="background-color: hsl(var(--feature-1))">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mb-6">
+                <path d="..."/>
+            </svg>
+            <h3 class="text-xl font-bold mb-3">Card Title</h3>
+            <p class="text-sm opacity-90">This is the description text for the card.</p>
         </div>
         \`\`\`
 

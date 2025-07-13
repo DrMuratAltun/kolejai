@@ -38,6 +38,8 @@
     --sidebar-accent: 217 33% 22%;
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-ring: 221 83% 53%;
+
+    --animation-speed: 300ms;
   }
   .dark {
     --background: 222 47% 11%;
@@ -93,4 +95,12 @@
     @apply text-muted-foreground float-left h-0 pointer-events-none;
     content: attr(data-placeholder);
   }
+}
+
+@layer utilities {
+    .transition-all {
+        transition-property: all;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: var(--animation-speed, 300ms);
+    }
 }

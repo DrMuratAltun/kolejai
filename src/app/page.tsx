@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import { 
     ArrowRight, 
     Calendar,
-    CheckCircle,
     BrainCircuit,
     Languages,
     Bot,
@@ -135,18 +134,15 @@ export default async function Home() {
                   <div className="lg:w-1/2">
                       <Image src="https://placehold.co/600x450.png" alt="Okul binamız" width={600} height={450} className="rounded-xl shadow-xl" data-ai-hint="modern school building"/>
                   </div>
-                  <div className="lg:w-1/2">
-                      <div className="text-center lg:text-left mb-8">
-                          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Neden {settings.schoolName}?</h2>
+                  <div className="lg:w-1/2 space-y-4">
+                      <div className="text-center lg:text-left">
+                          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-2">Neden {settings.schoolName}?</h2>
                           <div className="w-20 h-1 bg-primary mx-auto lg:mx-0"></div>
                       </div>
-                      <p className="text-muted-foreground leading-relaxed mb-6">Öğrencilerimizi akademik, sosyal ve kültürel açıdan en iyi şekilde yetiştirerek, 21. yüzyıl becerileriyle donatılmış, özgüvenli ve erdemli bireyler olarak topluma kazandırmak temel vizyonumuzdur.</p>
-                       <div className="grid grid-cols-2 gap-4">
-                          <div className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-500" /> <p>Akademik Mükemmellik</p></div>
-                          <div className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-500" /> <p>Bireysel Eğitim</p></div>
-                          <div className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-500" /> <p>Yabancı Dil Ağırlıklı</p></div>
-                          <div className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-500" /> <p>Sosyal Sorumluluk</p></div>
-                      </div>
+                      <p className="text-muted-foreground leading-relaxed">Öğrencilerimizi akademik, sosyal ve kültürel açıdan en iyi şekilde yetiştirerek, 21. yüzyıl becerileriyle donatılmış, özgüvenli ve erdemli bireyler olarak topluma kazandırmak temel vizyonumuzdur.</p>
+                       <p className="text-muted-foreground leading-relaxed">
+                          Sadece bilgi aktarmakla kalmıyor, aynı zamanda karakter gelişimini, eleştirel düşünmeyi ve yaşam boyu öğrenme sevgisini teşvik eden bir ortam yaratıyoruz.
+                       </p>
                   </div>
               </div>
             </section>
@@ -182,30 +178,20 @@ export default async function Home() {
               <div className="text-center mb-16">
                 <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Kolejimizin Öne Çıkan Özellikleri</h2>
                 <div className="w-20 h-1 bg-primary mx-auto"></div>
+                <p className="text-muted-foreground max-w-2xl mx-auto mt-6">Öğrencilerimize bütüncül bir yaklaşımla, sadece akademik değil aynı zamanda sosyal, sanatsal ve sportif alanlarda da kendilerini geliştirme fırsatı sunuyoruz.</p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {features.map((feature) => (
-                  <div key={feature.title} className="group h-80 [perspective:1000px]">
-                    <div className="relative h-full w-full rounded-xl shadow-xl transition-all duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
-                      {/* Front Side */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {features.map((feature) => (
                       <div 
-                        className="absolute inset-0 flex flex-col items-center justify-center rounded-xl [backface-visibility:hidden] text-white p-6 text-center"
-                        style={{ backgroundColor: `hsl(var(--${feature.colorVar}))` }}
+                          key={feature.title} 
+                          className="relative p-8 rounded-2xl text-white flex flex-col items-center text-center shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+                          style={{ backgroundColor: `hsl(var(--${feature.colorVar}))` }}
                       >
-                        <feature.icon className="w-20 h-20 mb-4" />
-                        <h3 className="text-2xl font-bold">{feature.title}</h3>
+                          <feature.icon className="w-16 h-16 mb-6" />
+                          <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
+                          <p className="text-sm opacity-90">{feature.description}</p>
                       </div>
-                      {/* Back Side */}
-                      <div 
-                        className="absolute inset-0 flex flex-col items-center justify-center rounded-xl [backface-visibility:hidden] [transform:rotateY(180deg)] text-white p-6 text-center"
-                        style={{ backgroundColor: `hsl(var(--${feature.colorVar}))` }}
-                      >
-                        <h3 className="text-xl font-bold mb-4">{feature.title}</h3>
-                        <p className="text-base">{feature.description}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </section>
       
