@@ -25,8 +25,9 @@ import type { Page } from '@/services/pageService';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import dynamic from 'next/dynamic';
+import PagePreview from './PagePreview';
 
 const AiTextEditor = dynamic(() => import('@/components/ai/AiTextEditor'), {
   ssr: false,
@@ -243,18 +244,26 @@ export default function MenuItemEditor({ page, allPages }: MenuItemEditorProps) 
                              </Button>
                         </div>
                         
-                        <div>
-                            <Label className="block mb-2">İçerik Editörü</Label>
-                            {isGenerating && (
-                                <div className="flex flex-col items-center justify-center h-64 text-muted-foreground p-8 border rounded-md">
-                                    <Wand2 className="h-12 w-12 mb-4 animate-pulse text-primary" />
-                                    <p className="text-lg font-medium">Sayfa içeriği oluşturuluyor...</p>
+                        <Tabs defaultValue="editor">
+                            <TabsList>
+                                <TabsTrigger value="editor">Düzenleyici</TabsTrigger>
+                                <TabsTrigger value="preview">Önizleme</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="editor">
+                                {isGenerating && (
+                                    <div className="flex flex-col items-center justify-center h-64 text-muted-foreground p-8 border rounded-md">
+                                        <Wand2 className="h-12 w-12 mb-4 animate-pulse text-primary" />
+                                        <p className="text-lg font-medium">Sayfa içeriği oluşturuluyor...</p>
+                                    </div>
+                                )}
+                                <div className={isGenerating ? 'hidden' : 'block'}>
+                                   <AiTextEditor content={htmlContent} onContentChange={setHtmlContent} placeholder="İçeriğinizi buraya yazın veya AI ile üretin..." />
                                 </div>
-                            )}
-                            <div className={isGenerating ? 'hidden' : 'block'}>
-                               <AiTextEditor content={htmlContent} onContentChange={setHtmlContent} placeholder="İçeriğinizi buraya yazın veya AI ile üretin..." />
-                            </div>
-                        </div>
+                            </TabsContent>
+                            <TabsContent value="preview">
+                                 <PagePreview htmlContent={htmlContent} />
+                            </TabsContent>
+                        </Tabs>
                     </div>
                 )}
             </CardContent>
