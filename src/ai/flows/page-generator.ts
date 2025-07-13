@@ -63,8 +63,9 @@ Your output MUST be a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>
         *   **For listing features or services:** Use a grid of "Feature Cards".
         *   **For general text:** Use a full-width section with a title and enhanced paragraphs.
 
-3.  **Visual Rhythm (Backgrounds) - STRICTLY ENFORCED:**
-    *   You MUST alternate the background color of each \`<section>\` block between \`bg-background\` and \`bg-muted\` to create a visually appealing rhythm. This is not optional. For example: \`<section class="py-20 bg-background ...">\`, then \`<section class="py-20 bg-muted ...">\`, and so on. DO NOT use the same background color for two consecutive sections.
+3.  **Background Color (STRICTLY ENFORCED):**
+    *   You MUST use a clean and professional background for all sections.
+    *   **Every \`<section>\` block MUST have the class \`bg-background\`**. Do NOT use \`bg-muted\` or any other background color for sections. This rule is to ensure a clean, consistent, non-grey aesthetic.
 
 4.  **Color Palette (Strictly Enforced):**
     *   **NEVER** use hardcoded colors like \`text-gray-900\`, \`bg-blue-500\`, etc.
@@ -154,7 +155,7 @@ You MUST choose the most appropriate card type based on the context. If listing 
     *   \`data-ai-hint\` MUST be a descriptive, visual prompt for an image generation model.
 
 4.  **Call to Action (CTA) Section:**
-    *   The final section should be a CTA. It should have a clean background, like \`bg-muted\` or \`bg-background\`.
+    *   The final section should be a CTA. It should have a clean background, like \`bg-background\`.
     *   Include a strong headline (\`h2\`) and a descriptive paragraph (\`p\`).
     *   The button MUST be prominent and **MUST link to the real contact page**: \`<a href="/contact" class="inline-block bg-primary text-primary-foreground font-bold py-3 px-8 rounded-lg hover:bg-primary/90 transition-colors">Kayıt Ol</a>\`. Do NOT use placeholder hrefs like "#".
 
@@ -214,3 +215,5 @@ const generatePageContentFlow = ai.defineFlow(
     return { htmlContent };
   }
 );
+
+    
