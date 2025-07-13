@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useFormStatus } from "react-dom";
@@ -45,7 +46,7 @@ export default function LoginPage() {
         <CardHeader className="text-center">
           <div className="flex justify-center items-center gap-2 mb-4">
             <School className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold">Bilge Yıldız</span>
+            <span className="text-2xl font-bold">Elit Gençler</span>
           </div>
           <CardTitle className="text-2xl">Yönetim Paneli</CardTitle>
           <CardDescription>Giriş yapmak için bilgilerinizi girin</CardDescription>
@@ -58,9 +59,9 @@ export default function LoginPage() {
                 id="email"
                 name="email"
                 type="email"
-                placeholder="admin@bilgeyildiz.com"
+                placeholder="admin@elitgencler.com"
                 required
-                defaultValue="admin@bilgeyildiz.com"
+                defaultValue="admin@elitgencler.com"
               />
             </div>
             <div className="space-y-2">

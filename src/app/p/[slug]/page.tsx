@@ -1,3 +1,4 @@
+
 import { getPageBySlug, Page } from '@/services/pageService';
 import { notFound } from 'next/navigation';
 
@@ -15,7 +16,7 @@ export async function generateMetadata({ params }: Props) {
         }
     }
     return {
-        title: `${page.title} | Bilge Yıldız Koleji`,
+        title: page.title,
     }
 }
 

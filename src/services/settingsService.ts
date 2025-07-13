@@ -36,7 +36,7 @@ const fromFirestore = (snapshot: any): SiteSettings => {
   const updatedAtTimestamp = data.updatedAt;
   return {
     id: snapshot.id,
-    schoolName: data.schoolName || 'Bilge Yıldız Koleji',
+    schoolName: data.schoolName || 'Elit Gençler Koleji',
     showSchoolNameInHeader: data.showSchoolNameInHeader === undefined ? true : data.showSchoolNameInHeader,
     logoUrl: data.logoUrl || 'https://placehold.co/150x150.png',
     logoDisplayMode: data.logoDisplayMode || 'contain',
@@ -56,7 +56,7 @@ export const getSiteSettings = async (): Promise<SiteSettings> => {
         const docSnap = await getDoc(settingsDocRef);
         if (!docSnap.exists()) {
             const defaultSettings: SiteSettingsData = {
-                schoolName: 'Bilge Yıldız Koleji',
+                schoolName: 'Elit Gençler Koleji',
                 showSchoolNameInHeader: true,
                 logoUrl: 'https://placehold.co/150x150.png',
                 logoDisplayMode: 'contain',
@@ -64,7 +64,7 @@ export const getSiteSettings = async (): Promise<SiteSettings> => {
                 showHeroBanner: true,
                 address: 'Örnek Mah. Okul Sk. No:123, 34762 Üsküdar/İstanbul',
                 phone: '+90 (216) 123 45 67',
-                email: 'info@bilgeyildiz.com',
+                email: 'info@elitgencler.com',
                 socialLinks: {
                     facebook: '#', twitter: '#', instagram: '#', linkedin: '#'
                 }

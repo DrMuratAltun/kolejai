@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -66,7 +67,7 @@ export default function ContactPage() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Kayıt Bilgi Formu</h2>
-            <p className="text-primary-foreground/80 max-w-2xl mx-auto">Çocuğunuzun eğitim yolculuğuna Bilge Yıldız Koleji ile başlaması için aşağıdaki formu doldurun, sizinle en kısa sürede iletişime geçelim.</p>
+            <p className="text-primary-foreground/80 max-w-2xl mx-auto">Çocuğunuzun eğitim yolculuğuna Elit Gençler Koleji ile başlaması için aşağıdaki formu doldurun, sizinle en kısa sürede iletişime geçelim.</p>
           </div>
           <Card>
             <CardContent className="p-8">

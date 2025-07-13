@@ -4,13 +4,16 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import ConditionalLayout from '@/components/layout/ConditionalLayout';
 import { getMenuPages, type Page } from "@/services/pageService";
-import { getSiteSettings, type SiteSettings } from '@/services/settingsService';
+import { getSiteSettings, type SiteSettings } from "@/services/settingsService";
 import type { NavItem } from "@/components/layout/HeaderClient";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   return {
-    title: `${settings.schoolName} - Geleceğin Liderlerini Yetiştiriyoruz`,
+    title: {
+      default: `${settings.schoolName} | Geleceğin Liderlerini Yetiştiriyoruz`,
+      template: `%s | ${settings.schoolName}`,
+    },
     description: 'Öğrencilerimize akademik başarının yanı sıra sosyal ve duygusal gelişimlerini destekleyen bir eğitim ortamı sunuyoruz.',
   };
 }
