@@ -102,7 +102,7 @@ You MUST choose the most appropriate card type based on the context. If listing 
     *   **Example of a PERFECT Feature Card:**
         \`\`\`html
         <div class="p-8 rounded-2xl text-white flex flex-col items-center text-center shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl" style="background-color: hsl(var(--feature-1));">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mb-6">
                 <!-- A semantically relevant path, like a swimmer for a swimming topic -->
                 <path d="M19 19l-4-4-1 3-3-1-4 4"/>
                 <path d="m10 8-1-1-2 2-1-1-2 2"/>
@@ -114,42 +114,31 @@ You MUST choose the most appropriate card type based on the context. If listing 
         \`\`\`
 
 2.  **Profile Cards (For listing people, alumni, or specific items with photos):**
-    *   Design interactive, 3D flip-on-hover cards exactly like this example. This is a strict requirement for this context.
-    *   **Container:** The main container MUST have these classes: \`group perspective w-full max-w-sm h-96\`.
-    *   **Flipper:** Inside, there MUST be a flipper div with these classes: \`relative preserve-3d group-hover:rotate-y-180 w-full h-full duration-500\`.
-    *   **Front of Card:**
-        *   Use an \`absolute\` div for the front with these classes: \`backface-hidden w-full h-full\`.
-        *   The content MUST be inside a \`div\` with classes \`bg-card rounded-xl shadow-lg h-full flex flex-col items-center justify-center text-center p-4\`.
-        *   It MUST contain an \`<img>\` tag with \`w-36 h-36 object-cover rounded-full mb-4\`.
-        *   It MUST contain an \`<h3>\` with \`text-xl font-semibold text-foreground\` for the person's name.
-        *   It MUST contain a \`<p>\` with \`text-muted-foreground\` for the person's title or role.
-    *   **Back of Card:**
-        *   Use an \`absolute\` div for the back with these classes: \`backface-hidden rotate-y-180 w-full h-full\`.
-        *   The content MUST be inside a \`div\` with classes \`bg-primary rounded-xl shadow-lg h-full flex flex-col items-center justify-center text-center p-6 text-primary-foreground\`.
-        *   It MUST contain an \`<h3>\` with \`text-xl font-bold\` for the person's name.
-        *   It MUST contain a \`<p>\` with \`text-primary-foreground/80 mb-4\` for the title/role.
-        *   It MUST contain a \`<p>\` with \`text-sm opacity-90\` for a short biography or description.
+    *   Design interactive, two-state hover cards exactly like this example. Do NOT use 3D flip effects.
+    *   **Main Container:** The container must be a Card component: \`<div class="rounded-xl overflow-hidden shadow-lg group transform transition-all duration-300 hover:-translate-y-2 hover:shadow-primary/20">\`.
+    *   **Image Container:** Inside, there must be a relative-positioned div for the image: \`<div class="relative aspect-square">\`.
+    *   **Image:** The \`<img>\` tag must have \`object-cover transition-transform duration-300 group-hover:scale-105\` classes.
+    *   **Hover Overlay:** You MUST add two overlay divs inside the image container for the hover effect.
+        *   **Gradient Overlay:** \`<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>\`
+        *   **Text Overlay:** \`<div class="absolute inset-0 p-6 flex flex-col justify-end text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">...\` This div will contain the person's biography.
+    *   **Bottom Content Area:** Below the image container, there must be a \`<div>\` with \`p-4 bg-card\` classes. This area contains the person's name and title.
     *   **Example of a PERFECT Profile Card:**
         \`\`\`html
-        <div class="group perspective w-full max-w-sm h-96">
-            <div class="relative preserve-3d group-hover:rotate-y-180 w-full h-full duration-500">
-                <!-- Front -->
-                <div class="absolute backface-hidden w-full h-full">
-                    <div class="bg-card rounded-xl shadow-lg h-full flex flex-col items-center justify-center text-center p-4">
-                        <img src="[AI_IMAGE_PLACEHOLDER]" alt="A descriptive alt text for the person" class="w-36 h-36 object-cover rounded-full mb-4 ring-4 ring-primary/20" data-ai-hint="portrait of a person" />
-                        <h3 class="text-xl font-semibold text-foreground">Person's Name</h3>
-                        <p class="text-muted-foreground">Person's Title</p>
-                    </div>
-                </div>
-                <!-- Back -->
-                <div class="absolute backface-hidden rotate-y-180 w-full h-full">
-                    <div class="bg-primary rounded-xl shadow-lg h-full flex flex-col items-center justify-center text-center p-6 text-primary-foreground">
-                        <h3 class="text-xl font-bold">Person's Name</h3>
-                        <p class="text-primary-foreground/80 mb-4">Person's Title</p>
-                        <p class="text-sm opacity-90">A brief bio about the person goes here. It should be concise and informative.</p>
-                    </div>
-                </div>
+        <div class="rounded-xl overflow-hidden shadow-lg group transform transition-all duration-300 hover:-translate-y-2 hover:shadow-primary/20">
+          <div class="relative aspect-square">
+            <img src="[AI_IMAGE_PLACEHOLDER]" alt="Descriptive alt text" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="portrait of a person" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="absolute inset-0 p-6 flex flex-col justify-end text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <p class="text-sm line-clamp-4 mb-4">A brief bio about the person goes here. It should be concise and informative.</p>
+              <div class="flex space-x-3">
+                  <!-- Optional Social Links Here -->
+              </div>
             </div>
+          </div>
+          <div class="p-4 bg-card">
+            <h3 class="text-lg font-semibold text-foreground">Person's Name</h3>
+            <p class="text-sm text-muted-foreground">Person's Title</p>
+          </div>
         </div>
         \`\`\`
 

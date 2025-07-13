@@ -49,30 +49,29 @@ const groupRootStaffByDepartment = (staff: StaffMember[]) => {
 
 function StaffCard({ member }: { member: StaffMember }) {
   return (
-    <div className="relative rounded-xl overflow-hidden shadow-lg group transform transition-transform duration-300 hover:-translate-y-2 h-full">
-      <Image
-        src={member.photo}
-        alt={member.name}
-        width={400}
-        height={400}
-        className="w-full h-full object-cover"
-        data-ai-hint={member.aiHint}
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-      <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-        <h3 className="text-xl font-bold">{member.name}</h3>
-        <p className="text-primary-foreground/80">{member.title}</p>
-      </div>
-      <div className="absolute inset-0 bg-blue-800/90 flex flex-col justify-end p-6 text-primary-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <h3 className="text-xl font-bold mb-2">{member.name}</h3>
-        <p className="text-blue-200 mb-4">{member.title}</p>
-        <p className="text-sm mb-4 line-clamp-3">{member.description}</p>
-        <div className="flex space-x-3 mt-auto">
-          <Link href="#" className="text-white hover:text-blue-300"><Linkedin /></Link>
-          <Link href="#" className="text-white hover:text-blue-300"><Mail /></Link>
+    <Card className="rounded-xl overflow-hidden shadow-lg group transform transition-all duration-300 hover:-translate-y-2 hover:shadow-primary/20">
+      <div className="relative aspect-square">
+        <Image
+          src={member.photo}
+          alt={member.name}
+          fill
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          data-ai-hint={member.aiHint}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div className="absolute inset-0 p-6 flex flex-col justify-end text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <p className="text-sm line-clamp-4 mb-4">{member.description}</p>
+          <div className="flex space-x-3">
+              <Link href="#" className="text-white hover:text-primary"><Linkedin size={20} /></Link>
+              <Link href="#" className="text-white hover:text-primary"><Mail size={20} /></Link>
+          </div>
         </div>
       </div>
-    </div>
+      <div className="p-4 bg-card">
+        <h3 className="text-lg font-semibold text-foreground">{member.name}</h3>
+        <p className="text-sm text-muted-foreground">{member.title}</p>
+      </div>
+    </Card>
   );
 }
 
