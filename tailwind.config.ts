@@ -9,8 +9,9 @@ export default {
   ],
   safelist: [
     {
-      pattern: /bg-(red|green|blue|orange|amber|yellow|lime|emerald|teal|cyan|sky|indigo|violet|purple|fuchsia|pink|rose)-(500)/,
-    }
+      pattern: /(bg|text|border|ring)-(red|green|blue|orange|amber|yellow|lime|emerald|teal|cyan|sky|indigo|violet|purple|fuchsia|pink|rose)-(500)/,
+      variants: ['hover', 'focus'],
+    },
   ],
   theme: {
     extend: {
