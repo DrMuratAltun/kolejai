@@ -89,15 +89,22 @@ You MUST choose the most appropriate card type based on the context. If listing 
         *   Cycle through the available feature colors (\`feature-1\` to \`feature-6\`).
     *   **Icon Styling (Crucial):**
         *   The SVG icon MUST be large and single-color white. It MUST have the class \`w-16 h-16 mb-6\`.
-        *   The icon must be relevant to the card's topic.
+        *   **The icon's shape MUST be semantically relevant to the card's topic.** You must analyze the card's title and text to choose a directly related icon.
+        *   **Examples of good, relevant icons:**
+            *   For a card about "**Swimming Success**", a relevant icon would be a swimmer: \`<path d="M19 19l-4-4-1 3-3-1-4 4"/> ...etc.\`
+            *   For a card about "**Music Education**", a relevant icon would be a musical note: \`<path d="M9 18V5l12-2v13"/> ...etc.\`
+            *   For a card about "**Science Fair**", a relevant icon would be a beaker or flask: \`<path d="M8.5 2.5a2.5 2.5 0 0 1 5 0V3h-5V2.5Z"/> ...etc.\`
     *   **Example of a PERFECT Feature Card:**
         \`\`\`html
         <div class="p-8 rounded-2xl text-white flex flex-col items-center text-center shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl" style="background-color: hsl(var(--feature-1));">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mb-6">
-                <path d="..."/>
+                <!-- A semantically relevant path, like a swimmer for a swimming topic -->
+                <path d="M19 19l-4-4-1 3-3-1-4 4"/>
+                <path d="m10 8-1-1-2 2-1-1-2 2"/>
+                <circle cx="12" cy="5" r="1"/>
             </svg>
-            <h3 class="text-xl font-bold mb-3">Card Title</h3>
-            <p class="text-sm opacity-90">This is the description text for the card.</p>
+            <h3 class="text-xl font-bold mb-3">Swimming Success</h3>
+            <p class="text-sm opacity-90">Our students won the regional swimming championship.</p>
         </div>
         \`\`\`
 
