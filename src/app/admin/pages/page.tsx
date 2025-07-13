@@ -1,4 +1,5 @@
 
+
 'use client'
 
 import React, { useMemo } from 'react';
@@ -98,7 +99,7 @@ function PageRow({ page, level, allPages }: { page: PageNode, level: number, all
                       </div>
                   </div>
                   <div className="flex-shrink-0 flex items-center gap-4">
-                      <a href={getLink(page)} target="_blank" rel="noopener noreferrer">
+                      <a href={getLink(page) || undefined} target="_blank" rel="noopener noreferrer">
                           <Badge variant={getLink(page) === '#' ? 'destructive' : 'secondary'}>
                               {getLink(page) === '#' ? 'Bağlantı Yok' : (getLink(page)?.startsWith('/') ? getLink(page) : 'Dış Bağlantı')}
                           </Badge>
@@ -152,30 +153,26 @@ export default function PagesListPage() {
     const { active, over } = event;
 
     if (active && over && active.id !== over.id) {
-        const activePage = pages.find(p => p.id === active.id);
-        const overPage = pages.find(p => p.id === over.id);
+      const activePage = pages.find(p => p.id === active.id);
+      if (!activePage) return;
 
-        if (!activePage || !overPage) return;
-        
-        // You can only drop on containers or pages, not simple links
-        if (overPage.type === 'link') {
-            toast({ variant: 'destructive', title: 'Geçersiz Hedef', description: 'Bir öğeyi basit bir bağlantının altına taşıyamazsınız.'});
-            return;
-        }
+      const overContainerId = over.id as string;
+      
+      toast({ title: 'Menü güncelleniyor...' });
+      
+      const result = await updatePageOrderAndParentAction(
+        active.id as string,
+        overContainerId,
+        activePage.menuOrder
+      );
 
-        const newParentId = over.id as string;
-        
-        toast({ title: 'Menü güncelleniyor...' });
-        
-        const result = await updatePageOrderAndParentAction(active.id as string, newParentId, activePage.menuOrder);
-
-        if (result.success) {
-            toast({ title: "Başarılı!", description: "Menü hiyerarşisi güncellendi." });
-            // Refresh pages from server
-            getPages().then(setPages);
-        } else {
-            toast({ variant: "destructive", title: "Hata!", description: result.error as string });
-        }
+      if (result.success) {
+          toast({ title: "Başarılı!", description: "Menü hiyerarşisi güncellendi." });
+          // Refresh pages from server
+          getPages().then(setPages);
+      } else {
+          toast({ variant: "destructive", title: "Hata!", description: result.error as string });
+      }
     }
   };
 
