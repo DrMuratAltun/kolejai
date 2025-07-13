@@ -46,13 +46,14 @@ Your output MUST be a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>
 
 **MANDATORY DESIGN SYSTEM & STRUCTURE:**
 
-1.  **Content Sectioning (Crucial):**
+1.  **Content Sectioning & Layout Variation (Crucial):**
     *   You MUST analyze the provided topic and divide it into logical, self-contained \`<section>\` blocks.
     *   Each section MUST have a clear title (e.g., \`<h2 class="text-3xl font-bold text-primary mb-8">\`).
-    *   **Vary the layout!** Alternate between different section styles. For example:
-        *   A section with text on the left and an image on the right (\`<div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">\`).
-        *   A section with a centered title and a grid of feature cards below it.
-        *   A full-width section with just a title and a paragraph.
+    *   **Vary the layout!** Choose the most appropriate layout for the content of each section.
+        *   **For featuring a single person or a detailed concept:** Use a two-column layout: \`<div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">\`, placing text on one side and an image on the other. Alternate the order (image left, then image right) in subsequent sections to create visual interest.
+        *   **For listing a group of people (e.g., a board of directors, alumni):** Use a grid of "Profile Cards". Example: \`<div class="grid grid-cols-1 md:grid-cols-3 gap-8">\`.
+        *   **For listing features or services:** Use a grid of "Feature Cards".
+        *   **For general text:** Use a full-width section with a title and enhanced paragraphs.
 
 2.  **Visual Rhythm (Backgrounds):**
     *   You MUST alternate the background color of each \`<section>\` block between \`bg-background\` and \`bg-muted\` to create a visually appealing rhythm. For example: \`<section class="py-20 px-4 bg-background">\`, then \`<section class="py-20 px-4 bg-muted">\`, and so on.
