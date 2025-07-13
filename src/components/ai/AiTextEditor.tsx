@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, Wand2, Sparkles, Bold, Italic, Strikethrough, Underline, List, ListOrdered, Link2, Image as ImageIcon, Code } from 'lucide-react';
+import { Loader2, Wand2, Sparkles, Bold, Italic, Strikethrough, Underline, List, ListOrdered, Link2, Image as ImageIcon, Code, Split } from 'lucide-react';
 import { generateText, rewriteText } from '@/ai/flows/content-tools';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -100,7 +100,7 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
   const [rewriteTone, setRewriteTone] = useState('');
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
-  const [viewMode, setViewMode] = useState<'visual' | 'code'>('visual');
+  const [viewMode, setViewMode] = useState<'visual' | 'code' | 'split'>('visual');
 
   const isLoading = isRewriting || isGeneratingText || isUploadingImage;
 
@@ -224,6 +224,53 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
     }
   }
 
+  const toggleViewMode = (newMode: 'visual' | 'code' | 'split') => {
+    if (viewMode === newMode) {
+      setViewMode('visual'); // Default back to visual if clicking the same button
+    } else {
+      setViewMode(newMode);
+    }
+  }
+
+  const renderContent = () => {
+    const visualEditor = (
+      <div className='rounded-md border border-input focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 w-full'>
+        <Toolbar editor={editor} onImageUploadClick={triggerImageUpload} isUploadingImage={isUploadingImage} />
+        <EditorContent editor={editor} />
+      </div>
+    );
+
+    const codeEditor = (
+      <div className="w-full">
+        <Label htmlFor="html-editor" className="mb-2 block">HTML Kod Editörü</Label>
+        <Textarea
+            id="html-editor"
+            className="min-h-[400px] font-mono text-sm bg-muted/30"
+            value={content}
+            onChange={handleCodeChange}
+            placeholder="HTML kodunu buraya girin..."
+            disabled={isLoading}
+        />
+      </div>
+    );
+  
+    switch (viewMode) {
+      case 'visual':
+        return visualEditor;
+      case 'code':
+        return codeEditor;
+      case 'split':
+        return (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {visualEditor}
+            {codeEditor}
+          </div>
+        );
+      default:
+        return visualEditor;
+    }
+  };
+
   return (
     <div className="space-y-2">
        <input
@@ -233,24 +280,7 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
         className="hidden"
         accept="image/jpeg,image/png,image/webp,image/gif"
       />
-      {viewMode === 'visual' ? (
-        <div className='rounded-md border border-input focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2'>
-            <Toolbar editor={editor} onImageUploadClick={triggerImageUpload} isUploadingImage={isUploadingImage} />
-            <EditorContent editor={editor} />
-        </div>
-      ) : (
-        <div>
-            <Label htmlFor="html-editor" className="mb-2 block">HTML Kod Editörü</Label>
-            <Textarea
-                id="html-editor"
-                className="min-h-[400px] font-mono text-sm bg-muted/30"
-                value={content}
-                onChange={handleCodeChange}
-                placeholder="HTML kodunu buraya girin..."
-                disabled={isLoading}
-            />
-        </div>
-      )}
+      {renderContent()}
 
       <div className="flex flex-wrap gap-4 items-center pt-2">
         <div className="flex flex-wrap gap-2 items-center p-2 border rounded-lg">
@@ -301,16 +331,37 @@ const AiTextEditor: React.FC<AiTextEditorProps> = ({ content, onContentChange, p
             </div>
           </PopoverContent>
         </Popover>
-         <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => setViewMode(prev => prev === 'visual' ? 'code' : 'visual')}
-            disabled={isLoading}
-        >
-            <Code className="mr-2 h-4 w-4" />
-            {viewMode === 'visual' ? 'Kodu Görüntüle' : 'Görsel Düzenleyici'}
-        </Button>
+         <div className="flex gap-2">
+            <Button
+                type="button"
+                variant={viewMode === 'visual' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => toggleViewMode('visual')}
+                disabled={isLoading}
+            >
+                Görsel
+            </Button>
+             <Button
+                type="button"
+                variant={viewMode === 'code' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => toggleViewMode('code')}
+                disabled={isLoading}
+            >
+                <Code className="mr-2 h-4 w-4" />
+                Kod
+            </Button>
+             <Button
+                type="button"
+                variant={viewMode === 'split' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => toggleViewMode('split')}
+                disabled={isLoading}
+            >
+                <Split className="mr-2 h-4 w-4" />
+                Böl
+            </Button>
+         </div>
       </div>
     </div>
   );
