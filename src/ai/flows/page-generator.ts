@@ -58,8 +58,8 @@ Your output MUST be a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>
         *   **For listing features or services:** Use a grid of "Feature Cards".
         *   **For general text:** Use a full-width section with a title and enhanced paragraphs.
 
-2.  **Visual Rhythm (Backgrounds):**
-    *   You MUST alternate the background color of each \`<section>\` block between \`bg-background\` and \`bg-muted\` to create a visually appealing rhythm. For example: \`<section class="py-20 px-4 bg-background">\`, then \`<section class="py-20 px-4 bg-muted">\`, and so on.
+2.  **Visual Rhythm (Backgrounds) - STRICTLY ENFORCED:**
+    *   You MUST alternate the background color of each \`<section>\` block between \`bg-background\` and \`bg-muted\` to create a visually appealing rhythm. This is not optional. For example: \`<section class="py-20 px-4 bg-background ...">\`, then \`<section class="py-20 px-4 bg-muted ...">\`, and so on. DO NOT use the same background color for two consecutive sections.
 
 3.  **Color Palette (Strictly Enforced):**
     *   **NEVER** use hardcoded colors like \`text-gray-900\`, \`bg-blue-500\`, etc.
@@ -68,20 +68,18 @@ Your output MUST be a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>
         *   Subtitles, descriptions: \`text-muted-foreground\`
         *   Main titles, highlighted elements: \`text-primary\`
 
-4.  **Rich Typography & Readability (Strictly Enforced):**
+4.  **Rich Typography & Readability (STRICTLY ENFORCED):**
     *   **Page Title (h1):** Use \`text-4xl md:text-5xl font-extrabold text-primary\`.
     *   **Section Titles (h2):** Use \`text-3xl font-bold text-primary\`.
     *   **Main Paragraphs:** Use \`text-lg leading-relaxed text-muted-foreground\` for optimal readability.
-    *   **Text Enrichment:** Do not just use plain paragraphs. You MUST enhance the content's visual appeal and readability by using:
-        *   **Lists (\`<ul>\`):** For bullet points, use classes like \`list-disc pl-6 space-y-2 text-lg text-muted-foreground\`.
-        *   **Quotes (\`<blockquote>\`):** To highlight key statements, use classes like \`border-l-4 border-primary pl-4 italic text-muted-foreground\`.
-        *   **Emphasis (\`<strong>\`):** Use bold text to emphasize important keywords within paragraphs.
+    *   **Text Enrichment (MANDATORY):** Do not just use plain paragraphs. It is a strict requirement to enhance the content's visual appeal and readability by using a variety of the following elements. You MUST use a mix of these elements where appropriate.
+        *   **Lists (\`<ul>\`):** For bullet points, use classes like \`list-disc pl-6 space-y-2 text-lg text-muted-foreground\`. This is required for itemized information.
+        *   **Quotes (\`<blockquote>\`):** To highlight key statements, use classes like \`border-l-4 border-primary pl-4 italic text-muted-foreground\`. This is required for testimonials or important quotes.
+        *   **Emphasis (\`<strong>\`):** Use bold text to emphasize important keywords within paragraphs. This must be used to draw attention to key concepts.
 
-5.  **Spacing:**
-    *   Use ample whitespace. Sections should have significant vertical padding, like \`py-20 px-4\` or \`py-24\`.
-    
-6.  **Animations:**
-    *   Animate sections into view subtly: \`<section class="py-20 px-4 bg-muted animate-in fade-in slide-in-from-bottom-8 duration-500">\`.
+5.  **Spacing & Animation (MANDATORY):**
+    *   Use ample whitespace. Sections must have significant vertical padding, like \`py-20 px-4\` or \`py-24\`.
+    *   You MUST animate sections into view subtly: \`<section class="... animate-in fade-in slide-in-from-bottom-8 duration-500">\`.
 
 ---
 
@@ -151,7 +149,7 @@ You MUST choose the most appropriate card type based on the context. If listing 
     *   \`data-ai-hint\` MUST be a descriptive, visual prompt for an image generation model.
 
 4.  **Call to Action (CTA) Section:**
-    *   The final section should be a CTA. It should have a clean background, like \`bg-muted\`.
+    *   The final section should be a CTA. It should have a clean background, like \`bg-muted\` or \`bg-background\`.
     *   Include a strong headline (\`h2\`) and a descriptive paragraph (\`p\`).
     *   The button MUST be prominent and **MUST link to the real contact page**: \`<a href="/contact" class="inline-block bg-primary text-primary-foreground font-bold py-3 px-8 rounded-lg hover:bg-primary/90 transition-colors">Kayıt Ol</a>\`. Do NOT use placeholder hrefs like "#".
 
