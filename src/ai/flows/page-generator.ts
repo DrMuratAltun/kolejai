@@ -11,7 +11,7 @@ import { generateImage } from './image-generation';
 import { uploadFile } from '@/lib/firebase-storage';
 import { dataURLtoFile } from '@/lib/utils';
 import { v4 as uuidv4 } from 'uuid';
-import { getSiteSettings } from '@/services/settingsService';
+import { getSiteSettings, type SiteSettingsData } from '@/services/settingsService';
 
 const GeneratePageContentInputSchema = z.object({
   title: z.string().describe('The main title of the web page.'),
@@ -30,15 +30,18 @@ export async function generatePageContent(input: GeneratePageContentInput): Prom
 
 const prompt = ai.definePrompt({
   name: 'generatePageContentPrompt',
-  input: {schema: GeneratePageContentInputSchema.extend({ schoolName: z.string() })},
+  input: {schema: GeneratePageContentInputSchema.extend({ settings: z.custom<SiteSettingsData>() })},
   // The output from the prompt is just the initial HTML with placeholders
   output: {schema: z.object({ htmlContent: z.string() })},
-  prompt: `You are an expert web designer with a keen eye for modern, vibrant, and engaging aesthetics. You will create a complete, single-page HTML body for a school website called "{{{schoolName}}}". The design must be professional, spacious, and strictly follow the provided design system.
+  prompt: `You are an expert web designer with a keen eye for modern, vibrant, and engaging aesthetics. You will create a complete, single-page HTML body for a school website called "{{{settings.schoolName}}}". The design must be professional, spacious, and strictly follow the provided design system.
 
 Your output MUST be a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>\`, or \`<body>\` tags.
 
 **Core Instructions:**
-- School Name: {{{schoolName}}}
+- School Name: {{{settings.schoolName}}}
+- School Address: {{{settings.address}}}
+- School Phone: {{{settings.phone}}}
+- School Email: {{{settings.email}}}
 - Page Title: {{{title}}}
 - Page Topic/Instructions: {{{topic}}}
 
@@ -69,7 +72,7 @@ Your output MUST be a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>
     *   **Page Title (h1):** Use \`text-4xl md:text-5xl font-extrabold text-primary\`.
     *   **Section Titles (h2):** Use \`text-3xl font-bold text-primary\`.
     *   **Main Paragraphs:** Use \`text-lg leading-relaxed text-muted-foreground\` for optimal readability.
-    *   **Text Enrichment:** Do not just use plain paragraphs. Enhance the content's visual appeal and readability by using:
+    *   **Text Enrichment:** Do not just use plain paragraphs. You MUST enhance the content's visual appeal and readability by using:
         *   **Lists (\`<ul>\`):** For bullet points, use classes like \`list-disc pl-6 space-y-2 text-lg text-muted-foreground\`.
         *   **Quotes (\`<blockquote>\`):** To highlight key statements, use classes like \`border-l-4 border-primary pl-4 italic text-muted-foreground\`.
         *   **Emphasis (\`<strong>\`):** Use bold text to emphasize important keywords within paragraphs.
@@ -150,7 +153,7 @@ You MUST choose the most appropriate card type based on the context. If listing 
 4.  **Call to Action (CTA) Section:**
     *   The final section should be a CTA. It should have a clean background, like \`bg-muted\`.
     *   Include a strong headline (\`h2\`) and a descriptive paragraph (\`p\`).
-    *   The button must be prominent: \`<a href="/contact" class="inline-block bg-primary text-primary-foreground font-bold py-3 px-8 rounded-lg hover:bg-primary/90 transition-colors">Kayıt Ol</a>\`.
+    *   The button MUST be prominent and **MUST link to the real contact page**: \`<a href="/contact" class="inline-block bg-primary text-primary-foreground font-bold py-3 px-8 rounded-lg hover:bg-primary/90 transition-colors">Kayıt Ol</a>\`. Do NOT use placeholder hrefs like "#".
 
 Now, generate the full, beautiful, and brand-consistent HTML body based on these strict instructions.
 `,
@@ -169,7 +172,7 @@ const generatePageContentFlow = ai.defineFlow(
     // 1. Generate HTML with image placeholders
     const llmResponse = await prompt({
         ...input,
-        schoolName: settings.schoolName,
+        settings: settings,
     });
     let htmlContent = llmResponse.output?.htmlContent || '';
 
