@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 
 function SubmitButton() {
@@ -120,15 +121,34 @@ export default function SiteSettingsPage() {
                         <CardTitle>Okul Bilgileri</CardTitle>
                         <CardDescription>Okulunuzun temel kimlik bilgileri.</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-6">
                         <div className="space-y-2">
                             <Label htmlFor="schoolName">Okul Adı</Label>
                             <Input id="schoolName" name="schoolName" defaultValue={settings.schoolName} required />
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="logo">Logo</Label>
-                            <Input id="logo" name="logo" type="file" accept="image/png, image/jpeg, image/svg+xml" onChange={(e) => handleFileChange(e, setLogoPreview)} />
-                            {logoPreview && <Image src={logoPreview} alt="Logo Preview" width={100} height={100} className="mt-2 rounded-md bg-muted p-2" />}
+                        <div className="space-y-4">
+                            <Label>Logo</Label>
+                             <div className="flex flex-col md:flex-row gap-6">
+                                <div className="space-y-2 flex-1">
+                                    <Label htmlFor="logo" className="text-xs text-muted-foreground">Logo Dosyası</Label>
+                                    <Input id="logo" name="logo" type="file" accept="image/png, image/jpeg, image/svg+xml" onChange={(e) => handleFileChange(e, setLogoPreview)} />
+                                    {logoPreview && <Image src={logoPreview} alt="Logo Preview" width={100} height={100} className="mt-2 rounded-md bg-muted p-2" />}
+                                </div>
+                                <div className="space-y-2 flex-1">
+                                    <Label className="text-xs text-muted-foreground">Logo Gösterim Stili</Label>
+                                    <RadioGroup name="logoDisplayMode" defaultValue={settings.logoDisplayMode} className="p-3 border rounded-md">
+                                        <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="contain" id="contain" />
+                                            <Label htmlFor="contain" className="font-normal cursor-pointer">Sığdır (Orijinal boyutlar korunur)</Label>
+                                        </div>
+                                         <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="cover" id="cover" />
+                                            <Label htmlFor="cover" className="font-normal cursor-pointer">Kapla (Alanı doldurur, kırpılabilir)</Label>
+                                        </div>
+                                    </RadioGroup>
+                                    <p className="text-xs text-muted-foreground">Sığdır: Yatay/dikey logolar için idealdir. Kapla: Kare logolar için daha uygun olabilir.</p>
+                                </div>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>

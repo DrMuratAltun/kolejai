@@ -16,6 +16,7 @@ export interface SiteSettings {
   id: string;
   schoolName: string;
   logoUrl: string;
+  logoDisplayMode: 'contain' | 'cover';
   heroBannerUrl: string;
   showHeroBanner: boolean;
   address: string;
@@ -36,6 +37,7 @@ const fromFirestore = (snapshot: any): SiteSettings => {
     id: snapshot.id,
     schoolName: data.schoolName || 'Bilge Yıldız Koleji',
     logoUrl: data.logoUrl || 'https://placehold.co/150x150.png',
+    logoDisplayMode: data.logoDisplayMode || 'contain',
     heroBannerUrl: data.heroBannerUrl || 'https://placehold.co/1200x400.png',
     showHeroBanner: data.showHeroBanner === undefined ? true : data.showHeroBanner,
     address: data.address || '',
@@ -51,9 +53,10 @@ export const getSiteSettings = async (): Promise<SiteSettings> => {
     try {
         const docSnap = await getDoc(settingsDocRef);
         if (!docSnap.exists()) {
-            const defaultSettings = {
+            const defaultSettings: SiteSettingsData = {
                 schoolName: 'Bilge Yıldız Koleji',
                 logoUrl: 'https://placehold.co/150x150.png',
+                logoDisplayMode: 'contain',
                 heroBannerUrl: 'https://placehold.co/1200x400.png',
                 showHeroBanner: true,
                 address: 'Örnek Mah. Okul Sk. No:123, 34762 Üsküdar/İstanbul',

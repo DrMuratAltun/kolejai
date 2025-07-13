@@ -10,6 +10,7 @@ import { uploadFile } from '@/lib/firebase-storage';
 const settingsSchema = z.object({
   schoolName: z.string().min(1, 'Okul adı gerekli.'),
   logoUrl: z.string().url().or(z.literal('')),
+  logoDisplayMode: z.enum(['contain', 'cover']),
   heroBannerUrl: z.string().url().or(z.literal('')),
   showHeroBanner: z.boolean(),
   address: z.string().min(1, 'Adres gerekli.'),
@@ -46,6 +47,7 @@ export async function handleSettingsFormSubmit(prevState: any, formData: FormDat
     const dataToValidate = {
         schoolName: formData.get('schoolName') ?? currentSettings.schoolName,
         logoUrl: logoUrl,
+        logoDisplayMode: formData.get('logoDisplayMode') ?? currentSettings.logoDisplayMode,
         heroBannerUrl: heroBannerUrl,
         showHeroBanner: formData.has('heroBanner') ? (formData.get('showHeroBanner') === 'on') : currentSettings.showHeroBanner,
         address: formData.get('address') ?? currentSettings.address,
