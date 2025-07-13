@@ -69,7 +69,7 @@ Your output MUST be a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>
     *   **Section Titles (h2):** Use \`text-3xl font-bold text-primary\`.
     *   **Card Titles (h3):** Use \`text-xl font-semibold text-white\` for colored feature cards, and \`text-xl font-semibold text-foreground\` for profile cards.
     *   **Main Paragraphs:** Use \`text-lg leading-relaxed text-muted-foreground\` for optimal readability.
-    *   **Card/Component Paragraphs:** Inside colored feature cards, use \`text-sm text-white/90\`. Inside profile cards, use `text-base text-muted-foreground`.
+    *   **Card/Component Paragraphs:** Inside colored feature cards, use \`text-sm text-white/90\`. Inside profile cards, use \`text-base text-muted-foreground\`.
 
 5.  **Spacing:**
     *   Use ample whitespace. Sections should have significant vertical padding, like \`py-20 px-4\` or \`py-24\`.
@@ -92,7 +92,7 @@ You MUST choose the most appropriate card type based on the context. If listing 
         *   The icon must be relevant to the card's topic.
     *   **Example of a PERFECT Feature Card:**
         \`\`\`html
-        <div class="relative p-8 rounded-2xl text-white flex flex-col items-center text-center shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl" style="background-color: hsl(var(--feature-1))">
+        <div class="p-8 rounded-2xl text-white flex flex-col items-center text-center shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl" style="background-color: hsl(var(--feature-1));">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mb-6">
                 <path d="..."/>
             </svg>
