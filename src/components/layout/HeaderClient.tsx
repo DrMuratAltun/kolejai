@@ -91,12 +91,12 @@ export default function HeaderClient({ dynamicNavItems, settings }: HeaderClient
             )}
           >
             {settings.logoUrl ? (
-                <div className="relative h-12 w-12 flex-shrink-0">
+                <div className="relative h-14 w-auto flex-shrink-0">
                     <Image 
                         src={settings.logoUrl} 
                         alt={settings.schoolName} 
                         fill
-                        sizes="48px"
+                        sizes="(max-width: 768px) 56px, 150px"
                         className={cn(
                             'rounded-md',
                             settings.logoDisplayMode === 'contain' ? 'object-contain' : 'object-cover'
