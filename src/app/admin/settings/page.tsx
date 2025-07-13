@@ -34,6 +34,7 @@ export default function SiteSettingsPage() {
     const { toast } = useToast();
     const [settings, setSettings] = useState<SiteSettings | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState("general");
 
     const [logoPreview, setLogoPreview] = useState<string | null>(null);
     const [bannerPreview, setBannerPreview] = useState<string | null>(null);
@@ -107,8 +108,11 @@ export default function SiteSettingsPage() {
         {/* Hidden inputs to pass existing URLs */}
         <input type="hidden" name="logoUrl" value={settings.logoUrl} />
         <input type="hidden" name="heroBannerUrl" value={settings.heroBannerUrl} />
+        {/* Hidden inputs to track active tab for form submission */}
+        {activeTab === 'general' && <input type="hidden" name="generalTabActive" value="true" />}
+        {activeTab === 'homepage' && <input type="hidden" name="homepageTabActive" value="true" />}
 
-        <Tabs defaultValue="general">
+        <Tabs defaultValue="general" onValueChange={setActiveTab}>
             <TabsList>
                 <TabsTrigger value="general">Genel Bilgiler</TabsTrigger>
                 <TabsTrigger value="contact">İletişim & Sosyal Medya</TabsTrigger>
@@ -125,6 +129,10 @@ export default function SiteSettingsPage() {
                         <div className="space-y-2">
                             <Label htmlFor="schoolName">Okul Adı</Label>
                             <Input id="schoolName" name="schoolName" defaultValue={settings.schoolName} required />
+                        </div>
+                        <div className="flex items-center space-x-2 p-4 border rounded-md">
+                            <Checkbox id="showSchoolNameInHeader" name="showSchoolNameInHeader" defaultChecked={settings.showSchoolNameInHeader} />
+                            <Label htmlFor="showSchoolNameInHeader" className="cursor-pointer text-base">Okul Adını Başlıkta Göster</Label>
                         </div>
                         <div className="space-y-4">
                             <Label>Logo</Label>

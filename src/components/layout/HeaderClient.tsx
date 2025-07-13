@@ -86,18 +86,19 @@ export default function HeaderClient({ dynamicNavItems, settings }: HeaderClient
           <Link
             href="/"
             className={cn(
-              "flex items-center gap-2 text-xl font-bold",
+              "flex items-center gap-3 text-xl font-bold",
               isHeaderTransparent ? "text-white" : "text-primary"
             )}
           >
             {settings.logoUrl ? (
-                <div className="relative h-10 w-10">
+                <div className="relative h-12 w-12 flex-shrink-0">
                     <Image 
                         src={settings.logoUrl} 
                         alt={settings.schoolName} 
                         fill
-                        sizes="40px"
+                        sizes="48px"
                         className={cn(
+                            'rounded-md',
                             settings.logoDisplayMode === 'contain' ? 'object-contain' : 'object-cover'
                         )}
                     />
@@ -105,7 +106,7 @@ export default function HeaderClient({ dynamicNavItems, settings }: HeaderClient
             ) : (
                 <School className="h-8 w-8" />
             )}
-            <span>{settings.schoolName}</span>
+            {settings.showSchoolNameInHeader && <span>{settings.schoolName}</span>}
           </Link>
           <div className="hidden md:block">
             <NavigationMenu>

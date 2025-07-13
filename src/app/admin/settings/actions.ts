@@ -9,6 +9,7 @@ import { uploadFile } from '@/lib/firebase-storage';
 // This schema validates the final object, not the raw form data
 const settingsSchema = z.object({
   schoolName: z.string().min(1, 'Okul adı gerekli.'),
+  showSchoolNameInHeader: z.boolean(),
   logoUrl: z.string().url().or(z.literal('')),
   logoDisplayMode: z.enum(['contain', 'cover']),
   heroBannerUrl: z.string().url().or(z.literal('')),
@@ -46,10 +47,11 @@ export async function handleSettingsFormSubmit(prevState: any, formData: FormDat
     // This handles fields in inactive (unmounted) tabs
     const dataToValidate = {
         schoolName: formData.get('schoolName') ?? currentSettings.schoolName,
+        showSchoolNameInHeader: formData.has('generalTabActive') ? (formData.get('showSchoolNameInHeader') === 'on') : currentSettings.showSchoolNameInHeader,
         logoUrl: logoUrl,
         logoDisplayMode: formData.get('logoDisplayMode') ?? currentSettings.logoDisplayMode,
         heroBannerUrl: heroBannerUrl,
-        showHeroBanner: formData.has('heroBanner') ? (formData.get('showHeroBanner') === 'on') : currentSettings.showHeroBanner,
+        showHeroBanner: formData.has('homepageTabActive') ? (formData.get('showHeroBanner') === 'on') : currentSettings.showHeroBanner,
         address: formData.get('address') ?? currentSettings.address,
         phone: formData.get('phone') ?? currentSettings.phone,
         email: formData.get('email') ?? currentSettings.email,

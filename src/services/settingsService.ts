@@ -15,6 +15,7 @@ export interface SocialLinks {
 export interface SiteSettings {
   id: string;
   schoolName: string;
+  showSchoolNameInHeader: boolean;
   logoUrl: string;
   logoDisplayMode: 'contain' | 'cover';
   heroBannerUrl: string;
@@ -36,6 +37,7 @@ const fromFirestore = (snapshot: any): SiteSettings => {
   return {
     id: snapshot.id,
     schoolName: data.schoolName || 'Bilge Yıldız Koleji',
+    showSchoolNameInHeader: data.showSchoolNameInHeader === undefined ? true : data.showSchoolNameInHeader,
     logoUrl: data.logoUrl || 'https://placehold.co/150x150.png',
     logoDisplayMode: data.logoDisplayMode || 'contain',
     heroBannerUrl: data.heroBannerUrl || 'https://placehold.co/1200x400.png',
@@ -55,6 +57,7 @@ export const getSiteSettings = async (): Promise<SiteSettings> => {
         if (!docSnap.exists()) {
             const defaultSettings: SiteSettingsData = {
                 schoolName: 'Bilge Yıldız Koleji',
+                showSchoolNameInHeader: true,
                 logoUrl: 'https://placehold.co/150x150.png',
                 logoDisplayMode: 'contain',
                 heroBannerUrl: 'https://placehold.co/1200x400.png',
