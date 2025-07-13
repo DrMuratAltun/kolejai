@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react"
 
 const MOBILE_BREAKPOINT = 768
@@ -15,6 +17,7 @@ export function useIsMobile() {
 
     window.addEventListener("resize", checkDevice)
 
+    // Cleanup listener
     return () => {
       window.removeEventListener("resize", checkDevice)
     }
