@@ -81,7 +81,7 @@ Your output MUST be a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>
     *   **Text Enrichment (MANDATORY):** Do not just use plain paragraphs. It is a strict requirement to enhance the content's visual appeal and readability by using a variety of the following elements. You MUST use a mix of these elements where appropriate.
         *   **Lists (\`<ul>\`):** For bullet points, use classes like \`list-disc pl-6 space-y-2 text-lg text-muted-foreground\`. This is required for itemized information.
         *   **Quotes (\`<blockquote>\`):** To highlight key statements, use classes like \`border-l-4 border-primary pl-4 italic text-muted-foreground\`. This is required for testimonials or important quotes.
-        *   **Emphasis (\`<strong>\`):** Use bold text to emphasize important keywords within paragraphs. This must be used to draw attention to key concepts.
+        *   **Emphasis (\`<strong>\`):** Use bold text to emphasize important keywords within paragraphs. It's even better to use \`<strong class="text-primary">\` to color the keyword with the site's main theme color for a more vibrant look.
 
 6.  **Spacing & Animation (MANDATORY):**
     *   Use ample whitespace. Sections must have significant vertical padding, like \`py-20\` or \`py-24\`.
@@ -215,5 +215,3 @@ const generatePageContentFlow = ai.defineFlow(
     return { htmlContent };
   }
 );
-
-    
