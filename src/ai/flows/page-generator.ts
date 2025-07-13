@@ -49,36 +49,41 @@ Your output MUST be a single root \`<div>\`. Do NOT include \`<html>\`, \`<head>
 
 **MANDATORY DESIGN SYSTEM & STRUCTURE:**
 
-1.  **Content Sectioning & Layout Variation (Crucial):**
+1.  **Overall Structure (Strictly Enforced):**
+    *   The entire output MUST be wrapped in a single root \`<div>\`.
+    *   This root div should contain multiple \`<section>\` blocks.
+    *   **Crucially, each \`<section>\` MUST have a \`<div class="container mx-auto px-4">\` as its direct child.** This container will then hold all the content for that section (headings, paragraphs, grids, etc.). This is a non-negotiable structural rule to ensure proper content alignment.
+
+2.  **Content Sectioning & Layout Variation (Crucial):**
     *   You MUST analyze the provided topic and divide it into logical, self-contained \`<section>\` blocks.
-    *   Each section MUST have a clear title (e.g., \`<h2 class="text-3xl font-bold text-primary mb-8">\`).
+    *   Each section MUST have a clear title (e.g., \`<h2 class="text-3xl font-bold text-primary mb-12 text-center">\`).
     *   **Vary the layout!** Choose the most appropriate layout for the content of each section.
         *   **For featuring a single person or a detailed concept:** Use a two-column layout: \`<div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">\`, placing text on one side and an image on the other. Alternate the order (image left, then image right) in subsequent sections to create visual interest.
         *   **For listing a group of people (e.g., a board of directors, alumni):** Use a grid of "Profile Cards". Example: \`<div class="grid grid-cols-1 md:grid-cols-3 gap-8">\`.
         *   **For listing features or services:** Use a grid of "Feature Cards".
         *   **For general text:** Use a full-width section with a title and enhanced paragraphs.
 
-2.  **Visual Rhythm (Backgrounds) - STRICTLY ENFORCED:**
-    *   You MUST alternate the background color of each \`<section>\` block between \`bg-background\` and \`bg-muted\` to create a visually appealing rhythm. This is not optional. For example: \`<section class="py-20 px-4 bg-background ...">\`, then \`<section class="py-20 px-4 bg-muted ...">\`, and so on. DO NOT use the same background color for two consecutive sections.
+3.  **Visual Rhythm (Backgrounds) - STRICTLY ENFORCED:**
+    *   You MUST alternate the background color of each \`<section>\` block between \`bg-background\` and \`bg-muted\` to create a visually appealing rhythm. This is not optional. For example: \`<section class="py-20 bg-background ...">\`, then \`<section class="py-20 bg-muted ...">\`, and so on. DO NOT use the same background color for two consecutive sections.
 
-3.  **Color Palette (Strictly Enforced):**
+4.  **Color Palette (Strictly Enforced):**
     *   **NEVER** use hardcoded colors like \`text-gray-900\`, \`bg-blue-500\`, etc.
     *   **ONLY USE SEMANTIC THEME CLASSES:**
         *   Main text: \`text-foreground\`
         *   Subtitles, descriptions: \`text-muted-foreground\`
         *   Main titles, highlighted elements: \`text-primary\`
 
-4.  **Rich Typography & Readability (STRICTLY ENFORCED):**
-    *   **Page Title (h1):** Use \`text-4xl md:text-5xl font-extrabold text-primary\`.
-    *   **Section Titles (h2):** Use \`text-3xl font-bold text-primary\`.
+5.  **Rich Typography & Readability (STRICTLY ENFORCED):**
+    *   **Page Title (h1):** The very first section should contain the H1 title, styled as \`text-4xl md:text-5xl font-extrabold text-primary mb-4\`.
+    *   **Section Titles (h2):** Use \`text-3xl font-bold text-primary mb-12 text-center\`.
     *   **Main Paragraphs:** Use \`text-lg leading-relaxed text-muted-foreground\` for optimal readability.
     *   **Text Enrichment (MANDATORY):** Do not just use plain paragraphs. It is a strict requirement to enhance the content's visual appeal and readability by using a variety of the following elements. You MUST use a mix of these elements where appropriate.
         *   **Lists (\`<ul>\`):** For bullet points, use classes like \`list-disc pl-6 space-y-2 text-lg text-muted-foreground\`. This is required for itemized information.
         *   **Quotes (\`<blockquote>\`):** To highlight key statements, use classes like \`border-l-4 border-primary pl-4 italic text-muted-foreground\`. This is required for testimonials or important quotes.
         *   **Emphasis (\`<strong>\`):** Use bold text to emphasize important keywords within paragraphs. This must be used to draw attention to key concepts.
 
-5.  **Spacing & Animation (MANDATORY):**
-    *   Use ample whitespace. Sections must have significant vertical padding, like \`py-20 px-4\` or \`py-24\`.
+6.  **Spacing & Animation (MANDATORY):**
+    *   Use ample whitespace. Sections must have significant vertical padding, like \`py-20\` or \`py-24\`.
     *   You MUST animate sections into view subtly: \`<section class="... animate-in fade-in slide-in-from-bottom-8 duration-500">\`.
 
 ---
