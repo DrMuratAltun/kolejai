@@ -48,11 +48,14 @@ Instructions:
     *   **Alternating Sections:** Alternate section backgrounds using \`bg-background\` and \`bg-muted\` to create visual separation. Use padding like \`py-20 px-4\`.
     *   **Dynamic Grids:** Use CSS Grid (\`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8\`) for feature lists or card sections.
     *   **Animations & Transitions:** Animate sections on load with \`animate-in fade-in slide-in-from-bottom-8 duration-500\`. Elements should have \`transition-all duration-300\`. Cards should have hover effects like \`hover:shadow-xl hover:-translate-y-2\`.
-3.  **Component Design (Cards & CTAs):**
-    *   **Feature Cards:** Design beautiful cards. Cards should be in \`bg-card\`, have \`rounded-2xl\`, and \`shadow-lg hover:shadow-primary/20\`. Include an icon.
+3.  **Typography & Readability:**
+    *   **Headings:** Use appropriate heading levels (h2, h3). Section titles should be large and bold (e.g., \`text-3xl font-bold\`).
+    *   **Main Paragraphs:** For main content areas, especially next to an image or in a single column, use a larger, more readable font size like \`text-lg\` and increase line spacing with \`leading-relaxed\`.
+    *   **Card Text:** For text inside smaller components like cards, use standard font sizes like \`text-base\` or \`text-sm\` to avoid a cramped look.
+4.  **Component Design (Cards & CTAs):**
+    *   **Feature Cards:** Design beautiful cards. Cards should be in \`bg-card\`, have \`rounded-2xl\`, and \`shadow-lg hover:shadow-primary/20\`. Include an icon if appropriate.
     *   **Icon Usage:** Use inline SVGs for icons. Example for a plus icon: \`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>\`. The icon should be wrapped in a colored circle, e.g., \`<div class="bg-primary/10 text-primary rounded-full w-12 h-12 flex items-center justify-center mb-6">...</div>\`.
     *   **Call to Action (CTA):** Include a visually distinct CTA section with a gradient background, like \`bg-gradient-to-br from-primary to-blue-700\`, with white text (\`text-primary-foreground\`) and a prominent button.
-4.  **Content**: Ensure generated text is professional, well-written, and directly addresses the provided topic and title.
 5.  **Image Integration**:
     *   You MUST use this exact placeholder format for all images: \`<img src="[AI_IMAGE_PLACEHOLDER]" alt="A highly descriptive alt text" class="w-full h-auto rounded-lg shadow-md aspect-video object-cover" data-ai-hint="a concise prompt for an image model max 5 words" />\`.
     *   \`data-ai-hint\` MUST be a very descriptive and visual prompt for an image generation model.
